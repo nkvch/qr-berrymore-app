@@ -8,6 +8,7 @@ const singup = () => {
     password: '',
     lastName: '',
     firstName: '',
+    email: '',
   };
 
   const onSubmit = values => {
@@ -33,46 +34,54 @@ const singup = () => {
             <form onSubmit={handleSubmit}>
               <TextField
                 className="form-field"
-                // id="outlined-basic"
                 name="firstName"
                 label="Имя"
                 variant="outlined"
                 onChange={handleChange}
                 value={values.firstName}
+                type="text"
               />
               <TextField
                 className="form-field"
-                // id="outlined-basic"
                 name="lastName"
                 label="Фамилия"
                 variant="outlined"
                 onChange={handleChange}
                 value={values.lastName}
+                type="text"
               />
               <TextField
                 className="form-field"
-                // id="outlined-basic"
+                name="email"
+                label="Email"
+                variant="outlined"
+                onChange={handleChange}
+                value={values.email}
+                type="email"
+              />
+              <TextField
+                className="form-field"
                 name="username"
                 label="Имя пользователя"
                 variant="outlined"
                 onChange={handleChange}
                 value={values.username}
+                type="text"
               />
               <TextField
                 className="form-field"
-                // id="outlined-basic"
                 name="password"
                 label="Пароль"
                 variant="outlined"
-                type="password"
                 onChange={handleChange}
                 value={values.password}
+                type="password"
               />
               <Button
                 type="submit"
                 variant="contained"
               >
-                Зарегаться
+                Зарегистрироваться
               </Button>
             </form>
           )
