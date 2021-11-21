@@ -1,13 +1,20 @@
-import prisma from "../../../prisma/prismaClient/prismaClient";
+import prisma from '../../../prisma/prismaClient/prismaClient';
 
-const userHandler = async (req, res) => {
-  // res.status(200).json({ name: 'John Doe' })
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const usersHandler = async (req, res) => {
   switch (req.method) {
     case 'POST':
       const { body } = req;
-      const data = typeof body === "string" ? JSON.parse(body) : body;
+      const user = typeof body === 'string' ? JSON.parse(body) : body;
 
-      const savedUser = await prisma.users.create({ data });
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(user.password, salt);
+
+      const data = { ...user, password: hash };
+
+      const { id, password, ...savedUser } = await prisma.user.create({ data });
 
       res.status(200).json(savedUser);
       break;
@@ -17,4 +24,4 @@ const userHandler = async (req, res) => {
   }
 }
 
-export default userHandler;
+export default usersHandler;

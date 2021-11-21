@@ -1,3 +1,4 @@
+import styles from '../styles/Wrapper.module.scss';
 import {
   AppBar,
   IconButton,
@@ -11,16 +12,9 @@ import {
   ListItemText,
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
+import Link from 'next/link';
 import { useState } from "react";
-import HomeIcon from '@mui/icons-material/Home';
-import EqualizerIcon from '@mui/icons-material/Equalizer';
-import PeopleIcon from '@mui/icons-material/People';
-
-const icons = {
-  'Кабинет': <HomeIcon />,
-  'Статистика': <EqualizerIcon />,
-  'Сотрудники': <PeopleIcon />,
-};
+import Image from 'next/image';
 
 const Wrapper = ({ children, title, menuItems }) => {
 
@@ -42,7 +36,8 @@ const Wrapper = ({ children, title, menuItems }) => {
             <MenuIcon />
           </IconButton>
           <Typography className="text topbartitle" variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            { title }
+            <img src="https://cdn-icons.flaticon.com/png/512/4861/premium/4861890.png?token=exp=1637415695~hmac=b48c839dd81d65ba7abfd7614c068ffc" width="30" height="30" />
+            { ' ' + title }
           </Typography>
         </Toolbar>
       </AppBar>
@@ -52,14 +47,18 @@ const Wrapper = ({ children, title, menuItems }) => {
         onClose={switchSidebar}
       >
         <Box sx={{
-          width: 200
+          width: 300
         }}>
           <List>
             {
-              menuItems.map(menuItem => (
-                <ListItem button key={menuItem}>
-                  <ListItemIcon>{icons[menuItem]}</ListItemIcon>
-                  <ListItemText primary={menuItem} />
+              menuItems.map(({ text, icon, linkUrl }) => (
+                <ListItem button key={text} onClick={switchSidebar}>
+                  <Link href={linkUrl}>
+                    <a className={styles.menuLink}>
+                      <ListItemIcon>{icon}</ListItemIcon>
+                      <ListItemText primary={text} />
+                    </a>
+                  </Link>
                 </ListItem>
               ))
             }

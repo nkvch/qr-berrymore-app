@@ -15,6 +15,12 @@ const request = obj => {
     },
   };
 
+  const token = localStorage.getItem('jwt');
+
+  if (token) {
+    requestOptions.headers.Authorization = `Bearer ${token}`;
+  }
+
   if (searchParams) {
     const params = new URLSearchParams(searchParams);
 

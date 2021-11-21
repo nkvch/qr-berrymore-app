@@ -1,12 +1,12 @@
-import '../styles/globals.css'
-import Wrapper from '../components/Wrapper';
+import '../styles/globals.css';
+import AuthWrapper from '../utils/auth/AuthWrapper';
 
 function MyApp({ Component, pageProps }) {
 
   return (
-    <Wrapper title="Berrymore" menuItems={['Кабинет', 'Статистика', 'Сотрудники']}>
+    <AuthWrapper>
       <Component {...pageProps} />
-    </Wrapper>
+    </AuthWrapper>
   );
 }
 

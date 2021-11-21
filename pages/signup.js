@@ -2,7 +2,7 @@ import { TextField, Button } from "@mui/material";
 import { Formik } from "formik";
 import request from '../utils/request';
 
-const singup = () => {
+const signup = () => {
   const initialValues = {
     username: '',
     password: '',
@@ -91,4 +91,4 @@ const singup = () => {
   )
 };
 
-export default singup;
+export default signup;
