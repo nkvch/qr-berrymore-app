@@ -52,7 +52,7 @@ const AuthWrapper = ({ children }) => {
 
   useEffect(() => {
     request({
-      url: '/users/auth',
+      url: '/auth',
       callback: (status, response) => {
         if (status === 'OK') {
           const { token, ...userData } = response;

@@ -1,27 +1,8 @@
-import prisma from '../../../prisma/prismaClient/prismaClient';
+import apiWrapper from '../../../wrappers/backend/apiWrapper';
+import addUser from '../../../endpoints/users/actions/addUser';
 
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const usersHandler = {
+  post: addUser,
+};
 
-const usersHandler = async (req, res) => {
-  switch (req.method) {
-    case 'POST':
-      const { body } = req;
-      const user = typeof body === 'string' ? JSON.parse(body) : body;
-
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(user.password, salt);
-
-      const data = { ...user, password: hash };
-
-      const { id, password, ...savedUser } = await prisma.user.create({ data });
-
-      res.status(200).json(savedUser);
-      break;
-    default:
-      res.status(405).json({ msg: 'Invalid method' })
-      break;
-  }
-}
-
-export default usersHandler;
+export default apiWrapper(usersHandler);

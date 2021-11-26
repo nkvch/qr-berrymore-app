@@ -14,7 +14,7 @@ const signin = () => {
 
   const onSubmit = values => {
     request({
-      url: '/users/auth',
+      url: '/auth',
       method: 'POST',
       body: values,
       callback: (status, response) => {
