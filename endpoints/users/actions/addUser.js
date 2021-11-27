@@ -2,7 +2,7 @@ import prisma from '../../../prisma/prismaClient/prismaClient';
 
 const bcrypt = require('bcryptjs');
 
-const addUser = async (req, res) => {
+const addUser = async req => {
   const { body } = req;
   const user = typeof body === 'string' ? JSON.parse(body) : body;
 
@@ -13,7 +13,7 @@ const addUser = async (req, res) => {
 
   const { id, password, ...savedUser } = await prisma.user.create({ data });
 
-  res.status(200).json(savedUser);
+  return savedUser;
 };
 
 export default addUser;

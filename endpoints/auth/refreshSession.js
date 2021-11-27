@@ -1,17 +1,26 @@
 import prisma from '../../prisma/prismaClient/prismaClient';
+import NotFound from '../../utils/errors/notFound';
+import Unauthorized from '../../utils/errors/Unauthorized';
 import generateJWT from '../../utils/generateJWT';
 
 const jwt = require('jsonwebtoken');
 
-const refreshSession = async (req, res) => {
+const refreshSession = async req => {
   const { authorization } = req.headers;
 
-  if (!authorization) return res.status(401).json({ msg: 'Unauthorized' });
+  if (!authorization) throw new Unauthorized('Authorization required!');
 
   const token = authorization.replace('Bearer ', '');
 
-  const { id } = jwt.verify(token, process.env.JWT_SECRET);
+  let id;
 
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+    id = decoded.id;
+  } catch (err) {
+    throw new Unauthorized('Session expired!');
+  }
+  
   const user = await prisma.user.findFirst({
     where: { id },
     select: {
@@ -22,11 +31,11 @@ const refreshSession = async (req, res) => {
     },
   });
 
-  if (!user) return res.status(404).json({status: 'not found'});
+  if (!user) throw new NotFound('User does not exist', { username });
 
   const newToken = await generateJWT({ id });
 
-  res.status(200).json({ ...user, token: newToken });
+  return { ...user, token: newToken };
 };
 
 export default refreshSession;

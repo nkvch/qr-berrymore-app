@@ -17,7 +17,6 @@ import { useState } from "react";
 import Image from 'next/image';
 
 const Wrapper = ({ children, title, menuItems }) => {
-
   const [sidebar, setSidebar] = useState(false);
 
   const switchSidebar = () => setSidebar(!sidebar);

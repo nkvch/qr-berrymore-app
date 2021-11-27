@@ -1,4 +1,5 @@
 import { handleErrors } from '../../utils/handleErrors';
+import response from '../../utils/response';
 
 const apiWrapper = routeHandler => async (req, res) => {
   const method = req.method.toLowerCase();
@@ -11,7 +12,7 @@ const apiWrapper = routeHandler => async (req, res) => {
       // global middleware
       // await jwtMiddleware(req, res);
 
-      await routeHandler[method](req, res);
+      response(await routeHandler[method](req), res);
   } catch (err) {
       handleErrors(err, res);
   };

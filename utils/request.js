@@ -29,14 +29,14 @@ const request = obj => {
 
   return fetch('/api' + (urlWithParams || url), requestOptions)
     .then(response => response.json())
-    .then(json => {
-      callback('OK', json);
+    .then(({ status, data }) => {
+      callback(status, data);
 
-      return json;
+      return data;
     })
     .catch(ex => {
       if (typeof callback === 'function') {
-        callback('ERROR', ex);
+        callback('error', ex);
       }
     });
 };

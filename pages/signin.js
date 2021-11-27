@@ -18,10 +18,12 @@ const signin = () => {
       method: 'POST',
       body: values,
       callback: (status, response) => {
-        if (status === 'OK') {
+        if (status === 'ok') {
           const { token, ...user } = response;
 
           auth.login(token, user);
+        } else if (status === 'error') {
+          // todo
         }
       }
     });

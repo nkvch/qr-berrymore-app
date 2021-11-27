@@ -54,10 +54,13 @@ const AuthWrapper = ({ children }) => {
     request({
       url: '/auth',
       callback: (status, response) => {
-        if (status === 'OK') {
+        if (status === 'ok') {
+          
           const { token, ...userData } = response;
 
           login(token, userData);
+        } else if (status === 'error') {
+          logout();
         }
       }
     });
