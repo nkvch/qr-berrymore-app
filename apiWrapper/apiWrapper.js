@@ -1,5 +1,5 @@
-import { handleErrors } from '../../utils/handleErrors';
-import response from '../../utils/response';
+import { handleErrors } from './utils/handleErrors';
+import response from './utils/response';
 
 const apiWrapper = routeHandler => async (req, res) => {
   const method = req.method.toLowerCase();

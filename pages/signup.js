@@ -1,6 +1,6 @@
 import { TextField, Button } from "@mui/material";
 import { Formik } from "formik";
-import request from '../utils/request';
+import request from '../frontendWrapper/utils/request';
 
 const signup = () => {
   const initialValues = {

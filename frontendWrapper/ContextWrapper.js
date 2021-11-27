@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import AuthContext from './authContext';
-import Wrapper from '../../components/Wrapper';
+import Context from './context';
+import Wrapper from './Wrapper';
 import HomeIcon from '@mui/icons-material/Home';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import PeopleIcon from '@mui/icons-material/People';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
-import request from '../request';
+import request from './utils/request';
+import notifications from './components/notifications';
 
 const unauthMenuOptions = [{
   text: 'Зарегистрироваться',
@@ -37,8 +38,19 @@ const authMenuOptions = [{
   icon: <HomeIcon />,
 }];
 
-const AuthWrapper = ({ children }) => {
+const ContextWrapper = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [contents, setContents] = useState([]);
+
+  const showActiveNotifications = activeNotifications => {
+    console.log(activeNotifications);
+    setContents(activeNotifications);
+  }
+
+  const notification = data => {
+    notifications.open(data, showActiveNotifications);
+    // showActiveNotifications(activeNots);
+  }
 
   const login = (token, user) => {
     localStorage.setItem('jwt', token);
@@ -67,16 +79,18 @@ const AuthWrapper = ({ children }) => {
   }, []);
 
   return (
-    <Wrapper title="Berrymore" menuItems={
-      user
-      ? authMenuOptions
-      : unauthMenuOptions
-    }>
-      <AuthContext.Provider value={{ user, login, logout }}>
-        {children}
-      </AuthContext.Provider>
-    </Wrapper>
+    <Context.Provider value={{ user, login, logout, notification }}>
+      <Wrapper title="Berrymore" menuItems={
+        user
+        ? authMenuOptions
+        : unauthMenuOptions
+      }
+        contents={contents}
+      >
+          {children}
+      </Wrapper>
+    </Context.Provider>
   );
 };
 
-export default AuthWrapper;
+export default ContextWrapper;

@@ -1,5 +1,6 @@
 import styles from '../styles/Wrapper.module.scss';
 import {
+  Alert,
   AppBar,
   IconButton,
   Toolbar,
@@ -10,13 +11,20 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  AlertTitle,
+  Collapse,
+  Button,
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import Link from 'next/link';
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Image from 'next/image';
+import { TransitionGroup } from 'react-transition-group';
+import Context from './context';
 
-const Wrapper = ({ children, title, menuItems }) => {
+const Wrapper = ({ children, title, menuItems, contents }) => {
+  const { user, logout } = useContext(Context);
+
   const [sidebar, setSidebar] = useState(false);
 
   const switchSidebar = () => setSidebar(!sidebar);
@@ -34,10 +42,13 @@ const Wrapper = ({ children, title, menuItems }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography className="text topbartitle" variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <img src="https://cdn-icons.flaticon.com/png/512/4861/premium/4861890.png?token=exp=1637415695~hmac=b48c839dd81d65ba7abfd7614c068ffc" width="30" height="30" />
-            { ' ' + title }
+          <Typography className="text topbartitle" display="flex" variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Image alt="icon" src="/icon.svg" width="40" height="40" />
+            <h1 className={styles.heading}>{title}</h1>
           </Typography>
+          {
+            user && <Button variant="text" onClick={logout}>Выйти</Button>
+          }
         </Toolbar>
       </AppBar>
       <Drawer
@@ -64,7 +75,15 @@ const Wrapper = ({ children, title, menuItems }) => {
           </List>
         </Box>
       </Drawer>
-      {children}
+      <TransitionGroup>
+        {
+          [...contents, { key: 'pageContent', content: children }].map(({ key, content }) => (
+            <Collapse key={key}>
+              {content}
+            </Collapse>
+          ))
+        }
+      </TransitionGroup>
     </div>
   )
 };

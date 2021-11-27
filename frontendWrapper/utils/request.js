@@ -29,7 +29,7 @@ const request = obj => {
 
   return fetch('/api' + (urlWithParams || url), requestOptions)
     .then(response => response.json())
-    .then(({ status, data }) => {
+    .then(({ status, ...data }) => {
       callback(status, data);
 
       return data;

@@ -1,7 +1,7 @@
 import prisma from '../../prisma/prismaClient/prismaClient';
-import generateJWT from '../../utils/generateJWT';
-import NotFound from '../../utils/errors/notFound';
-import Unauthorized from '../../utils/errors/Unauthorized';
+import generateJWT from '../../apiWrapper/utils/generateJWT';
+import NotFound from '../../apiWrapper/utils/errors/notFound';
+import Unauthorized from '../../apiWrapper/utils/errors/Unauthorized';
 
 const bcrypt = require('bcryptjs');
 

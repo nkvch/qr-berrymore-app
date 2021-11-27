@@ -1,11 +1,11 @@
 import { TextField, Button } from "@mui/material";
 import { Formik } from "formik";
 import { useContext } from 'react';
-import request from '../utils/request';
-import AuthContext from '../utils/auth/authContext';
+import request from '../frontendWrapper/utils/request';
+import Context from '../frontendWrapper/context';
 
 const signin = () => {
-  const auth = useContext(AuthContext);
+  const { login, notification } = useContext(Context);
 
   const initialValues = {
     username: '',
@@ -21,9 +21,17 @@ const signin = () => {
         if (status === 'ok') {
           const { token, ...user } = response;
 
-          auth.login(token, user);
+          login(token, user);
+
+          notification({
+            type: 'success',
+            title: 'Вход успешно выполнен',
+          });
         } else if (status === 'error') {
-          // todo
+          notification({
+            type: status,
+            title: response.message,
+          });
         }
       }
     });

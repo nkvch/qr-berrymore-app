@@ -1,12 +1,12 @@
-import '../styles/globals.css';
-import AuthWrapper from '../utils/auth/AuthWrapper';
+import '../styles/globals.scss';
+import ContextWrapper from '../frontendWrapper/ContextWrapper';
 
 function MyApp({ Component, pageProps }) {
 
   return (
-    <AuthWrapper>
+    <ContextWrapper>
       <Component {...pageProps} />
-    </AuthWrapper>
+    </ContextWrapper>
   );
 }
 

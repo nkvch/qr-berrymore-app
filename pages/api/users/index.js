@@ -1,4 +1,4 @@
-import apiWrapper from '../../../wrappers/backend/apiWrapper';
+import apiWrapper from '../../../apiWrapper/apiWrapper';
 import addUser from '../../../endpoints/users/actions/addUser';
 
 const usersHandler = {

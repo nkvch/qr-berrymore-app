@@ -1,4 +1,4 @@
-import apiWrapper from '../../wrappers/backend/apiWrapper';
+import apiWrapper from '../../apiWrapper/apiWrapper';
 import login from '../../endpoints/auth/login';
 import refreshSession from '../../endpoints/auth/refreshSession';
 
