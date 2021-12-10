@@ -42,16 +42,6 @@ const ContextWrapper = ({ children }) => {
   const [user, setUser] = useState(null);
   const [contents, setContents] = useState([]);
 
-  const showActiveNotifications = activeNotifications => {
-    console.log(activeNotifications);
-    setContents(activeNotifications);
-  }
-
-  const notification = data => {
-    notifications.open(data, showActiveNotifications);
-    // showActiveNotifications(activeNots);
-  }
-
   const login = (token, user) => {
     localStorage.setItem('jwt', token);
     setUser(() => user);
@@ -79,7 +69,7 @@ const ContextWrapper = ({ children }) => {
   }, []);
 
   return (
-    <Context.Provider value={{ user, login, logout, notification }}>
+    <Context.Provider value={{ user, login, logout }}>
       <Wrapper title="Berrymore" menuItems={
         user
         ? authMenuOptions

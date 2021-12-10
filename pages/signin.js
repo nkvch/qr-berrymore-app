@@ -3,9 +3,10 @@ import { Formik } from "formik";
 import { useContext } from 'react';
 import request from '../frontendWrapper/utils/request';
 import Context from '../frontendWrapper/context';
+import { notification } from "../frontendWrapper/components/notifications";
 
 const signin = () => {
-  const { login, notification } = useContext(Context);
+  const { login } = useContext(Context);
 
   const initialValues = {
     username: '',
@@ -23,12 +24,12 @@ const signin = () => {
 
           login(token, user);
 
-          notification({
+          notification.open({
             type: 'success',
             title: 'Вход успешно выполнен',
           });
         } else if (status === 'error') {
-          notification({
+          notification.open({
             type: status,
             title: response.message,
           });

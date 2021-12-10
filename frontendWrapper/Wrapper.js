@@ -21,6 +21,7 @@ import { useContext, useState } from "react";
 import Image from 'next/image';
 import { TransitionGroup } from 'react-transition-group';
 import Context from './context';
+import Notifications from './components/notifications';
 
 const Wrapper = ({ children, title, menuItems, contents }) => {
   const { user, logout } = useContext(Context);
@@ -75,15 +76,8 @@ const Wrapper = ({ children, title, menuItems, contents }) => {
           </List>
         </Box>
       </Drawer>
-      <TransitionGroup>
-        {
-          [...contents, { key: 'pageContent', content: children }].map(({ key, content }) => (
-            <Collapse key={key}>
-              {content}
-            </Collapse>
-          ))
-        }
-      </TransitionGroup>
+      <Notifications />
+      {children}
     </div>
   )
 };

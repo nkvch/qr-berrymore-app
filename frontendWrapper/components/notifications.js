@@ -1,15 +1,20 @@
-import { Alert, AlertTitle } from '@mui/material';
+import { Alert, AlertTitle, Collapse } from '@mui/material';
+import { useState } from 'react';
 import styles from '../../styles/Notification.module.scss';
+import { TransitionGroup } from 'react-transition-group';
 
-class Notifications {
-  constructor() {
-    this.active = [];
-  };
+const notification = {
+};
 
-  open = ({ type, title, text }, callback) => {
+export { notification };
+
+const Notifications = () => {
+  const [activeNotifications, setActiveNotifications] = useState([]);
+
+  const open = ({ type, title, text }) => {
     const key = `notification${Math.random()}`;
 
-    this.active.push({
+    setActiveNotifications([{
       key,
       content: (
         <Alert severity={type} className={styles.notification}>
@@ -17,23 +22,30 @@ class Notifications {
           {text}
         </Alert>
       ),
-    });
-
-    callback(this.active);
+    }, ...activeNotifications]);
 
     setTimeout(() => {
-      this.close(key);
-      callback(this.active);
+      close(key);
     }, 5000);
   };
 
-  close = key => {
-    this.active = this.active.filter(notification => notification.key !== key);
+  const close = key => {
+    setActiveNotifications(active => active.filter(notification => notification.key !== key));
   };
 
-  get = () => this.active;
+  notification.open = open;
+
+  return (
+    <TransitionGroup>
+      {
+        activeNotifications.map(({ key, content }) => (
+          <Collapse key={key}>
+            {content}
+          </Collapse>
+        ))
+      }
+    </TransitionGroup>
+  )
 };
 
-const notifications = new Notifications();
-
-export default notifications;
+export default Notifications;
