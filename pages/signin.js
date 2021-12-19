@@ -20,7 +20,7 @@ const signin = () => {
       body: values,
       callback: (status, response) => {
         if (status === 'ok') {
-          const { token, ...user } = response;
+          const { token, ...user } = response.data;
 
           login(token, user);
 
