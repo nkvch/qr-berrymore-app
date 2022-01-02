@@ -1,18 +1,17 @@
 import { Alert, AlertTitle, Collapse } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '../../styles/Notification.module.scss';
 import { TransitionGroup } from 'react-transition-group';
 
 const notification = {
 };
 
-export { notification };
-
 const Notifications = () => {
   const [activeNotifications, setActiveNotifications] = useState([]);
 
   const open = ({ type, title, text }) => {
     const key = `notification${Math.random()}`;
+    console.log('alaaalalal');
 
     setActiveNotifications([{
       key,
@@ -47,5 +46,7 @@ const Notifications = () => {
     </TransitionGroup>
   )
 };
+
+export { notification };
 
 export default Notifications;

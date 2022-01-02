@@ -9,6 +9,10 @@ import {
   TablePagination,
   IconButton,
   Paper,
+  CircularProgress,
+  Autocomplete,
+  TextField,
+  Button,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTheme } from '@emotion/react';
@@ -18,24 +22,33 @@ import {
   KeyboardArrowLeft, 
   KeyboardArrowRight,
 } from '@mui/icons-material';
-import { useRouter } from 'next/dist/client/router';
-import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { notification } from './notifications';
+import { useState, useEffect, useRef } from 'react';
 import request from '../utils/request';
+import Debouncer from '../utils/debouncer';
 
 
 const PaginatedTable = props => {
   const { url, columnNames } = props;
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [qty, setQty] = useState(10);
+  const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
   const [rows, setRows] = useState([]);
+  const debouncer = useRef(new Debouncer(500));
 
   useEffect(() => {
+    setLoading(true);
+
     request({
       url,
       searchParams: {
         page,
         qty,
+        search,
+        searchColumns: Object.keys(columnNames),
       },
       callback: (status, response) => {
         if (status === 'ok') {
@@ -43,12 +56,23 @@ const PaginatedTable = props => {
 
           setRows(data.pageData);
           setTotal(data.total);
+          setLoading(false);
+
+          if (data.total === 0) {
+            notification.open({
+              type: 'warning',
+              title: 'Результатов не найдено',
+            });
+          }
         } else {
-          //
+          notification.open({
+            type: 'error',
+            title: `Ошибка: ${response.message}`,
+          });
         }
       }
     });
-  }, [page, qty]);
+  }, [page, qty, search]);
 
   const handleChangePage = page => {
     setPage(page);
@@ -56,7 +80,27 @@ const PaginatedTable = props => {
 
   const handleChangeRowsPerPage = event => {
     setQty(Number(event.target.value));
+    setPage(1);
   };
+
+  const handleChangeSearch = event => {
+    const { value } = event.target;
+    const { debounce } = debouncer.current;
+
+    debounce(() => {
+      setSearch(value);
+      setPage(1);
+    });
+
+    // the only way to handle clear button :(
+    const [clearBtn] = document.getElementsByClassName('MuiAutocomplete-clearIndicator');
+    clearBtn?.addEventListener('click', clearSearch);
+  }
+
+  const clearSearch = () => {
+    setSearch('');
+    setPage(1);
+  }
 
   const totallyPages = Math.ceil(total/qty);
 
@@ -114,54 +158,77 @@ const PaginatedTable = props => {
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-        <TableHead>
-          <TableRow>
-            {
-              columnNames.map(columnName => (
-                <TableCell key={columnName}>{columnName}</TableCell>
-              ))
-            }
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, idx) => (
-            <TableRow key={idx}>
+    <>
+      <Autocomplete
+        freeSolo
+        id={`${url.split('/').pop()}-search`}
+        options={[]}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Поиск..."
+            onChange={handleChangeSearch}
+          />
+        )}
+      />
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+          <TableHead>
+            <TableRow>
               {
-                Object.entries(row).map(([key, value]) => (
-                  <TableCell key={`${idx}${key}${value}`} scope="row">
-                    {value}
-                  </TableCell>
+                Object.values(columnNames).map(columnName => (
+                  <TableCell key={columnName}>{columnName}</TableCell>
                 ))
               }
             </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'Все', value: -1 }]}
-              colSpan={3}
-              count={-1}
-              rowsPerPage={qty}
-              page={page}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                label: 'Результатов на странице',
-                native: true,
-              }}
-              labelDisplayedRows={() => `${page}-${totallyPages}`}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={() => TablePaginationActions(page, totallyPages, handleChangePage)}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody className={loading ? 'table-rows dimmed' : 'table-rows'}>
+            { loading ? <CircularProgress className="loading-spinner" /> : null }
+            {rows.map((row, idx) => (
+              <TableRow key={idx}>
+                {
+                  Object.entries(row).map(([key, value]) => (
+                    <TableCell key={`${idx}${key}${value}`} scope="row">
+                      {value}
+                    </TableCell>
+                  ))
+                }
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25, { label: 'Все', value: -1 }]}
+                colSpan={3}
+                count={-1}
+                rowsPerPage={qty}
+                page={page}
+                SelectProps={{
+                  inputProps: {
+                    'aria-label': 'rows per page',
+                  },
+                  label: 'Результатов на странице',
+                  native: true,
+                }}
+                labelDisplayedRows={() => `${page}-${totallyPages}`}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                ActionsComponent={() => TablePaginationActions(page, totallyPages, handleChangePage)}
+              />
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </TableContainer>
+      <Link href={`${url}/create`}>
+        <Button
+          variant="contained"
+          style={{ marginTop: '1em' }}
+        >
+          Добавить
+        </Button>
+      </Link>
+    </>
   )
 };
 

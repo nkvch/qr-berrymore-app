@@ -14,6 +14,7 @@ import {
   AlertTitle,
   Collapse,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import Link from 'next/link';
@@ -24,7 +25,7 @@ import Context from './context';
 import Notifications from './components/notifications';
 
 const Wrapper = ({ children, title, menuItems, contents }) => {
-  const { user, logout } = useContext(Context);
+  const { user, logout, loading } = useContext(Context);
 
   const [sidebar, setSidebar] = useState(false);
 
@@ -77,7 +78,7 @@ const Wrapper = ({ children, title, menuItems, contents }) => {
         </Box>
       </Drawer>
       <Notifications />
-      {children}
+      { loading ? <CircularProgress /> : children }
     </div>
   )
 };

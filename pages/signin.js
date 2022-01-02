@@ -1,16 +1,28 @@
 import { TextField, Button } from "@mui/material";
 import { Formik } from "formik";
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import request from '../frontendWrapper/utils/request';
 import Context from '../frontendWrapper/context';
 import { notification } from "../frontendWrapper/components/notifications";
+import Form from "../frontendWrapper/components/Form";
 
 const signin = () => {
-  const { login } = useContext(Context);
+  const { login, offLoading } = useContext(Context);
 
   const initialValues = {
     username: '',
     password: '',
+  };
+
+  const fieldsData = {
+    username: {
+      label: 'Имя пользователя',
+      type: 'text',
+    },
+    password: {
+      label: 'Пароль',
+      type: 'password',
+    },
   };
 
   const onSubmit = values => {
@@ -40,40 +52,12 @@ const signin = () => {
 
   return (
     <div className="block">
-      <Formik
-        {...({ initialValues, onSubmit })}
-      >
-        {
-          ({ values, handleChange, handleSubmit }) => (
-            <form onSubmit={handleSubmit}>
-              <TextField
-                className="form-field"
-                name="username"
-                label="Имя пользователя"
-                variant="outlined"
-                onChange={handleChange}
-                value={values.username}
-                type="text"
-              />
-              <TextField
-                className="form-field"
-                name="password"
-                label="Пароль"
-                variant="outlined"
-                onChange={handleChange}
-                value={values.password}
-                type="password"
-              />
-              <Button
-                type="submit"
-                variant="contained"
-              >
-                Зарегистрироваться
-              </Button>
-            </form>
-          )
-        }
-      </Formik>
+      <Form
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        submitText="Войти"
+        fieldsData={fieldsData}
+      />
     </div>
   )
 };
