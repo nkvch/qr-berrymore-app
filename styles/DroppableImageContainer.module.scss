@@ -1,0 +1,12 @@
+.box {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  border-width: 1px;
+  border-color: rgba($color: #000000, $alpha: 0.3);
+  border-style: dotted;
+}
+
+.label {
+  color: #000000;
+}

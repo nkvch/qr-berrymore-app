@@ -1,5 +1,8 @@
 import { Formik } from 'formik';
 import { TextField, Button } from '@mui/material';
+import { FileUploader } from 'react-drag-drop-files';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import DroppableImageContainer from './DroppableImageContainer';
 
 const Form = ({ onSubmit, submitText, fieldsData }) => (
   <Formik
@@ -11,19 +14,32 @@ const Form = ({ onSubmit, submitText, fieldsData }) => (
     })}
   >
     {
-      ({ values, handleChange, handleSubmit }) => (
+      ({ values, handleChange, handleSubmit, setFieldValue }) => (
         <form onSubmit={handleSubmit}>
           {
             Object.entries(fieldsData).map(([field, { label, type }]) => (
-              <TextField
-                className="form-field"
-                name={field}
-                label={label}
-                variant="outlined"
-                onChange={handleChange}
-                value={values[field]}
-                type={type}
-              />
+              type === 'file'
+                ? (
+                  <FileUploader
+                    handleChange={file => setFieldValue(field, file)}
+                    label={label}
+                    name={field}
+                    hoverTitle="Отпускайте"
+                    types={['JPG', 'PNG', 'GIF']}
+                    children={<DroppableImageContainer file={values[field]}/>}
+                  />
+                )
+                : (
+                  <TextField
+                    className="form-field"
+                    name={field}
+                    label={label}
+                    variant="outlined"
+                    onChange={handleChange}
+                    value={values[field]}
+                    type={type}
+                  />
+                )
             ))
           }
           <Button

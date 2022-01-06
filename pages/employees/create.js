@@ -13,35 +13,36 @@ const create = props => {
       type: 'text',
     },
     photo_path: {
-      label: 'llalal',
-      type: 'text',
-    }
+      label: 'Выберите или перетащите сюда фотографию',
+      type: 'file',
+    },
   };
 
   const onSubmit = values => {
-    request({
-      url: '/employees',
-      method: 'POST',
-      body: values,
-      callback: (status, response) => {
-        if (status === 'ok') {
-          const { firstName, lastName } = response.data;
+    console.log(values);
+    // request({
+    //   url: '/employees',
+    //   method: 'POST',
+    //   body: values,
+    //   callback: (status, response) => {
+    //     if (status === 'ok') {
+    //       const { firstName, lastName } = response.data;
 
-          notification.open({
-            type: 'success',
-            title: `Сотрудник ${firstName} ${lastName} успешно добавлен`,
-          });
-        } else {
-          console.log(response);
-          const { message } = response.data;
+    //       notification.open({
+    //         type: 'success',
+    //         title: `Сотрудник ${firstName} ${lastName} успешно добавлен`,
+    //       });
+    //     } else {
+    //       console.log(response);
+    //       const { message } = response.data;
 
-          notification.open({
-            type: 'error',
-            title: `Ошибка: ${message}`,
-          });
-        }
-      },
-    });
+    //       notification.open({
+    //         type: 'error',
+    //         title: `Ошибка: ${message}`,
+    //       });
+    //     }
+    //   },
+    // });
   }
 
   return (
