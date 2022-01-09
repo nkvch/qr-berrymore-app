@@ -3,11 +3,13 @@ import { Formik } from "formik";
 import { useContext, useEffect } from 'react';
 import request from '../frontendWrapper/utils/request';
 import Context from '../frontendWrapper/context';
-import { notification } from "../frontendWrapper/components/notifications";
-import Form from "../frontendWrapper/components/Form";
+import { notification } from '../frontendWrapper/components/notifications';
+import Form from '../frontendWrapper/components/Form';
+import { useRouter } from 'next/router';
 
 const signin = () => {
   const { login, offLoading } = useContext(Context);
+  const router = useRouter();
 
   const initialValues = {
     username: '',
@@ -40,6 +42,8 @@ const signin = () => {
             type: 'success',
             title: 'Вход успешно выполнен',
           });
+
+          router.push('/observe');
         } else if (status === 'error') {
           notification.open({
             type: status,
@@ -51,7 +55,7 @@ const signin = () => {
   }
 
   return (
-    <div className="block">
+    <div className="block content-center">
       <Form
         initialValues={initialValues}
         onSubmit={onSubmit}

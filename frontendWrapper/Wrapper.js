@@ -24,8 +24,8 @@ import { TransitionGroup } from 'react-transition-group';
 import Context from './context';
 import Notifications from './components/notifications';
 
-const Wrapper = ({ children, title, menuItems, contents }) => {
-  const { user, logout, loading } = useContext(Context);
+const Wrapper = ({ children, title, menuItems }) => {
+  const { user, logout } = useContext(Context);
 
   const [sidebar, setSidebar] = useState(false);
 
@@ -78,7 +78,7 @@ const Wrapper = ({ children, title, menuItems, contents }) => {
         </Box>
       </Drawer>
       <Notifications />
-      { loading ? <CircularProgress /> : children }
+      {children}
     </div>
   )
 };

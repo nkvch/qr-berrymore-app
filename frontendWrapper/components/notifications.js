@@ -11,7 +11,6 @@ const Notifications = () => {
 
   const open = ({ type, title, text }) => {
     const key = `notification${Math.random()}`;
-    console.log('alaaalalal');
 
     setActiveNotifications([{
       key,

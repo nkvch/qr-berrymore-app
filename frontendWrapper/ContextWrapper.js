@@ -40,8 +40,6 @@ const authMenuOptions = [{
 
 const ContextWrapper = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [contents, setContents] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   const login = (token, user) => {
     localStorage.setItem('jwt', token);
@@ -53,23 +51,13 @@ const ContextWrapper = ({ children }) => {
     setUser(() => null);
   };
 
-  const onLoading = () => {
-    console.log('on loading');
-    setLoading(() => true);
-  }
-
-  const offLoading = () => {
-    console.log('off loading');
-    setLoading(() => false);
-  }
-
   useEffect(() => {
     request({
       url: '/auth',
       callback: (status, response) => {
         if (status === 'ok') {
           
-          const { token, ...userData } = response;
+          const { token, ...userData } = response.data;
 
           login(token, userData);
         } else if (status === 'error') {
@@ -80,13 +68,12 @@ const ContextWrapper = ({ children }) => {
   }, []);
 
   return (
-    <Context.Provider value={{ user, login, logout, loading, onLoading, offLoading }}>
+    <Context.Provider value={{ user, login, logout }}>
       <Wrapper title="Berrymore" menuItems={
         user
         ? authMenuOptions
         : unauthMenuOptions
       }
-        contents={contents}
       >
           {children}
       </Wrapper>

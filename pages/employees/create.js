@@ -19,30 +19,35 @@ const create = props => {
   };
 
   const onSubmit = values => {
-    console.log(values);
-    // request({
-    //   url: '/employees',
-    //   method: 'POST',
-    //   body: values,
-    //   callback: (status, response) => {
-    //     if (status === 'ok') {
-    //       const { firstName, lastName } = response.data;
+    const formData = new FormData();
+    
+    Object.entries(values).forEach(([key, value]) =>
+      formData.append(key, value)
+    );
 
-    //       notification.open({
-    //         type: 'success',
-    //         title: `Сотрудник ${firstName} ${lastName} успешно добавлен`,
-    //       });
-    //     } else {
-    //       console.log(response);
-    //       const { message } = response.data;
+    request({
+      url: '/employees',
+      method: 'POST',
+      body: formData,
+      withFiles: true,
+      callback: (status, response) => {
+        if (status === 'ok') {
+          const { firstName, lastName } = response.data;
 
-    //       notification.open({
-    //         type: 'error',
-    //         title: `Ошибка: ${message}`,
-    //       });
-    //     }
-    //   },
-    // });
+          notification.open({
+            type: 'success',
+            title: `Сотрудник ${firstName} ${lastName} успешно добавлен`,
+          });
+        } else {
+          const { message } = response;
+
+          notification.open({
+            type: 'error',
+            title: `Ошибка: ${message}`,
+          });
+        }
+      },
+    });
   }
 
   return (
@@ -51,6 +56,7 @@ const create = props => {
         onSubmit={onSubmit}
         submitText="Сохранить"
         fieldsData={fieldsData}
+        className="wide"
       />
     </div>
   )

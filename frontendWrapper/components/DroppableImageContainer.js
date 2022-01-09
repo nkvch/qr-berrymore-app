@@ -7,13 +7,14 @@ const DroppableImageContainer = ({ file }) => (
     <p className={styles.label}>
       {
         file
-        ? 'Фотография заружена'
-        : 'Загрузите или перетащите сюда фотографию'
+        ? <>Фотография заружена. <span className={styles['upload-button']}>Выбрать другую?</span></>
+        : <><span className={styles['upload-button']}>Выберите</span> или перетащите сюда фотографию</>
       }
     </p>
     {
       file && (
         <img
+          className={styles.image}
           src={URL.createObjectURL(file)}
         />
       )

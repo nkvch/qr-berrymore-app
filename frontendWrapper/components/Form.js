@@ -3,8 +3,9 @@ import { TextField, Button } from '@mui/material';
 import { FileUploader } from 'react-drag-drop-files';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import DroppableImageContainer from './DroppableImageContainer';
+import styles from '../../styles/Form.module.scss';
 
-const Form = ({ onSubmit, submitText, fieldsData }) => (
+const Form = ({ onSubmit, submitText, fieldsData, className }) => (
   <Formik
     {...({
       initialValues: Object.fromEntries(
@@ -15,7 +16,10 @@ const Form = ({ onSubmit, submitText, fieldsData }) => (
   >
     {
       ({ values, handleChange, handleSubmit, setFieldValue }) => (
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={handleSubmit}
+          className={`${styles.form} ${className ? styles[className] : ''}`}
+        >
           {
             Object.entries(fieldsData).map(([field, { label, type }]) => (
               type === 'file'
@@ -31,7 +35,7 @@ const Form = ({ onSubmit, submitText, fieldsData }) => (
                 )
                 : (
                   <TextField
-                    className="form-field"
+                    className={styles['form-field']}
                     name={field}
                     label={label}
                     variant="outlined"
@@ -45,6 +49,7 @@ const Form = ({ onSubmit, submitText, fieldsData }) => (
           <Button
             type="submit"
             variant="contained"
+            className={styles['form-submit']}
           >
             {submitText}
           </Button>

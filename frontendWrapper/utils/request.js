@@ -1,5 +1,5 @@
 const request = obj => {
-  const { url, method, body, searchParams, callback } = obj;
+  const { url, method, body, searchParams, callback, withFiles } = obj;
 
   if (!url) {
     return null;
@@ -8,10 +8,12 @@ const request = obj => {
   let urlWithParams;
   const requestOptions = {
     method: method || 'GET',
-    body: JSON.stringify(body),
+    body: withFiles ? body : JSON.stringify(body),
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
+      ...(!withFiles && {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      }),
     },
   };
 

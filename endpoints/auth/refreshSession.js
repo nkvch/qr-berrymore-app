@@ -13,6 +13,7 @@ const refreshSession = async req => {
   const token = authorization.replace('Bearer ', '');
 
   let id;
+  let decoded;
 
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET);

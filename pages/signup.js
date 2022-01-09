@@ -49,7 +49,7 @@ const signup = () => {
   }
 
   return (
-    <div className="block">
+    <div className="block content-center">
       <Form
         initialValues={initialValues}
         onSubmit={onSubmit}

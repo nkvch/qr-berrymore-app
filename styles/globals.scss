@@ -29,6 +29,10 @@ a {
   margin: 20px 20px 0 20px;
   padding: 20px;
   border-radius: 12px;
+  &.content-center {
+    display: flex;
+    justify-content: center;
+  } 
 }
 
 .text {
@@ -37,12 +41,6 @@ a {
 
 .title {
   font-size: 30px;
-}
-
-.form-field {
-  display: block;
-  margin-bottom: 8px;
-  width: 100%;
 }
 
 .loading-spinner {

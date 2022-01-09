@@ -1,0 +1,36 @@
+.form {
+  display: flex;
+  flex-flow: column;
+  width: 300px;
+  &.wide {
+    width: 60%;
+    margin: auto;
+  }
+}
+
+.form-field {
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.form-submit {
+  max-width: 300px;
+  align-self: flex-end;
+}
+
+// .form-with-photo {
+//   display: grid;
+//   column-gap: 8px;
+//   .form-field {
+//     grid-column: 1;
+//     grid-row: 1;
+//   }
+//   label {
+//     grid-column: 2;
+//     grid-row: 1;
+//   }
+//   .form-submit {
+//     grid-column-start: 1;
+//     grid-column-end: 3;
+//   }
+// }
