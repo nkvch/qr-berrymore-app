@@ -9,6 +9,7 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import request from './utils/request';
 import notifications from './components/notifications';
+import sleep from './utils/sleep';
 
 const unauthMenuOptions = [{
   text: 'Зарегистрироваться',
@@ -40,6 +41,7 @@ const authMenuOptions = [{
 
 const ContextWrapper = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [addTitle, setAddTitle] = useState(null);
 
   const login = (token, user) => {
     localStorage.setItem('jwt', token);
@@ -67,13 +69,24 @@ const ContextWrapper = ({ children }) => {
     });
   }, []);
 
+  const updateAddTitle = async newAddTitle => {
+    await sleep(500);
+    setAddTitle(null);
+    await sleep(600);
+    setAddTitle(newAddTitle);
+  };
+
   return (
     <Context.Provider value={{ user, login, logout }}>
-      <Wrapper title="Berrymore" menuItems={
-        user
-        ? authMenuOptions
-        : unauthMenuOptions
-      }
+      <Wrapper
+        title="Berrymore"
+        menuItems={
+          user
+          ? authMenuOptions
+          : unauthMenuOptions
+        }
+        addTitle={addTitle}
+        updateAddTitle={updateAddTitle}
       >
           {children}
       </Wrapper>
