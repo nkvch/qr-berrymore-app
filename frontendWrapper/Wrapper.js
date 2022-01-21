@@ -24,7 +24,7 @@ import { TransitionGroup } from 'react-transition-group';
 import Context from './context';
 import Notifications from './components/notifications';
 
-const Wrapper = ({ children, title, menuItems, addTitle, updateAddTitle }) => {
+const Wrapper = ({ children, title, menuItems, addTitle }) => {
   const { user, logout } = useContext(Context);
 
   const [sidebar, setSidebar] = useState(false);
@@ -46,12 +46,12 @@ const Wrapper = ({ children, title, menuItems, addTitle, updateAddTitle }) => {
           </IconButton>
           <Typography className="text topbartitle" display="flex" variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <Image alt="icon" src="/icon.svg" width="40" height="40" />
-              <h1 className={styles.heading}>{title}</h1>
+              <h1 className={styles.heading}>{title}  |</h1>
             <TransitionGroup>
                 {
                   addTitle && (
                     <Collapse orientation="horizontal" key={addTitle}>
-                      <h1 className={styles.heading}>| {addTitle}</h1>
+                      <h1 className={styles.heading}>{addTitle}</h1>
                     </Collapse>
                   )
                 }
@@ -75,7 +75,7 @@ const Wrapper = ({ children, title, menuItems, addTitle, updateAddTitle }) => {
               menuItems.map(({ text, icon, linkUrl }) => (
                 <ListItem button key={text} onClick={switchSidebar}>
                   <Link href={linkUrl}>
-                    <a className={styles.menuLink} onClick={() => updateAddTitle(text)}>
+                    <a className={styles.menuLink}>
                       <ListItemIcon>{icon}</ListItemIcon>
                       <ListItemText primary={text} />
                     </a>
@@ -87,6 +87,13 @@ const Wrapper = ({ children, title, menuItems, addTitle, updateAddTitle }) => {
         </Box>
       </Drawer>
       <Notifications />
+      {/* <TransitionGroup>
+          {
+            <Collapse key={children.type.name}>
+              {children}
+            </Collapse>
+          }
+      </TransitionGroup> */}
       {children}
     </div>
   )

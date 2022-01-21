@@ -2,8 +2,16 @@ import { TextField, Button } from "@mui/material";
 import { Formik } from "formik";
 import Form from "../frontendWrapper/components/Form";
 import request from '../frontendWrapper/utils/request';
+import Context from '../frontendWrapper/context';
+import { useContext, useEffect } from "react";
 
 const signup = () => {
+  const { updateAddTitle } = useContext(Context);
+
+  useEffect(() => {
+    updateAddTitle('Регистрация');
+  }, []);
+
   const initialValues = {
     username: '',
     password: '',

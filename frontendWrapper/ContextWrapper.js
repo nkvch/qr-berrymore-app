@@ -77,7 +77,7 @@ const ContextWrapper = ({ children }) => {
   };
 
   return (
-    <Context.Provider value={{ user, login, logout }}>
+    <Context.Provider value={{ user, login, logout, updateAddTitle }}>
       <Wrapper
         title="Berrymore"
         menuItems={
@@ -86,7 +86,6 @@ const ContextWrapper = ({ children }) => {
           : unauthMenuOptions
         }
         addTitle={addTitle}
-        updateAddTitle={updateAddTitle}
       >
           {children}
       </Wrapper>

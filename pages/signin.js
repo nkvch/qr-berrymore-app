@@ -8,7 +8,12 @@ import Form from '../frontendWrapper/components/Form';
 import { useRouter } from 'next/router';
 
 const signin = () => {
-  const { login, offLoading } = useContext(Context);
+  const { login, offLoading, updateAddTitle } = useContext(Context);
+
+  useEffect(() => {
+    updateAddTitle('Вход');
+  }, []);
+
   const router = useRouter();
 
   const initialValues = {

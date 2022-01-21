@@ -17,13 +17,18 @@ const paginated = modelName => async req => {
       where = searchManyColumns(search, columnNames);
     }
 
+    const allResults = qty === '-1';
+
     const getParams = {
-      skip: Number((page - 1) * qty),
-      take: Number(qty),
+      ...(!allResults && {
+        skip: Number((page - 1) * qty),
+        take: Number(qty),
+      }),
       where,
     };
 
     const pageData = await prisma[modelName].findMany(getParams);
+
     const total = await prisma[modelName].count({ where });
 
     return {

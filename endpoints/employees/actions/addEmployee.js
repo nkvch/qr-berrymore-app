@@ -27,7 +27,7 @@ const typeIsValid = file => ['jpeg', 'jpg', 'png'].includes(file.newFilename.spl
 
 const addEmployee = async req => {
   const uploadsFolder = path.resolve(__dirname, '../../../uploads');
-  const savedFilesFolder = path.resolve(__dirname, '../../../savedFiles');
+  const savedFilesFolder = path.join('public', 'savedFiles', 'employeesPhotos');
 
   const form = new IncomingForm({
     multiples: true,
@@ -78,17 +78,21 @@ const addEmployee = async req => {
     throw new GeneralError('Проблема с загрузкой фотографии на сервер');
   }
 
-  const photo_path = path.join(employeePhotoFolder, photo.originalFilename);
+  const photoName  = photo.originalFilename.replace(/[/\\?%*:|"<>]/g, '-');
+
+  const photo_save_path = path.join(employeePhotoFolder, photoName);
 
   try {
     await new Promise((res, rej) => {
-      fs.rename(photo.filepath, photo_path, err => (
+      fs.rename(photo.filepath, photo_save_path, err => (
         err ? rej(err) : res('klass')
       ));
     });
   } catch (err) {
     throw new GeneralError('Проблема с сохранением фотографии');
   }
+
+  const photo_path = photo_save_path.replace('public', '');
 
   const data = {
     firstName,

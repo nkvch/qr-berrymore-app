@@ -1,8 +1,16 @@
 import Form from '../../frontendWrapper/components/Form';
 import request from '../../frontendWrapper/utils/request';
 import { notification } from '../../frontendWrapper/components/notifications';
+import Context from '../../frontendWrapper/context';
+import { useContext, useEffect } from 'react';
 
 const create = props => {
+  const { updateAddTitle } = useContext(Context);
+
+  useEffect(() => {
+    updateAddTitle('Новый сотрудник');
+  }, []);
+
   const fieldsData = {
     firstName: {
       label: 'Имя сотрудника',
