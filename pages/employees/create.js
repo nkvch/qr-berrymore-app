@@ -3,9 +3,11 @@ import request from '../../frontendWrapper/utils/request';
 import { notification } from '../../frontendWrapper/components/notifications';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
+import { useRouter } from 'next/dist/client/router';
 
 const create = props => {
   const { updateAddTitle } = useContext(Context);
+  const router = useRouter();
 
   useEffect(() => {
     updateAddTitle('Новый сотрудник');
@@ -46,6 +48,8 @@ const create = props => {
             type: 'success',
             title: `Сотрудник ${firstName} ${lastName} успешно добавлен`,
           });
+
+          router.back();
         } else {
           const { message } = response;
 

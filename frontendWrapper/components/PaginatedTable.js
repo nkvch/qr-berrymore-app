@@ -29,7 +29,7 @@ import request from '../utils/request';
 import Debouncer from '../utils/debouncer';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-
+import Avatar from '@mui/material/Avatar';
 
 const PaginatedTable = props => {
   const { url, columns } = props;
@@ -45,13 +45,20 @@ const PaginatedTable = props => {
   useEffect(() => {
     setLoading(true);
 
+    const searchColumns = Object.entries(columns)
+      .filter(([, { type }]) => type === (Number(search) ? 'number' : 'text'))
+      .map(([key]) => key);
+
+    const searchNumbers = !!Number(search);
+
     request({
       url,
       searchParams: {
         page,
         qty,
         search,
-        searchColumns: Object.values(columns).map(({ name }) => name),
+        searchColumns,
+        searchNumbers,
       },
       callback: (status, response) => {
         if (status === 'ok') {
@@ -105,7 +112,24 @@ const PaginatedTable = props => {
     setPage(1);
   }
 
-  const totallyPages = Math.ceil(total/qty);
+  const renderCellContend = (key, value) => {
+    switch (columns[key].type) {
+      case 'image':
+        return (
+          <Avatar
+            alt="Аватар"
+            src={value}
+            sx={{ width: 80, height: 80 }}
+          />
+        );
+      default:
+        return value;
+    }
+  };
+
+  const totallyPages = qty === -1
+    ? 1
+    : Math.ceil(total/qty);
 
   const TablePaginationActions = (page, totallyPages, onPageChange) => {
     const theme = useTheme();
@@ -190,56 +214,36 @@ const PaginatedTable = props => {
             {rows.map((row, idx) => (
               <TableRow key={idx}>
                 {
-                  Object.entries(row).map(([key, value]) => {
-                    switch (columns[key].type) {
-                      case 'text':
-                        return (
-                          <TableCell key={`${idx}${key}${value}`} scope="row">
-                            {value}
-                          </TableCell>
-                        );
-                      case 'image':
-                        return (
-                          <Image
-                            alt="аватар сотрудника"
-                            src={value}
-                            width="100"
-                            height="100"
-                          />
-                        );
-                      default:
-                        return (
-                          <TableCell key={`${idx}${key}${value}`} scope="row">
-                            {value}
-                          </TableCell>
-                        );
-                    }
-                  })
+                  Object.entries(row).map(([key, value]) => (
+                    <TableCell key={`${idx}${key}${value}`} scope="row">
+                      {renderCellContend(key, value)}
+                    </TableCell>
+                  ))
                 }
               </TableRow>
             ))}
           </TableBody>
         </Table>
         <TablePagination
-            rowsPerPageOptions={[5, 10, 25, { label: 'Все', value: -1 }]}
-            colSpan={3}
-            count={-1}
-            rowsPerPage={qty}
-            page={page}
-            style={{ float: 'right' }}
-            SelectProps={{
-              inputProps: {
-                'aria-label': 'rows per page',
-              },
-              label: 'Результатов на странице',
-              native: true,
-            }}
-            labelRowsPerPage={'Результатов на странице'}
-            labelDisplayedRows={() => `${page}-${totallyPages}`}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            ActionsComponent={() => TablePaginationActions(page, totallyPages, handleChangePage)}
-          />
+          rowsPerPageOptions={[5, 10, 25, { label: 'Все', value: -1 }]}
+          colSpan={3}
+          count={-1}
+          rowsPerPage={qty}
+          page={page}
+          style={{ float: 'right' }}
+          SelectProps={{
+            inputProps: {
+              'aria-label': 'rows per page',
+            },
+            label: 'Результатов на странице',
+            native: true,
+          }}
+          labelRowsPerPage={'Результатов на странице'}
+          labelDisplayedRows={() => `${page}-${totallyPages}`}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          ActionsComponent={() => TablePaginationActions(page, totallyPages, handleChangePage)}
+        />
       </TableContainer>
       <Button
         variant="contained"

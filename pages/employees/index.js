@@ -5,7 +5,7 @@ import { useContext, useEffect } from 'react';
 const columns = {
   id: {
     name: 'ID',
-    type: 'text',
+    type: 'number',
   },
   firstName: {
     name: 'Имя',
