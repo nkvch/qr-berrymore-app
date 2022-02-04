@@ -24,13 +24,13 @@ import { TransitionGroup } from 'react-transition-group';
 import Context from './context';
 import Notifications from './components/notifications';
 
-const Wrapper = ({ children, title, menuItems, addTitle }) => {
+const Wrapper = ({ children, title, menuItems, subTitle }) => {
   const { user, logout } = useContext(Context);
 
   const [sidebar, setSidebar] = useState(false);
 
   const switchSidebar = () => setSidebar(!sidebar);
-
+  
   return (
     <div className="container">
       <AppBar position="static">
@@ -49,9 +49,9 @@ const Wrapper = ({ children, title, menuItems, addTitle }) => {
               <h1 className={styles.heading}>{title}  |</h1>
             <TransitionGroup>
                 {
-                  addTitle && (
-                    <Collapse orientation="horizontal" key={addTitle}>
-                      <h1 className={styles.heading}>{addTitle}</h1>
+                  subTitle && (
+                    <Collapse orientation="horizontal" key={subTitle}>
+                      <h1 className={styles.heading}>{subTitle}</h1>
                     </Collapse>
                   )
                 }

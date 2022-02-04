@@ -1,49 +1,55 @@
-import prisma from "../prisma/prismaClient/prismaClient";
+import prisma from '../prisma/prismaClient/prismaClient';
 import searchManyColumns from '../apiWrapper/utils/searchManyColumns';
-import searchNumberLike from "../apiWrapper/utils/searchNumberLike";
 
 
 const paginated = modelName => async req => {
-  const { query: { page, qty, search, searchColumns, searchNumbers } } = req;
+  const { query: { page, qty, search, searchTextColumns, searchNumberColumns, selectColumns } } = req;
 
-  if (!page || !qty) {
-    const data = await prisma[modelName].findMany();
+  let where = {};
 
-    return data;
-  } else {
-    let where = {};
+  const textColumns = searchTextColumns.split(',').map(columnName => ({
+    columnName,
+    type: 'text',
+  }));
 
-    if (search) {
-      const columnNames = searchColumns.split(',');
+  const numberColumns = searchNumberColumns.split(',').map(columnName => ({
+    columnName,
+    type: 'number',
+  }));
 
-      if (searchNumbers === 'true') {
-        const { pageData, total } = await searchNumberLike(modelName, search, qty, page, columnNames);
+  if (search) {
+    const searchColumns = [...textColumns];
 
-        return { pageData, total };
-      }
+    const searchForNumbers = !Number.isNaN(search);
 
-      where = searchManyColumns(search, columnNames);
+    if (searchForNumbers) {
+      searchColumns.push(...numberColumns);
     }
 
-    const allResults = qty === '-1';
-
-    const getParams = {
-      ...(!allResults && {
-        skip: Number((page - 1) * qty),
-        take: Number(qty),
-      }),
-      where,
-    };
-
-    const pageData = await prisma[modelName].findMany(getParams);
-
-    const total = await prisma[modelName].count({ where });
-
-    return {
-      pageData,
-      total,
-    };
+    where = searchManyColumns(search, searchColumns);
   }
+
+  const allResults = qty === '-1';
+
+  const select = Object.fromEntries(selectColumns.split(',').map(column => ([column, true])));
+
+  const getParams = {
+    ...(!allResults && {
+      skip: Number((page - 1) * qty),
+      take: Number(qty),
+    }),
+    where,
+    select,
+  };
+
+  const pageData = await prisma[modelName].findMany(getParams);
+
+  const total = await prisma[modelName].count({ where });
+
+  return {
+    pageData,
+    total,
+  };
 };
 
 export default paginated;

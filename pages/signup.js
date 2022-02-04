@@ -1,15 +1,16 @@
-import { TextField, Button } from "@mui/material";
-import { Formik } from "formik";
 import Form from "../frontendWrapper/components/Form";
 import request from '../frontendWrapper/utils/request';
 import Context from '../frontendWrapper/context';
 import { useContext, useEffect } from "react";
+import { notification } from '../frontendWrapper/components/notifications';
+import { useRouter } from 'next/router';
 
-const signup = () => {
-  const { updateAddTitle } = useContext(Context);
+const SignUp = () => {
+  const { updateSubTitle } = useContext(Context);
+  const router = useRouter();
 
   useEffect(() => {
-    updateAddTitle('Регистрация');
+    updateSubTitle('Регистрация');
   }, []);
 
   const initialValues = {
@@ -49,8 +50,18 @@ const signup = () => {
       method: 'POST',
       body: values,
       callback: (status, response) => {
-        if (status === 'OK') {
-          console.log(response);
+        if (status === 'ok') {
+
+          notification.open({
+            type: 'success',
+            title: 'Успешная регистрация',
+          });
+          router.push('/signin');
+        } else if (status === 'error') {
+          notification.open({
+            type: status,
+            title: response.message,
+          });
         }
       }
     });
@@ -68,4 +79,4 @@ const signup = () => {
   )
 };
 
-export default signup;
+export default SignUp;

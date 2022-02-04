@@ -2,10 +2,10 @@ import Context from '../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 
 const Observe = props => {
-  const { updateAddTitle } = useContext(Context);
+  const { updateSubTitle } = useContext(Context);
 
   useEffect(() => {
-    updateAddTitle('Статистика');
+    updateSubTitle('Статистика');
   }, []);
 
   return <></>

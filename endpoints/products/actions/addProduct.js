@@ -25,9 +25,9 @@ const checkFolderExistsOrCreate = async pathname => {
 
 const typeIsValid = file => ['jpeg', 'jpg', 'png'].includes(file.newFilename.split('.').pop());
 
-const addEmployee = async req => {
+const addProduct = async req => {
   const uploadsFolder = path.resolve(__dirname, '../../../uploads');
-  const savedFilesFolder = path.join('public', 'savedFiles', 'employeesPhotos');
+  const savedFilesFolder = path.join('public', 'savedFiles', 'productsPhotos');
 
   const form = new IncomingForm({
     multiples: true,
@@ -43,7 +43,8 @@ const addEmployee = async req => {
   }
 
   let photo;
-  let firstName, lastName;
+  let productName;
+  let productPrice;
 
 
   try {
@@ -54,8 +55,8 @@ const addEmployee = async req => {
     
     if (!typeIsValid(photo)) rej(new GeneralError('Неправильный формат файла'));
 
-    firstName = fields.firstName;
-    lastName = fields.lastName;
+    productName = fields.productName;
+    productPrice = Number(fields.productPrice);
 
     res();
   }));
@@ -70,17 +71,17 @@ const addEmployee = async req => {
     throw new GeneralError('Проблема с загрузкой фотографии на сервер');
   }
 
-  const employeePhotoFolder = path.join(savedFilesFolder, `${firstName}_${lastName}`);
+  const productPhotoFolder = path.join(savedFilesFolder, productName);
 
-  const employeePhotoFolderCreated = await checkFolderExistsOrCreate(employeePhotoFolder);
+  const productPhotoFolderCreated = await checkFolderExistsOrCreate(productPhotoFolder);
 
-  if (!employeePhotoFolderCreated) {
+  if (!productPhotoFolderCreated) {
     throw new GeneralError('Проблема с загрузкой фотографии на сервер');
   }
 
   const photoName  = photo.originalFilename.replace(/[/\\?%*:|"<>]/g, '-');
 
-  const photo_save_path = path.join(employeePhotoFolder, photoName);
+  const photo_save_path = path.join(productPhotoFolder, photoName);
 
   try {
     await new Promise((res, rej) => {
@@ -95,14 +96,14 @@ const addEmployee = async req => {
   const photoPath = photo_save_path.replace('public', '');
 
   const data = {
-    firstName,
-    lastName,
+    productName,
+    productPrice,
     photoPath,
   };
 
-  const savedEmployee = await prisma.employee.create({ data });
+  const savedProduct = await prisma.product.create({ data });
 
-  return savedEmployee;
+  return savedProduct;
 };
 
-export default addEmployee;
+export default addProduct;

@@ -6,13 +6,13 @@ import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/dist/client/router';
 
 const fieldsData = {
-  firstName: {
-    label: 'Имя сотрудника',
+  productName: {
+    label: 'Название продукта',
     type: 'text',
   },
-  lastName: {
-    label: 'Фамилия сотрудника',
-    type: 'text',
+  productPrice: {
+    label: 'Цена продукта',
+    type: 'number',
   },
   photoPath: {
     label: 'Выберите или перетащите сюда фотографию',
@@ -20,12 +20,12 @@ const fieldsData = {
   },
 };
 
-const CreateEmployee = props => {
+const CreateProduct = props => {
   const { updateSubTitle } = useContext(Context);
   const router = useRouter();
 
   useEffect(() => {
-    updateSubTitle('Новый сотрудник');
+    updateSubTitle('Новый продукт');
   }, []);
 
   const onSubmit = values => {
@@ -36,17 +36,17 @@ const CreateEmployee = props => {
     );
 
     request({
-      url: '/employees',
+      url: '/products',
       method: 'POST',
       body: formData,
       withFiles: true,
       callback: (status, response) => {
         if (status === 'ok') {
-          const { firstName, lastName } = response.data;
+          const { productName } = response.data;
 
           notification.open({
             type: 'success',
-            title: `Сотрудник ${firstName} ${lastName} успешно добавлен`,
+            title: `Продукт ${productName} успешно добавлен`,
           });
 
           router.back();
@@ -74,4 +74,4 @@ const CreateEmployee = props => {
   )
 };
 
-export default CreateEmployee;
+export default CreateProduct;

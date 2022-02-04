@@ -10,6 +10,7 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import request from './utils/request';
 import notifications from './components/notifications';
 import sleep from './utils/sleep';
+import AddTaskIcon from '@mui/icons-material/AddTask';
 
 const unauthMenuOptions = [{
   text: 'Зарегистрироваться',
@@ -22,26 +23,30 @@ const unauthMenuOptions = [{
 }];
 
 const authMenuOptions = [{
-  text: 'База сотрудников',
+  text: 'Сотрудники',
   linkUrl: '/employees',
   icon: <PeopleIcon />,
 }, {
-  text: 'База продуктов',
+  text: 'Продукты',
   linkUrl: '/products',
   icon: <ManageSearchIcon />,
 }, {
-  text: 'Обзор по дням',
+  text: 'Статистика',
   linkUrl: '/observe',
   icon: <EqualizerIcon />,
 }, {
   text: 'Кабинет',
   linkUrl: '/office',
   icon: <HomeIcon />,
+}, {
+  text: 'Новый сбор',
+  linkUrl: '/new-portion',
+  icon: <AddTaskIcon />,
 }];
 
 const ContextWrapper = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [addTitle, setAddTitle] = useState(null);
+  const [subTitle, setSubTitle] = useState(null);
 
   const login = (token, user) => {
     localStorage.setItem('jwt', token);
@@ -69,15 +74,15 @@ const ContextWrapper = ({ children }) => {
     });
   }, []);
 
-  const updateAddTitle = async newAddTitle => {
+  const updateSubTitle = async newSubTitle => {
     await sleep(500);
-    setAddTitle(null);
+    setSubTitle(null);
     await sleep(600);
-    setAddTitle(newAddTitle);
+    setSubTitle(newSubTitle);
   };
 
   return (
-    <Context.Provider value={{ user, login, logout, updateAddTitle }}>
+    <Context.Provider value={{ user, login, logout, updateSubTitle }}>
       <Wrapper
         title="Berrymore"
         menuItems={
@@ -85,7 +90,7 @@ const ContextWrapper = ({ children }) => {
           ? authMenuOptions
           : unauthMenuOptions
         }
-        addTitle={addTitle}
+        subTitle={subTitle}
       >
           {children}
       </Wrapper>

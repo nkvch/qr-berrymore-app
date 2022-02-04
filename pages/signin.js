@@ -7,11 +7,11 @@ import { notification } from '../frontendWrapper/components/notifications';
 import Form from '../frontendWrapper/components/Form';
 import { useRouter } from 'next/router';
 
-const signin = () => {
-  const { login, offLoading, updateAddTitle } = useContext(Context);
+const SignIn = () => {
+  const { login, offLoading, updateSubTitle } = useContext(Context);
 
   useEffect(() => {
-    updateAddTitle('Вход');
+    updateSubTitle('Вход');
   }, []);
 
   const router = useRouter();
@@ -71,4 +71,4 @@ const signin = () => {
   )
 };
 
-export default signin;
+export default SignIn;

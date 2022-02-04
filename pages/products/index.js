@@ -7,13 +7,13 @@ const columns = {
     name: 'ID',
     type: 'number',
   },
-  firstName: {
-    name: 'Имя',
+  productName: {
+    name: 'Продукт',
     type: 'text',
   },
-  lastName: {
-    name: 'Фамилия',
-    type: 'text',
+  productPrice: {
+    name: 'Цена',
+    type: 'number',
   },
   photoPath: {
     name: 'Фото',
@@ -21,21 +21,21 @@ const columns = {
   },
 };
 
-const Employees = props => {
+const Products = props => {
   const { updateSubTitle } = useContext(Context);
 
   useEffect(() => {
-    updateSubTitle('Сотрудники');
+    updateSubTitle('Продукты');
   }, []);
 
   return (
     <div className="block">
       <PaginatedTable
-        url="/employees"
+        url="/products"
         columns={columns}
       />
     </div>
   )
 };
 
-export default Employees;
+export default Products;

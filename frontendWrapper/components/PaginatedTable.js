@@ -5,7 +5,6 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  TableFooter,
   TablePagination,
   IconButton,
   Paper,
@@ -22,67 +21,70 @@ import {
   KeyboardArrowLeft, 
   KeyboardArrowRight,
 } from '@mui/icons-material';
-import Link from 'next/link';
 import { notification } from './notifications';
 import { useState, useEffect, useRef } from 'react';
-import request from '../utils/request';
 import Debouncer from '../utils/debouncer';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 import Avatar from '@mui/material/Avatar';
+import useApi from '../utils/hooks/useApi';
 
 const PaginatedTable = props => {
   const { url, columns } = props;
-  const [loading, setLoading] = useState(true);
+
   const [page, setPage] = useState(1);
   const [qty, setQty] = useState(10);
   const [search, setSearch] = useState('');
-  const [total, setTotal] = useState(0);
-  const [rows, setRows] = useState([]);
+
   const debouncer = useRef(new Debouncer(500));
   const router = useRouter();
 
+  console.log(columns);
+
+  const searchTextColumns = Object.entries(columns)
+    .filter(([, { type }]) => type === 'text')
+    .map(([key]) => key);
+
+  const searchNumberColumns = Object.entries(columns)
+    .filter(([, { type }]) => type === 'number')
+    .map(([key]) => key);
+
+  // const searchColumns = Object.entries(columns)
+  //   .filter(([, { type }]) => type === (Number(search) ? 'number' : 'text'))
+  //   .map(([key]) => key);
+
+  // const searchNumbers = !!Number(search);
+
+  const selectColumns = Object.keys(columns);
+
+  const { loading, data, fetchError } = useApi({ url }, {
+    page,
+    qty,
+    search,
+    searchTextColumns,
+    searchNumberColumns,
+    selectColumns,
+  });
+
+  const rows = data?.pageData || [];
+  const total = data?.total;
+
   useEffect(() => {
-    setLoading(true);
+    if (fetchError) {
+      notification.open({
+        type: 'error',
+        title: `Ошибка: ${fetchError}`,
+      });
+    }
+  }, [fetchError]);
 
-    const searchColumns = Object.entries(columns)
-      .filter(([, { type }]) => type === (Number(search) ? 'number' : 'text'))
-      .map(([key]) => key);
-
-    const searchNumbers = !!Number(search);
-
-    request({
-      url,
-      searchParams: {
-        page,
-        qty,
-        search,
-        searchColumns,
-        searchNumbers,
-      },
-      callback: (status, response) => {
-        if (status === 'ok') {
-          const { data } = response;
-
-          setRows(data.pageData);
-          setTotal(data.total);
-          setLoading(false);
-
-          if (data.total === 0) {
-            notification.open({
-              type: 'warning',
-              title: 'Результатов не найдено',
-            });
-          }
-        } else {
-          notification.open({
-            type: 'error',
-            title: `Ошибка: ${response.message}`,
-          });
-        }
-      }
-    });
-  }, [page, qty, search]);
+  useEffect(() => {
+    if (total === 0) {
+      notification.open({
+        type: 'warning',
+        title: 'Результаты не найдены',
+      });
+    }
+  }, [total]);
 
   const handleChangePage = page => {
     setPage(page);
@@ -127,7 +129,7 @@ const PaginatedTable = props => {
     }
   };
 
-  const totallyPages = qty === -1
+  const totallyPages = (qty === -1 || total === 0)
     ? 1
     : Math.ceil(total/qty);
 
