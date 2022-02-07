@@ -24,7 +24,7 @@ const parseFormWithPhoto = async req => {
     const fields = await new Promise((res, rej) => form.parse(req, (err, fields, files) => {
       if (err) rej(new GeneralError('Не удалось прочитать файл'));
 
-      const photo = files.photoPath;
+      const photo = files.photo;
       
       if (photo && !typeIsValid(photo)) rej(new GeneralError('Неправильный формат файла'));
 

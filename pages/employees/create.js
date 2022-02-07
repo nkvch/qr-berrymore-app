@@ -14,7 +14,7 @@ const fieldsData = {
     label: 'Фамилия сотрудника',
     type: 'text',
   },
-  photoPath: {
+  photo: {
     label: 'Выберите или перетащите сюда фотографию',
     type: 'file',
   },

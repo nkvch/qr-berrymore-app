@@ -12,6 +12,7 @@ import {
   Autocomplete,
   TextField,
   Button,
+  Avatar,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTheme } from '@emotion/react';
@@ -25,7 +26,6 @@ import { notification } from './notifications';
 import { useState, useEffect, useRef } from 'react';
 import Debouncer from '../utils/debouncer';
 import { useRouter } from 'next/router';
-import Avatar from '@mui/material/Avatar';
 import useApi from '../utils/hooks/useApi';
 
 const PaginatedTable = props => {
@@ -38,8 +38,6 @@ const PaginatedTable = props => {
   const debouncer = useRef(new Debouncer(500));
   const router = useRouter();
 
-  console.log(columns);
-
   const searchTextColumns = Object.entries(columns)
     .filter(([, { type }]) => type === 'text')
     .map(([key]) => key);
@@ -47,12 +45,6 @@ const PaginatedTable = props => {
   const searchNumberColumns = Object.entries(columns)
     .filter(([, { type }]) => type === 'number')
     .map(([key]) => key);
-
-  // const searchColumns = Object.entries(columns)
-  //   .filter(([, { type }]) => type === (Number(search) ? 'number' : 'text'))
-  //   .map(([key]) => key);
-
-  // const searchNumbers = !!Number(search);
 
   const selectColumns = Object.keys(columns);
 

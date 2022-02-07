@@ -1,5 +1,21 @@
 import Context from '../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
+import FetchSelect from '../frontendWrapper/components/FetchSelect';
+
+const columns = {
+  photoPath: {
+    name: 'Фото',
+    type: 'image',
+  },
+  firstName: {
+    name: 'Имя',
+    type: 'text',
+  },
+  lastName: {
+    name: 'Фамилия',
+    type: 'text',
+  },
+};
 
 const AddPortion = props => {
   const { updateSubTitle } = useContext(Context);
@@ -8,22 +24,12 @@ const AddPortion = props => {
     updateSubTitle('Новый сбор');
   }, []);
 
-  const fieldsData = {
-    employeeId: {
-      label: 'Сотрудник',
-      type: 'select',
-    },
-    productId: {
-      label: 'Продукт',
-      type: 'select',
-    },
-    dateTime: {
-      label: 'Дата и время сбора',
-      type: 'datetime',
-    },
-  };
-
-  return <></>
+  return (
+    <FetchSelect
+      url="/employees"
+      columns={columns}
+    />
+  )
 };
 
 export default AddPortion;

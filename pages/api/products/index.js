@@ -1,6 +1,6 @@
 import apiWrapper from '../../../apiWrapper/apiWrapper';
-import paginated from '../../../endpoints/paginated';
-import addProduct from '../../../endpoints/products/actions/addProduct'
+import paginated from '../../../controllers/paginated';
+import addProduct from '../../../controllers/products/actions/addProduct'
 
 const productsHandler = {
   get: paginated('product'),

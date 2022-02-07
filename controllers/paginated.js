@@ -7,15 +7,15 @@ const paginated = modelName => async req => {
 
   let where = {};
 
-  const textColumns = searchTextColumns.split(',').map(columnName => ({
+  const textColumns = searchTextColumns?.split(',').map(columnName => ({
     columnName,
     type: 'text',
-  }));
+  })) || [];
 
-  const numberColumns = searchNumberColumns.split(',').map(columnName => ({
+  const numberColumns = searchNumberColumns?.split(',').map(columnName => ({
     columnName,
     type: 'number',
-  }));
+  })) || [];
 
   if (search) {
     const searchColumns = [...textColumns];
@@ -31,7 +31,7 @@ const paginated = modelName => async req => {
 
   const allResults = qty === '-1';
 
-  const select = Object.fromEntries(selectColumns.split(',').map(column => ([column, true])));
+  const select = selectColumns ? Object.fromEntries(selectColumns.split(',').map(column => ([column, true]))) : null;
 
   const getParams = {
     ...(!allResults && {

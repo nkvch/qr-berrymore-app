@@ -14,7 +14,7 @@ const fieldsData = {
     label: 'Цена продукта',
     type: 'number',
   },
-  photoPath: {
+  photo: {
     label: 'Выберите или перетащите сюда фотографию',
     type: 'file',
   },
