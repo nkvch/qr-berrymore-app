@@ -1,70 +1,16 @@
 import prisma from '../../../prisma/prismaClient/prismaClient';
-import { IncomingForm } from 'formidable';
 import path from 'path';
-import fs from 'fs';
 import GeneralError from '../../../apiWrapper/utils/errors/generalError';
-
-const checkFolderExistsOrCreate = async pathname => {
-  try {
-    await new Promise((res, rej) => {
-      fs.stat(pathname, err => err ? rej(err) : res('vse zbs'));
-    });
-  } catch (err) {
-    if (err?.code === 'ENOENT') {
-      try {
-        await new Promise((res, rej) => {
-          fs.mkdir(pathname, err => err ? rej(err) : res('vse chiki puki'));
-        });
-      } catch (e) {
-        return false;
-      }
-    } else return false;
-  }
-  return true;
-}
-
-const typeIsValid = file => ['jpeg', 'jpg', 'png'].includes(file.newFilename.split('.').pop());
+import parseFormWithPhoto from '../../parseFormWithPhoto';
+import checkOrCreateFolder from '../../../apiWrapper/utils/checkOrCreateFolder';
+import moveFile from '../../../apiWrapper/utils/moveFile';
 
 const addEmployee = async req => {
-  const uploadsFolder = path.resolve(__dirname, '../../../uploads');
   const savedFilesFolder = path.join('public', 'savedFiles', 'employeesPhotos');
 
-  const form = new IncomingForm({
-    multiples: true,
-    keepExtensions: true,
-    maxFileSize: 20 * 1024 * 1024, // 20 MB
-    uploadDir: uploadsFolder,
-  });
-
-  const folderExists = await checkFolderExistsOrCreate(uploadsFolder);
-
-  if (!folderExists) {
-    throw new GeneralError('Проблема с загрузкой фотографии на сервер');
-  }
-
-  let photo;
-  let firstName, lastName;
-
-
-  try {
-    await new Promise((res, rej) => form.parse(req, (err, fields, files) => {
-    if (err) rej(new GeneralError('Не удалось прочитать файл'));
-
-    photo = files.photoPath;
-    
-    if (!typeIsValid(photo)) rej(new GeneralError('Неправильный формат файла'));
-
-    firstName = fields.firstName;
-    lastName = fields.lastName;
-
-    res();
-  }));
-  } catch (err) {
-    throw err;
-  }
+  const { firstName, lastName, photoPath: photo } = await parseFormWithPhoto(req);
   
-
-  const savedFilesFolderExists = await checkFolderExistsOrCreate(savedFilesFolder);
+  const savedFilesFolderExists = await checkOrCreateFolder(savedFilesFolder);
 
   if (!savedFilesFolderExists) {
     throw new GeneralError('Проблема с загрузкой фотографии на сервер');
@@ -72,7 +18,7 @@ const addEmployee = async req => {
 
   const employeePhotoFolder = path.join(savedFilesFolder, `${firstName}_${lastName}`);
 
-  const employeePhotoFolderCreated = await checkFolderExistsOrCreate(employeePhotoFolder);
+  const employeePhotoFolderCreated = await checkOrCreateFolder(employeePhotoFolder);
 
   if (!employeePhotoFolderCreated) {
     throw new GeneralError('Проблема с загрузкой фотографии на сервер');
@@ -82,13 +28,9 @@ const addEmployee = async req => {
 
   const photo_save_path = path.join(employeePhotoFolder, photoName);
 
-  try {
-    await new Promise((res, rej) => {
-      fs.rename(photo.filepath, photo_save_path, err => (
-        err ? rej(err) : res('klass')
-      ));
-    });
-  } catch (err) {
+  const movedFileToSaveDir = await moveFile(photo.filepath, photo_save_path);
+
+  if (!movedFileToSaveDir) {
     throw new GeneralError('Проблема с сохранением фотографии');
   }
 
