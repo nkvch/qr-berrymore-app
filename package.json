@@ -14,7 +14,7 @@
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.1",
     "@mui/material": "^5.0.1",
-    "@prisma/client": "^3.5.0",
+    "@prisma/client": "^3.9.1",
     "bcryptjs": "^2.4.3",
     "formidable": "^2.0.1",
     "formik": "^2.2.9",
@@ -30,6 +30,6 @@
   "devDependencies": {
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2",
-    "prisma": "^3.5.0"
+    "prisma": "^3.9.1"
   }
 }

@@ -2,7 +2,7 @@ import Context from '../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import FetchSelect from '../frontendWrapper/components/FetchSelect';
 
-const columns = {
+const employeeColumns = {
   photoPath: {
     name: 'Фото',
     type: 'image',
@@ -17,6 +17,17 @@ const columns = {
   },
 };
 
+const productColumns = {
+  photoPath: {
+    name: 'Фото',
+    type: 'image',
+  },
+  productName: {
+    name: 'Имя',
+    type: 'text',
+  },
+};
+
 const AddPortion = props => {
   const { updateSubTitle } = useContext(Context);
 
@@ -25,10 +36,20 @@ const AddPortion = props => {
   }, []);
 
   return (
-    <FetchSelect
-      url="/employees"
-      columns={columns}
-    />
+    <div className="block">
+      <FetchSelect
+        url="/employees"
+        columns={employeeColumns}
+        placeholder="Выберите сотрудника"
+        renderSelected={selected => `${selected.firstName} ${selected.lastName}`}
+      />
+      <FetchSelect
+        url="/products"
+        columns={productColumns}
+        placeholder="Выберите продукт"
+        renderSelected={selected => selected.productName}
+      />
+    </div>
   )
 };
 

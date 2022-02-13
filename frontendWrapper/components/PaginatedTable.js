@@ -28,6 +28,8 @@ import Debouncer from '../utils/debouncer';
 import { useRouter } from 'next/router';
 import useApi from '../utils/hooks/useApi';
 
+const debouncer = new Debouncer(500);
+
 const PaginatedTable = props => {
   const { url, columns } = props;
 
@@ -35,7 +37,6 @@ const PaginatedTable = props => {
   const [qty, setQty] = useState(10);
   const [search, setSearch] = useState('');
 
-  const debouncer = useRef(new Debouncer(500));
   const router = useRouter();
 
   const searchTextColumns = Object.entries(columns)
@@ -89,9 +90,8 @@ const PaginatedTable = props => {
 
   const handleChangeSearch = event => {
     const { value } = event.target;
-    const { debounce } = debouncer.current;
 
-    debounce(() => {
+    debouncer.debounce(() => {
       setSearch(value);
       setPage(1);
     });

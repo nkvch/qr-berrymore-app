@@ -1,9 +1,12 @@
-import { Autocomplete, Box, TextField, Avatar } from '@mui/material';
+import { Autocomplete, Box, TextField, Avatar, CircularProgress, breadcrumbsClasses } from '@mui/material';
 import { useState } from 'react';
 import useApi from '../utils/hooks/useApi';
+import Debouncer from '../utils/debouncer';
+
+const debouncer = new Debouncer(500);
 
 const FetchSelect = props => {
-  const { url, columns } = props;
+  const { url, columns, placeholder, renderSelected } = props;
 
   const [search, setSearch] = useState('');
 
@@ -27,35 +30,43 @@ const FetchSelect = props => {
   });
 
   const renderCellContent = ([key, value]) => {
+    let cell;
+  
     switch (columns[key].type) {
       case 'image':
-        return (
+        cell = (
           <Avatar
             alt="Аватар"
             src={value}
             sx={{ width: 20, height: 20 }}
           />
         );
+        break;
       default:
-        return value;
+        cell = value;
     }
+
+    return <div style={{ marginRight: '5px' }}>{cell}</div>;
   };
 
-  const handleInputChange = e => {
+  const handleInputChange = (e, value) => {
     e.preventDefault();
 
-    setSearch(e.target.value);
+    debouncer.debounce(() => setSearch(value));
   };
 
   return (
     <Autocomplete
-      id="country-select-demo"
-      sx={{ width: 300 }}
+      id="country-select-demo2"
+      sx={{ width: 300, marginBottom: '8px' }}
       options={data?.pageData || []}
       autoHighlight
-      getOptionLabel={(option) => option.label}
+      filterOptions={option => option}
+      getOptionLabel={renderSelected}
       onInputChange={handleInputChange}
       loading={loading}
+      loadingText="Загрузка"
+      noOptionsText="Не найдено"
       renderOption={(props, option) => (
         <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
           {
@@ -66,10 +77,16 @@ const FetchSelect = props => {
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Choose a country"
+          label={placeholder}
           inputProps={{
             ...params.inputProps,
             autoComplete: 'new-password', // disable autocomplete and autofill
+            endAdornment: (
+              <>
+                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
           }}
         />
       )}

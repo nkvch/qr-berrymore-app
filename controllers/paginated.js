@@ -1,32 +1,13 @@
 import prisma from '../prisma/prismaClient/prismaClient';
-import searchManyColumns from '../apiWrapper/utils/searchManyColumns';
-
+import searchManyColumnsManyValues from '../apiWrapper/utils/searchManyColumnsManyValues';
 
 const paginated = modelName => async req => {
   const { query: { page, qty, search, searchTextColumns, searchNumberColumns, selectColumns } } = req;
 
   let where = {};
 
-  const textColumns = searchTextColumns?.split(',').map(columnName => ({
-    columnName,
-    type: 'text',
-  })) || [];
-
-  const numberColumns = searchNumberColumns?.split(',').map(columnName => ({
-    columnName,
-    type: 'number',
-  })) || [];
-
   if (search) {
-    const searchColumns = [...textColumns];
-
-    const searchForNumbers = !Number.isNaN(search);
-
-    if (searchForNumbers) {
-      searchColumns.push(...numberColumns);
-    }
-
-    where = searchManyColumns(search, searchColumns);
+      where = searchManyColumnsManyValues(search, searchTextColumns, searchNumberColumns);
   }
 
   const allResults = qty === '-1';
