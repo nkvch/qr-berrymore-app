@@ -13,14 +13,6 @@ const SignUp = () => {
     updateSubTitle('Регистрация');
   }, []);
 
-  const initialValues = {
-    username: '',
-    password: '',
-    lastName: '',
-    firstName: '',
-    email: '',
-  };
-
   const fieldsData = {
     firstName: {
       label: 'Имя',
@@ -70,7 +62,6 @@ const SignUp = () => {
   return (
     <div className="block content-center">
       <Form
-        initialValues={initialValues}
         onSubmit={onSubmit}
         submitText="Зарегистрироваться"
         fieldsData={fieldsData}

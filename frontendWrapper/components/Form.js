@@ -4,9 +4,11 @@ import { FileUploader } from 'react-drag-drop-files';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import DroppableImageContainer from './DroppableImageContainer';
 import styles from '../../styles/Form.module.scss';
+import FetchSelect from './FetchSelect';
 
 const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
-  const [field, { label, type }] = fieldData;
+  const [field, config] = fieldData;
+  const { label, type } = config;
 
   let fieldToRender;
 
@@ -23,21 +25,45 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
         />
       );
       break;
-    case 'select':
+    case 'fetch-select':
+      const {
+        fetchSelectConfig: { url, columns, showInOption, showInValue, returnValue },
+      } = config;
+
       fieldToRender = (
-        <Autocomplete
-          freeSolo
-          id={`${field}-select`}
-          options={[]}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Поиск..."
-              onChange={handleChangeSearch}
-            />
-          )}
+        <FetchSelect
+          url={url}
+          columns={columns}
+          label={label}
+          onChange={(_, value) => {
+            if (value) {
+              setFieldValue(field, value[returnValue]);
+            } else {
+              setFieldValue(field, undefined);
+            }
+          }}
+          showInOption={showInOption}
+          showInValue={showInValue}
         />
       );
+
+      break;
+    case 'datetime':
+      fieldToRender = (
+        <TextField
+          className={styles['form-field']}
+          name={field}
+          label={label}
+          variant="outlined"
+          onChange={handleChange}
+          value={values[field]}
+          type="datetime-local"
+          InputLabelProps={{
+            shrink: true
+          }}
+        />
+      );
+      break;
     default:
       fieldToRender = (
         <TextField
@@ -60,7 +86,7 @@ const Form = ({ onSubmit, submitText, fieldsData, className }) => (
   <Formik
     {...({
       initialValues: Object.fromEntries(
-        Object.entries(fieldsData).map(([field, _]) => ([field, '']))
+        Object.entries(fieldsData).map(([field, { defaultValue }]) => ([field, defaultValue || '']))
       ),
       onSubmit,
     })}

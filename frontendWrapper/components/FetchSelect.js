@@ -2,11 +2,13 @@ import { Autocomplete, Box, TextField, Avatar, CircularProgress, breadcrumbsClas
 import { useState } from 'react';
 import useApi from '../utils/hooks/useApi';
 import Debouncer from '../utils/debouncer';
+import styles from '../../styles/FetchSelect.module.scss';
+
 
 const debouncer = new Debouncer(500);
 
 const FetchSelect = props => {
-  const { url, columns, placeholder, renderSelected } = props;
+  const { url, columns, label, onChange, showInOption, showInValue } = props;
 
   const [search, setSearch] = useState('');
 
@@ -20,7 +22,7 @@ const FetchSelect = props => {
 
   const selectColumns = Object.keys(columns);
 
-  const { loading, data, fetchError } = useApi({ url }, {
+  const { loading, data } = useApi({ url }, {
     page: 1,
     qty: 10,
     search,
@@ -57,30 +59,31 @@ const FetchSelect = props => {
 
   return (
     <Autocomplete
-      id="country-select-demo2"
-      sx={{ width: 300, marginBottom: '8px' }}
+      id={`${url}fetchSelect`}
+      sx={{ marginBottom: '8px' }}
       options={data?.pageData || []}
       autoHighlight
       filterOptions={option => option}
-      getOptionLabel={renderSelected}
+      getOptionLabel={selected => showInValue.map(field => selected[field]).join(' ')}
+      onChange={onChange}
       onInputChange={handleInputChange}
       loading={loading}
       loadingText="Загрузка"
       noOptionsText="Не найдено"
       renderOption={(props, option) => (
-        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} className={styles.option} {...props}>
           {
-            Object.entries(option).map(renderCellContent)
+            Object.entries(option).filter(([field]) => showInOption.includes(field)).map(renderCellContent)
           }
         </Box>
       )}
       renderInput={(params) => (
         <TextField
           {...params}
-          label={placeholder}
+          label={label}
           inputProps={{
             ...params.inputProps,
-            autoComplete: 'new-password', // disable autocomplete and autofill
+            // autoComplete: 'new-password', // disable autocomplete and autofill
             endAdornment: (
               <>
                 {loading ? <CircularProgress color="inherit" size={20} /> : null}
