@@ -13,6 +13,7 @@ import {
   TextField,
   Button,
   Avatar,
+  Tooltip,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTheme } from '@emotion/react';
@@ -31,7 +32,7 @@ import useApi from '../utils/hooks/useApi';
 const debouncer = new Debouncer(500);
 
 const PaginatedTable = props => {
-  const { url, columns } = props;
+  const { url, columns, actions } = props;
 
   const [page, setPage] = useState(1);
   const [qty, setQty] = useState(10);
@@ -121,6 +122,15 @@ const PaginatedTable = props => {
     }
   };
 
+  const renderActions = (actions, idx) => Object.entries(actions)
+    .map(([, { icon, tooltip, action }]) => (
+      <Tooltip key={`${action}${idx}`} title={tooltip}>
+        <IconButton onClick={() => action(rows[idx], router)}>
+          { icon }
+        </IconButton>
+      </Tooltip>
+    ));
+
   const totallyPages = (qty === -1 || total === 0)
     ? 1
     : Math.ceil(total/qty);
@@ -201,18 +211,38 @@ const PaginatedTable = props => {
                   <TableCell key={name}>{name}</TableCell>
                 ))
               }
+              {
+                actions
+                  ? (
+                    <TableCell key="actions-header">Действия</TableCell>
+                  )
+                  : null
+              }
             </TableRow>
           </TableHead>
           <TableBody className={loading ? 'table-rows dimmed' : 'table-rows'}>
             { loading ? <CircularProgress className="loading-spinner" /> : null }
             {rows.map((row, idx) => (
-              <TableRow key={idx}>
+              <TableRow
+                key={idx}
+                // className={actions?.edit ? 'table-row-hoverable' : ''}
+                // onClick={actions?.edit ? () => actions.edit.action(row) : null}
+              >
                 {
                   Object.entries(row).map(([key, value]) => (
                     <TableCell key={`${idx}${key}${value}`} scope="row">
                       {renderCellContend(key, value)}
                     </TableCell>
                   ))
+                }
+                {
+                  actions
+                    ? (
+                      <TableCell key={`${idx}-actions`} scope="row">
+                        {renderActions(actions, idx)}
+                      </TableCell>
+                    )
+                    : null
                 }
               </TableRow>
             ))}

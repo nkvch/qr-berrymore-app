@@ -1,21 +1,20 @@
-import Image from 'next/image';
 import { Box } from '@mui/system';
 import styles from '../../styles/DroppableImageContainer.module.scss';
 
-const DroppableImageContainer = ({ file }) => (
+const DroppableImageContainer = ({ image }) => (
   <Box className={styles.box}>
     <p className={styles.label}>
       {
-        file
-        ? <>Фотография заружена. <span className={styles['upload-button']}>Выбрать другую?</span></>
-        : <><span className={styles['upload-button']}>Выберите</span> или перетащите сюда фотографию</>
+        image
+          ? <>Фотография заружена. <span className={styles['upload-button']}>Выбрать другую?</span></>
+          : <><span className={styles['upload-button']}>Выберите</span> или перетащите сюда фотографию</>
       }
     </p>
     {
-      file && (
+      image && (
         <img
           className={styles.image}
-          src={URL.createObjectURL(file)}
+          src={typeof image === 'string' ? image : URL.createObjectURL(image)}
         />
       )
     }

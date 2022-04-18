@@ -2,7 +2,7 @@ import { useState } from 'react';
 import useDeepEffect from './useDeepEffect';
 import request from '../request';
 
-const useApi = (config, searchParams) => {
+const useApi = (config, searchParams, disabled) => {
   const [data, setData] = useState(null);
   const [fetchError, setFetchError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,9 @@ const useApi = (config, searchParams) => {
 
   useDeepEffect(() => {
     setLoading(true);
-    fetchData();
+    if (!disabled) {
+      fetchData();
+    }
   }, [config, searchParams]);
 
   return { loading, data, fetchError, refetch: fetchData }

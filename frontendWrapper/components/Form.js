@@ -21,8 +21,9 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
           name={field}
           hoverTitle="Отпускайте"
           types={['JPG', 'PNG', 'GIF']}
-          children={<DroppableImageContainer file={values[field]}/>}
-        />
+        >
+          <DroppableImageContainer image={values[field]}/>
+        </FileUploader>
       );
       break;
     case 'fetch-select':

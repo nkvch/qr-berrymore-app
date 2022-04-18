@@ -1,5 +1,6 @@
 import checkOrCreateFolder from '../apiWrapper/utils/checkOrCreateFolder';
 import { IncomingForm } from 'formidable';
+import GeneralError from '../apiWrapper/utils/errors/generalError';
 import path from 'path';
 
 const typeIsValid = file => ['jpeg', 'jpg', 'png'].includes(file.newFilename.split('.').pop());
