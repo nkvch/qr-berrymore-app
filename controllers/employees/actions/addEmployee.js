@@ -1,5 +1,6 @@
 import prisma from '../../../prisma/prismaClient/prismaClient';
 import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import GeneralError from '../../../apiWrapper/utils/errors/generalError';
 import parseFormWithPhoto from '../../parseFormWithPhoto';
 import checkOrCreateFolder from '../../../apiWrapper/utils/checkOrCreateFolder';
@@ -39,10 +40,13 @@ const addEmployee = async req => {
     photoPath = photo_save_path.replace('public', '');
   }
 
+  const berryId = uuidv4();
+
   const data = {
     firstName,
     lastName,
     photoPath,
+    berryId,
   };
 
   const savedEmployee = await prisma.employee.create({ data });

@@ -7,7 +7,7 @@ const paginated = modelName => async req => {
   let where = {};
 
   if (search) {
-      where = searchManyColumnsManyValues(search, searchTextColumns, searchNumberColumns);
+    where = searchManyColumnsManyValues(search, searchTextColumns, searchNumberColumns);
   }
 
   const allResults = qty === '-1';
