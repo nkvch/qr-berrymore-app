@@ -1,6 +1,7 @@
 import { handleErrors } from './utils/handleErrors';
 import NextCors from 'nextjs-cors';
 import response from './utils/response';
+import jwtMiddleware from './jwtMiddleware';
 
 const apiWrapper = routeHandler => async (req, res) => {
   await NextCors(req, res, {
@@ -16,8 +17,7 @@ const apiWrapper = routeHandler => async (req, res) => {
   }
     
   try {
-      // global middleware
-      // await jwtMiddleware(req, res);
+      await jwtMiddleware(req, res);
 
       response(await routeHandler[method](req), res);
   } catch (err) {

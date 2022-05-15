@@ -11,6 +11,7 @@ import request from './utils/request';
 import notifications from './components/notifications';
 import sleep from './utils/sleep';
 import AddTaskIcon from '@mui/icons-material/AddTask';
+import router, { useRouter } from 'next/router';
 
 const unauthMenuOptions = [{
   text: 'Зарегистрироваться',
@@ -45,6 +46,7 @@ const authMenuOptions = [{
 }];
 
 const ContextWrapper = ({ children }) => {
+  const { pathname } = useRouter();
   const [user, setUser] = useState(null);
   const [subTitle, setSubTitle] = useState(null);
 
@@ -56,6 +58,8 @@ const ContextWrapper = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('jwt');
     setUser(() => null);
+
+    router.push('/signin');
   };
 
   useEffect(() => {
@@ -72,7 +76,7 @@ const ContextWrapper = ({ children }) => {
         }
       }
     });
-  }, []);
+  }, [pathname]);
 
   const updateSubTitle = async newSubTitle => {
     await sleep(500);
