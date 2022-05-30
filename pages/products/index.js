@@ -33,7 +33,7 @@ const actions = {
   delete: {
     icon: <Delete />,
     tooltip: 'Удалить',
-    action: (prod, _, refetch) => {
+    action: (prod, _, refetch, forceLoading) => {
       const dialogKey = notification.open({
         type: 'warning',
         title: 'Удаление продукта',
@@ -42,6 +42,9 @@ const actions = {
           title: 'Удалить',
           action: () => {
             notification.close(dialogKey);
+
+            forceLoading(true);
+
             request({
               url: `/products/${prod.id}`,
               method: 'DELETE',

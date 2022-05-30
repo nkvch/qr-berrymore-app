@@ -14,6 +14,7 @@ import { notification } from '../frontendWrapper/components/notifications';
 import request from '../frontendWrapper/utils/request';
 import FetchSelect from '../frontendWrapper/components/FetchSelect';
 import styles from '../styles/Form.module.scss';
+import { useRouter } from 'next/router';
 
 const url = '/history';
 
@@ -91,12 +92,12 @@ const columns = {
   employee: {
     name: 'Сотрудник',
     type: 'object',
-    parse: ({ firstName, lastName }) => `${firstName} ${lastName}`,
+    parse: emp => emp ? `${emp.firstName} ${emp.lastName}` : 'Нет данных',
   },
   product: {
     name: 'Продукт',
     type: 'object',
-    parse: ({ productName }) => productName,
+    parse: prod => prod?.productName || 'Нет данных',
   },
 };
 
@@ -104,15 +105,18 @@ const actions = {
   delete: {
     icon: <Delete />,
     tooltip: 'Удалить',
-    action: (rec, _, refetch) => {
+    action: (rec, _, refetch, forceLoading) => {
       const dialogKey = notification.open({
         type: 'warning',
         title: 'Удаление записи из истории',
-        text: `Вы действительно хотите запись ${rec.id} ${rec.employee.firstName} ${rec.employee.lastName} ${rec.product.productName} ${rec.amount}?`,
+        text: `Вы действительно хотите запись ${rec.id} ${rec.employee?.firstName || ''} ${rec.employee?.lastName || ''} ${rec.product?.productName || ''} ${rec.amount}?`,
         actions: [{
           title: 'Удалить',
           action: () => {
             notification.close(dialogKey);
+
+            forceLoading(true);
+
             request({
               url: `/history/${rec.id}`,
               method: 'DELETE',
@@ -151,6 +155,7 @@ const initFilters = {
 const Stats = props => {
   const { updateSubTitle } = useContext(Context);
 
+  const router = useRouter();
 
   const [tableMode, setTableMode] = useState(true);
   const [filters, setFilters] = useState(initFilters);
@@ -294,6 +299,7 @@ const Stats = props => {
                 toDateTime: `${filters.toDateTime}:00.000Z`,
               }),
             }}
+            customAddButton={() => router.push('/new-portion')}
           />
         ) : null
       }

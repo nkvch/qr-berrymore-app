@@ -16,6 +16,8 @@ const Notifications = () => {
       key,
       content: (
         <Alert
+          key={key}
+          id={key}
           icon={false}
           severity={type}
           className={styles.notification}

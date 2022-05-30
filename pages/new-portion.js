@@ -78,7 +78,7 @@ const AddPortion = props => {
   const { updateSubTitle } = useContext(Context);
 
   useEffect(() => {
-    updateSubTitle('Новый сбор');
+    updateSubTitle('Новая порция');
   }, []);
 
   const handleSubmit = values => {

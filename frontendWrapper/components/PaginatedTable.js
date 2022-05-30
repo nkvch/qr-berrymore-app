@@ -32,7 +32,7 @@ import useApi from '../utils/hooks/useApi';
 const debouncer = new Debouncer(500);
 
 const PaginatedTable = props => {
-  const { url, columns, actions, noSearch, customFilters } = props;
+  const { url, columns, actions, noSearch, customFilters, customAddButton } = props;
 
   const [page, setPage] = useState(1);
   const [qty, setQty] = useState(10);
@@ -50,7 +50,7 @@ const PaginatedTable = props => {
 
   const selectColumns = Object.keys(columns);
 
-  const { loading, data, fetchError, refetch } = useApi({ url }, {
+  const { loading, data, fetchError, refetch, forceLoading } = useApi({ url }, {
     page,
     qty,
     search,
@@ -137,7 +137,7 @@ const PaginatedTable = props => {
   const renderActions = (actions, idx) => Object.entries(actions)
     .map(([, { icon, tooltip, action }]) => (
       <Tooltip key={`${action}${idx}`} title={tooltip}>
-        <IconButton onClick={() => action(rows[idx], router, refetch)}>
+        <IconButton onClick={() => action(rows[idx], router, refetch, forceLoading)}>
           { icon }
         </IconButton>
       </Tooltip>
@@ -288,7 +288,7 @@ const PaginatedTable = props => {
       <Button
         variant="contained"
         style={{ marginTop: '1em' }}
-        onClick={() => router.push(`${url}/create`)}
+        onClick={customAddButton || (() => router.push(`${url}/create`))}
       >
         Добавить
       </Button>

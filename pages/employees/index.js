@@ -4,6 +4,7 @@ import { useContext, useEffect } from 'react';
 import { QrCode2, ModeEdit, Delete } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
 import { notification } from '../../frontendWrapper/components/notifications';
+import { CircularProgress } from '@mui/material';
 
 const url = '/employees';
 
@@ -35,7 +36,7 @@ const actions = {
   delete: {
     icon: <Delete />,
     tooltip: 'Удалить',
-    action: (emp, _, refetch) => {
+    action: (emp, _, refetch, forceLoading) => {
       const dialogKey = notification.open({
         type: 'warning',
         title: 'Удаление сотрудника',
@@ -44,6 +45,9 @@ const actions = {
           title: 'Удалить',
           action: () => {
             notification.close(dialogKey);
+
+            forceLoading(true);
+
             request({
               url: `/employees/${emp.id}`,
               method: 'DELETE',

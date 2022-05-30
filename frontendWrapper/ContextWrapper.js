@@ -29,7 +29,7 @@ const authMenuOptions = [{
   linkUrl: '/stats',
   icon: <EqualizerIcon />,
 }, {
-  text: 'Новый сбор',
+  text: 'Новая порция',
   linkUrl: '/new-portion',
   icon: <AddTaskIcon />,
 }];

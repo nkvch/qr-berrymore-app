@@ -20,8 +20,10 @@ const QrCode = props => {
   const QRCodeHtmlID = `${berryId}qrcode`;
 
   useEffect(() => {
-    updateSubTitle(`QR код: ${firstName} ${lastName}`);
-  }, []);
+    if (firstName && lastName) {
+      updateSubTitle(`QR код: ${firstName} ${lastName}`);
+    }
+  }, [firstName, lastName]);
 
   return (
     <div className='block flex-center-column'>
