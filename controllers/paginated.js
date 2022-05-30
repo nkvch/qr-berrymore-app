@@ -2,7 +2,7 @@ import prisma from '../prisma/prismaClient/prismaClient';
 import searchManyColumnsManyValues from '../apiWrapper/utils/searchManyColumnsManyValues';
 
 const paginated = modelName => async req => {
-  const { query: { page, qty, search, searchTextColumns, searchNumberColumns, selectColumns } } = req;
+  const { query: { page, qty, search, searchTextColumns, searchNumberColumns, selectColumns, includeEntities } } = req;
 
   let where = {};
 
@@ -12,7 +12,8 @@ const paginated = modelName => async req => {
 
   const allResults = qty === '-1';
 
-  const select = selectColumns ? Object.fromEntries(selectColumns.split(',').map(column => ([column, true]))) : null;
+  const include = includeEntities ? Object.fromEntries(includeEntities.split(',').map(entity => ([entity, true]))) : null;
+  const select = (!include && selectColumns) ? Object.fromEntries(selectColumns.split(',').map(column => ([column, true]))) : null;
 
   const getParams = {
     ...(!allResults && {
@@ -21,6 +22,7 @@ const paginated = modelName => async req => {
     }),
     where,
     select,
+    include,
   };
 
   const pageData = await prisma[modelName].findMany(getParams);

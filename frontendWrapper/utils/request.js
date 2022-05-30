@@ -1,6 +1,4 @@
-const request = obj => {
-  const { url, method, body, searchParams, callback, withFiles } = obj;
-
+const request = ({ url, method, body, searchParams, callback, withFiles }) => {
   if (!url) {
     return null;
   }

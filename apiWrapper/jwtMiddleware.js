@@ -1,11 +1,14 @@
-import getUserIdByJwt from "./utils/getUserIdByJwt";
+import getUserIdByJwt from './utils/getUserIdByJwt';
+import authWhiteList from './authWhiteList';
 
 const jwtMiddleware = async (req, res) => {
   const { url, method } = req;
 
-  const isLoggingIn = url === '/api/auth' && method === 'POST';
+  const [path] = url.split('?');
 
-  if (!isLoggingIn) {
+  const authRequired = !authWhiteList.find(item => item.url === path && item.method === method);
+
+  if (authRequired) {
     await getUserIdByJwt(req);
   }
 };

@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Collapse } from '@mui/material';
+import { Alert, AlertTitle, Button, Collapse } from '@mui/material';
 import { useState, useEffect } from 'react';
 import styles from '../../styles/Notification.module.scss';
 import { TransitionGroup } from 'react-transition-group';
@@ -9,13 +9,31 @@ const notification = {
 const Notifications = () => {
   const [activeNotifications, setActiveNotifications] = useState([]);
 
-  const open = ({ type, title, text }) => {
+  const open = ({ type, title, text, actions }) => {
     const key = `notification${Math.random()}`;
 
     setActiveNotifications([{
       key,
       content: (
-        <Alert severity={type} className={styles.notification}>
+        <Alert
+          icon={false}
+          severity={type}
+          className={styles.notification}
+          action={(
+            <>
+              {actions?.map(({ title, action }) => (
+                <Button
+                  key={`alertbutton${title}`}
+                  onClick={action}
+                  size="small"
+                  color="inherit"
+                >
+                  {title}
+                </Button>
+              ))}
+            </>
+          )}
+        >
           <AlertTitle>{title}</AlertTitle>
           {text}
         </Alert>
@@ -25,6 +43,8 @@ const Notifications = () => {
     setTimeout(() => {
       close(key);
     }, 5000);
+
+    return key;
   };
 
   const close = key => {
@@ -32,6 +52,7 @@ const Notifications = () => {
   };
 
   notification.open = open;
+  notification.close = close;
 
   return (
     <TransitionGroup>

@@ -2,6 +2,8 @@ import PaginatedTable from '../../frontendWrapper/components/PaginatedTable';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import { QrCode2, ModeEdit, Delete } from '@mui/icons-material';
+import request from '../../frontendWrapper/utils/request';
+import { notification } from '../../frontendWrapper/components/notifications';
 
 const url = '/employees';
 
@@ -33,7 +35,42 @@ const actions = {
   delete: {
     icon: <Delete />,
     tooltip: 'Удалить',
-    action: () => {},
+    action: (emp, _, refetch) => {
+      const dialogKey = notification.open({
+        type: 'warning',
+        title: 'Удаление сотрудника',
+        text: `Вы действительно хотите удалить сотрудника ${emp.firstName} ${emp.lastName}?`,
+        actions: [{
+          title: 'Удалить',
+          action: () => {
+            notification.close(dialogKey);
+            request({
+              url: `/employees/${emp.id}`,
+              method: 'DELETE',
+              callback: (status, response) => {
+                if (status === 'ok') {
+                  notification.open({
+                    type: 'success',
+                    title: 'Сотрудник успешно удален',
+                  });
+                  refetch();
+                } else {
+                  notification.open({
+                    type: 'error',
+                    title: 'Ошибка при удалении сотрудника',
+                    text: response.message,
+                  });
+                };
+              },
+            });
+          },
+        }, {
+          title: 'Отменить',
+          action: () => notification.close(dialogKey),
+        }],
+      });
+      window.scrollTo(0, 0);
+    },
   },
   qrcode: {
     icon: <QrCode2 />,

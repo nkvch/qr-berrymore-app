@@ -48,7 +48,7 @@ const SignIn = () => {
             title: 'Вход успешно выполнен',
           });
 
-          router.push('/observe');
+          router.push('/stats');
         } else if (status === 'error') {
           notification.open({
             type: status,

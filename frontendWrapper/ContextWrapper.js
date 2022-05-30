@@ -1,23 +1,16 @@
 import { useEffect, useState } from 'react';
 import Context from './context';
 import Wrapper from './Wrapper';
-import HomeIcon from '@mui/icons-material/Home';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import PeopleIcon from '@mui/icons-material/People';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import request from './utils/request';
-import notifications from './components/notifications';
 import sleep from './utils/sleep';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import router, { useRouter } from 'next/router';
 
 const unauthMenuOptions = [{
-  text: 'Зарегистрироваться',
-  linkUrl: '/signup',
-  icon: <AssignmentIndIcon />,
-}, {
   text: 'Войти',
   linkUrl: '/signin',
   icon: <ExitToAppIcon />,
@@ -33,12 +26,8 @@ const authMenuOptions = [{
   icon: <ManageSearchIcon />,
 }, {
   text: 'Статистика',
-  linkUrl: '/observe',
+  linkUrl: '/stats',
   icon: <EqualizerIcon />,
-}, {
-  text: 'Кабинет',
-  linkUrl: '/office',
-  icon: <HomeIcon />,
 }, {
   text: 'Новый сбор',
   linkUrl: '/new-portion',

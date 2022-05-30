@@ -66,3 +66,15 @@ a {
 .dimmed {
   opacity: 0.5;
 }
+
+.flex-center-column {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+
+.flex-center-row {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}

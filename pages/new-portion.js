@@ -82,6 +82,8 @@ const AddPortion = props => {
   }, []);
 
   const handleSubmit = values => {
+    values.dateTime += ':00.000Z';
+
     request({
       url: '/history',
       method: 'POST',
@@ -92,7 +94,7 @@ const AddPortion = props => {
             type: 'success',
             title: 'Данные успешно записаны',
           });
-          router.push('/observe');
+          router.push('/stats');
         } else if (status === 'error') {
           notification.open({
             type: status,

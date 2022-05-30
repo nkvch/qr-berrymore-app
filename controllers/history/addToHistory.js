@@ -3,6 +3,8 @@ import prisma from '../../prisma/prismaClient/prismaClient';
 const addToHistory = async req => {
   const { employeeId, productId, amount, dateTime } = req.body;
 
+  console.log(dateTime, typeof dateTime);
+
   const data = {
     employeeId,
     productId,

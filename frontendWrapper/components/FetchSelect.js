@@ -8,7 +8,7 @@ import styles from '../../styles/FetchSelect.module.scss';
 const debouncer = new Debouncer(500);
 
 const FetchSelect = props => {
-  const { url, columns, label, onChange, showInOption, showInValue } = props;
+  const { url, columns, label, onChange, showInOption, showInValue, style } = props;
 
   const [search, setSearch] = useState('');
 
@@ -61,6 +61,7 @@ const FetchSelect = props => {
     <Autocomplete
       id={`${url}fetchSelect`}
       sx={{ marginBottom: '8px' }}
+      style={style}
       options={data?.pageData || []}
       autoHighlight
       filterOptions={option => option}

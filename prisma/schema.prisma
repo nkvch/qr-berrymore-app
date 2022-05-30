@@ -43,13 +43,13 @@ model Product {
 
 model History {
   id          Int       @id @default(autoincrement())
-  employeeId  Int       @map("employee_id")
-  productId   Int       @map("product_id")
+  employeeId  Int?       @map("employee_id")
+  productId   Int?       @map("product_id")
   amount      Float     @db.Float
   dateTime    DateTime  @db.DateTime() @map("date_time")
 
-  employee    Employee  @relation(fields: [employeeId], references: [id])
-  product     Product   @relation(fields: [productId], references: [id])
+  employee    Employee?  @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  product     Product?   @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   @@map("history")
 }
