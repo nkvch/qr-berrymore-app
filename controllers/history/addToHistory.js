@@ -1,9 +1,7 @@
-import prisma from '../../prisma/prismaClient/prismaClient';
+import db from '../../db/models';
 
 const addToHistory = async req => {
   const { employeeId, productId, amount, dateTime } = req.body;
-
-  console.log(dateTime, typeof dateTime);
 
   const data = {
     employeeId,
@@ -12,7 +10,9 @@ const addToHistory = async req => {
     dateTime: new Date(dateTime),
   };
 
-  const savedData = await prisma.history.create({ data });
+  const modelData = await db.history.create(data);
+
+  const savedData = modelData.get({ plain: true });
 
   return savedData;
 };

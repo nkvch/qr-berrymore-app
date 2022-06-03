@@ -1,9 +1,9 @@
-import prisma from '../../prisma/prismaClient/prismaClient';
+import db from '../../db/models';
 
 const deleteHistory = async req => {
   const { id } = req.query;
 
-  const response = await prisma.history.delete({ where: { id: Number(id) } });
+  const response = await db.history.destroy({ where: { id: Number(id) } });
 
   return response;
 };

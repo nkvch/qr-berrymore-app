@@ -1,10 +1,11 @@
-import prisma from '../../prisma/prismaClient/prismaClient';
+import db from '../../db/models';
+import { Op } from 'sequelize';
 
 const getHistory = async req => {
   const { fromDateTime, toDateTime, sorting, sortColumn, product, employee, page, qty } = req.query;
 
   const where = {};
-  let orderBy = undefined;
+  let order = undefined;
 
   if (employee) {
     where.employeeId = Number(employee) || undefined;
@@ -17,38 +18,39 @@ const getHistory = async req => {
   if (fromDateTime || toDateTime) {
     where.dateTime = {
       ...(fromDateTime && {
-        gte: fromDateTime,
+        [Op.gte]: fromDateTime,
       }),
       ...(toDateTime && {
-        lte: toDateTime,
+        [Op.lte]: toDateTime,
       }),
     };
   }
 
   if (sorting && sortColumn) {
-    orderBy = [{
-      [sortColumn]: sorting,
-    }];
+    order = [[sortColumn, sorting]];
   }
 
   const allResults = qty === '-1';
 
   const getParams = {
     ...(!allResults && {
-      skip: Number((page - 1) * qty),
-      take: Number(qty),
+      offset: Number((page - 1) * qty),
+      limit: Number(qty),
     }),
     where,
-    include: {
-      employee: true,
-      product: true,
-    },
-    orderBy,
+    include: [{
+      model: db.employees,
+      as: 'employee',
+    }, {
+      model: db.products,
+      as: 'product',
+    }],
+    order,
   };
 
-  const pageData = await prisma.history.findMany(getParams);
+  const { count: total, rows } = await db.history.findAndCountAll(getParams);
 
-  const total = await prisma.history.count({ where });
+  const pageData = rows.map(row => row.get({ plain: true }));
 
   return {
     pageData,

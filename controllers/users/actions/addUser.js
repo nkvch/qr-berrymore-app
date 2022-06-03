@@ -1,4 +1,4 @@
-import prisma from '../../../prisma/prismaClient/prismaClient';
+import db from '../../../db/models';
 
 const bcrypt = require('bcryptjs');
 
@@ -11,7 +11,9 @@ const addUser = async req => {
 
   const data = { ...user, password: hash };
 
-  const { id, password, ...savedUser } = await prisma.user.create({ data });
+  const modelCreateData = await db.users.create(data);
+
+  const { id, password, ...savedUser } = modelCreateData.get({ plain: true });
 
   return savedUser;
 };

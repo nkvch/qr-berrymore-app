@@ -1,10 +1,10 @@
-import prisma from '../../../prisma/prismaClient/prismaClient';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import GeneralError from '../../../apiWrapper/utils/errors/generalError';
 import parseFormWithPhoto from '../../parseFormWithPhoto';
 import checkOrCreateFolder from '../../../apiWrapper/utils/checkOrCreateFolder';
 import moveFile from '../../../apiWrapper/utils/moveFile';
+import db from '../../../db/models';
 
 const addEmployee = async req => {
   const { firstName, lastName, photo } = await parseFormWithPhoto(req);
@@ -49,7 +49,7 @@ const addEmployee = async req => {
     berryId,
   };
 
-  const savedEmployee = await prisma.employee.create({ data });
+  const savedEmployee = await db.employees.create(data);
 
   return savedEmployee;
 };

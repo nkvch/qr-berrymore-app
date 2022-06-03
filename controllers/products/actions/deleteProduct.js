@@ -1,7 +1,7 @@
-import prisma from '../../../prisma/prismaClient/prismaClient';
 import path from 'path';
 import getProduct from './getProduct';
 import deleteFolder from '../../../apiWrapper/utils/deleteFolder';
+import db from '../../../db/models';
 
 const deleteProduct = async req => {
   const { id, photoPath } = await getProduct(req);
@@ -16,7 +16,7 @@ const deleteProduct = async req => {
     deleteFolder(productPhotoFolderPath);
   }
 
-  const response = await prisma.product.delete({ where: { id: Number(id) } });
+  const response = await db.products.destroy({ where: { id: Number(id) } });
 
   return response;
 };

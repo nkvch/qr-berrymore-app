@@ -1,9 +1,9 @@
-import prisma from '../../../prisma/prismaClient/prismaClient';
 import path from 'path';
 import GeneralError from '../../../apiWrapper/utils/errors/generalError';
 import parseFormWithPhoto from '../../parseFormWithPhoto';
 import checkOrCreateFolder from '../../../apiWrapper/utils/checkOrCreateFolder';
 import moveFile from '../../../apiWrapper/utils/moveFile';
+import db from '../../../db/models';
 
 const updateEmployee = async req => {
   const { firstName, lastName, photo } = await parseFormWithPhoto(req);
@@ -47,10 +47,15 @@ const updateEmployee = async req => {
     photoPath,
   };
 
-  const updatedEmployee = await prisma.employee.update({
+  await db.employees.update(data, {
     where: { id: Number(id) },
-    data,
   });
+
+  const modelData = await db.employees.findOne({
+    where: { id: Number(id) },
+  });
+
+  const updatedEmployee = modelData.get({ plain: true });
 
   return updatedEmployee;
 };

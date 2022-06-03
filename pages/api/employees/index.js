@@ -3,7 +3,7 @@ import paginated from '../../../controllers/paginated';
 import addEmployee from '../../../controllers/employees/actions/addEmployee'
 
 const employeesHandler = {
-  get: paginated('employee'),
+  get: paginated('employees'),
   post: addEmployee,
 };
 

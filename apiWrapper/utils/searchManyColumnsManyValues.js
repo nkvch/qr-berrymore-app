@@ -1,6 +1,8 @@
 import { combinations, combineTwoArrays } from '../utils/combinations';
 import zip from '../utils/zip';
 import getNumbersLike from './getNumbersLike';
+import db from '../../db/models';
+import { Op } from 'sequelize';
 
 const searchManyColumnsManyValues = (search, searchTextColumns, searchNumberColumns) => {
   const searchValues = search.split(' ');
@@ -18,9 +20,9 @@ const searchManyColumnsManyValues = (search, searchTextColumns, searchNumberColu
   });
 
   const textColumnsCombinations = combinations(searchTextColumnNames, searchTextValues.length)
-    .map(columnNames => zip(columnNames, searchTextValues.map(value => ({ contains: value }))));
+    .map(columnNames => zip(columnNames, searchTextValues.map(value => ({ [Op.like]: `%${value}%` }))));
   const numberColumnsCombinations = combinations(searchNumberColumnNames, searchNumberValues.length)
-    .map(columnNames => zip(columnNames, searchNumberValues.map(value => ({ in: getNumbersLike(value, 1000) }))));
+    .map(columnNames => zip(columnNames, searchNumberValues.map(value => ({ [Op.in]: getNumbersLike(value, 1000) }))));
 
   let allSearchCombinations;
 
@@ -34,7 +36,7 @@ const searchManyColumnsManyValues = (search, searchTextColumns, searchNumberColu
   }
   
   return {
-    OR: allSearchCombinations,
+    [Op.or]: allSearchCombinations,
   };
 };
 

@@ -1,9 +1,11 @@
-import prisma from '../../../prisma/prismaClient/prismaClient';
+import db from "../../../db/models";
 
 const getEmployee = async req => {
   const { id } = req.query;
 
-  const data = await prisma.employee.findFirst({ where: { id: parseInt(id) } });
+  const modelData = await db.employees.findOne({ where: { id: parseInt(id) } });
+
+  const data = modelData.get({ plain: true });
 
   return data;
 };

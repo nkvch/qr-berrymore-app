@@ -10,7 +10,17 @@ const port = process.env.PORT || 3000;
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
 
-app.prepare().then(() => {
+app.prepare().then(async () => {
+  try {
+    const db = require('./db/models');
+
+    await db.sequelize.authenticate();
+
+    // await db.sequelize.sync({ alter: true });
+  } catch (err) {
+    console.err(err);
+  }
+
   createServer(async (req, res) => {
     try {
       const parsedUrl = parse(req.url, true);

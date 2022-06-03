@@ -3,7 +3,7 @@ import paginated from '../../../controllers/paginated';
 import addProduct from '../../../controllers/products/actions/addProduct'
 
 const productsHandler = {
-  get: paginated('product'),
+  get: paginated('products'),
   post: addProduct,
 };
 

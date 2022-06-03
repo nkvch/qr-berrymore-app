@@ -1,9 +1,9 @@
-import prisma from '../../../prisma/prismaClient/prismaClient';
 import path from 'path';
 import GeneralError from '../../../apiWrapper/utils/errors/generalError';
 import parseFormWithPhoto from '../../parseFormWithPhoto';
 import checkOrCreateFolder from '../../../apiWrapper/utils/checkOrCreateFolder';
 import moveFile from '../../../apiWrapper/utils/moveFile';
+import db from '../../../db/models';
 
 const updateProduct = async req => {
   const { productName, productPrice, photo } = await parseFormWithPhoto(req);
@@ -47,10 +47,15 @@ const updateProduct = async req => {
     photoPath,
   };
 
-  const updatedProduct = await prisma.product.update({
+  await db.products.update(data, {
     where: { id: Number(id) },
-    data,
   });
+
+  const modelData = db.products.findOne({
+    where: { id: Number(id) },
+  });
+
+  const updatedProduct = modelData.get({ plain: true });
 
   return updatedProduct;
 };

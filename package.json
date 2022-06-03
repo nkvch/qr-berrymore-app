@@ -6,22 +6,20 @@
     "dev": "node server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
-    "lint": "next lint",
-    "prisma:generate": "npx prisma generate",
-    "db:push-changes": "npx prisma db push"
+    "lint": "next lint"
   },
   "dependencies": {
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.1",
     "@mui/material": "^5.8.1",
-    "@prisma/client": "^3.9.1",
     "@react-pdf/renderer": "^2.1.1",
     "bcryptjs": "^2.4.3",
     "formidable": "^2.0.1",
     "formik": "^2.2.9",
     "jsonwebtoken": "^8.5.1",
     "lodash.isequal": "^4.5.0",
+    "mysql2": "^2.3.3",
     "next": "^11.1.4",
     "nextjs-cors": "^2.1.0",
     "qrcode.react": "^3.0.1",
@@ -30,12 +28,13 @@
     "react-drag-drop-files": "^2.2.4",
     "react-transition-group": "^4.4.2",
     "sass": "^1.43.4",
+    "sequelize": "^6.20.1",
+    "sequelize-auto": "^0.8.8",
     "uuid": "^8.3.2",
     "victory": "^36.4.1"
   },
   "devDependencies": {
     "eslint": "7.32.0",
-    "eslint-config-next": "11.1.2",
-    "prisma": "^3.9.1"
+    "eslint-config-next": "11.1.2"
   }
 }

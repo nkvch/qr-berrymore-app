@@ -1,8 +1,8 @@
-import prisma from '../prisma/prismaClient/prismaClient';
 import searchManyColumnsManyValues from '../apiWrapper/utils/searchManyColumnsManyValues';
+import db from '../db/models';
 
 const paginated = modelName => async req => {
-  const { query: { page, qty, search, searchTextColumns, searchNumberColumns, selectColumns, includeEntities } } = req;
+  const { query: { page, qty, search, searchTextColumns, searchNumberColumns, selectColumns } } = req;
 
   let where = {};
 
@@ -12,22 +12,20 @@ const paginated = modelName => async req => {
 
   const allResults = qty === '-1';
 
-  const include = includeEntities ? Object.fromEntries(includeEntities.split(',').map(entity => ([entity, true]))) : null;
-  const select = (!include && selectColumns) ? Object.fromEntries(selectColumns.split(',').map(column => ([column, true]))) : null;
+  const attributes = selectColumns?.split(',');
 
   const getParams = {
     ...(!allResults && {
-      skip: Number((page - 1) * qty),
-      take: Number(qty),
+      offset: Number((page - 1) * qty),
+      limit: Number(qty),
     }),
     where,
-    select,
-    include,
+    attributes,
   };
 
-  const pageData = await prisma[modelName].findMany(getParams);
+  const { count: total, rows } = await db[modelName].findAndCountAll(getParams);
 
-  const total = await prisma[modelName].count({ where });
+  const pageData = rows.map(row => row.get({ plain: true }));
 
   return {
     pageData,

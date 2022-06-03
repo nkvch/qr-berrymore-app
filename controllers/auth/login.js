@@ -1,7 +1,7 @@
-import prisma from '../../prisma/prismaClient/prismaClient';
 import generateJWT from '../../apiWrapper/utils/generateJWT';
 import NotFound from '../../apiWrapper/utils/errors/notFound';
 import Unauthorized from '../../apiWrapper/utils/errors/Unauthorized';
+import db from '../../db/models';
 
 const bcrypt = require('bcryptjs');
 
@@ -9,7 +9,7 @@ const login = async req => {
   const { body } = req;
   const { username, password } = typeof body === 'string' ? JSON.parse(body) : body;
 
-  const existUser = await prisma.user.findFirst({ where: { username } });
+  const existUser = await db.users.findOne({ where: { username }, raw: true });
 
   if (!existUser) {
     throw new NotFound('User does not exist.', { username });

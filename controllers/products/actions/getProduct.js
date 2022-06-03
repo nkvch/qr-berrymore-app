@@ -1,9 +1,11 @@
-import prisma from '../../../prisma/prismaClient/prismaClient';
+import db from '../../../db/models';
 
 const getProduct = async req => {
   const { id } = req.query;
 
-  const data = await prisma.product.findFirst({ where: { id: parseInt(id) } });
+  const modelData = await db.products.findOne({ where: { id: parseInt(id) } });
+
+  const data = modelData.get({ plain: true });
 
   return data;
 };
