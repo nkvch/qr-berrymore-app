@@ -13,7 +13,7 @@ module.exports = function(sequelize, DataTypes) {
       references: {
         model: 'employees',
         key: 'id'
-      }
+      },
     },
     productId: {
       type: DataTypes.INTEGER,
@@ -21,7 +21,7 @@ module.exports = function(sequelize, DataTypes) {
       references: {
         model: 'products',
         key: 'id'
-      }
+      },
     },
     amount: {
       type: DataTypes.FLOAT,

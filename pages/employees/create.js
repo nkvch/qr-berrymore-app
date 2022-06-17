@@ -5,6 +5,21 @@ import Context from '../../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/dist/client/router';
 
+const foremanColumns = {
+  id: {
+    name: 'id',
+    type: 'number',
+  },
+  firstName: {
+    name: 'Имя',
+    type: 'text',
+  },
+  lastName: {
+    name: 'Фамилия',
+    type: 'text',
+  },
+};
+
 const fieldsData = {
   firstName: {
     label: 'Имя сотрудника',
@@ -13,6 +28,29 @@ const fieldsData = {
   lastName: {
     label: 'Фамилия сотрудника',
     type: 'text',
+  },
+  contract: {
+    label: 'Нумар кантракту',
+    type: 'text',
+  },
+  address: {
+    label: 'Адрас',
+    type: 'text',
+  },
+  phone: {
+    label: 'Тэлефон',
+    type: 'phone',
+  },
+  foremanId: {
+    label: 'Выберите бригадира',
+    type: 'fetch-select',
+    fetchSelectConfig: {
+      url: '/foremen',
+      columns: foremanColumns,
+      showInOption: ['firstName', 'lastName'],
+      showInValue: ['firstName', 'lastName'],
+      returnValue: 'id',
+    }
   },
   photo: {
     label: 'Выберите или перетащите сюда фотографию',

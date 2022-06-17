@@ -9,6 +9,21 @@ import request from '../../../frontendWrapper/utils/request';
 
 const url = '/employees';
 
+const foremanColumns = {
+  id: {
+    name: 'id',
+    type: 'number',
+  },
+  firstName: {
+    name: 'Имя',
+    type: 'text',
+  },
+  lastName: {
+    name: 'Фамилия',
+    type: 'text',
+  },
+};
+
 const getFieldsData = employeeData => ({
   firstName: {
     label: 'Имя сотрудника',
@@ -19,6 +34,33 @@ const getFieldsData = employeeData => ({
     label: 'Фамилия сотрудника',
     type: 'text',
     defaultValue: employeeData?.lastName,
+  },
+  contract: {
+    label: 'Нумар кантракту',
+    type: 'text',
+    defaultValue: employeeData?.contract,
+  },
+  address: {
+    label: 'Адрас',
+    type: 'text',
+    defaultValue: employeeData?.address,
+  },
+  phone: {
+    label: 'Тэлефон',
+    type: 'phone',
+    defaultValue: employeeData?.phone,
+  },
+  foremanId: {
+    label: 'Выберите бригадира',
+    type: 'fetch-select',
+    fetchSelectConfig: {
+      url: '/foremen',
+      columns: foremanColumns,
+      showInOption: ['firstName', 'lastName'],
+      showInValue: ['firstName', 'lastName'],
+      returnValue: 'id',
+    },
+    defaultValue: employeeData?.foremanId,
   },
   photo: {
     label: 'Выберите или перетащите сюда фотографию',

@@ -6,17 +6,16 @@ import { Op } from 'sequelize';
 
 const searchManyColumnsManyValues = (search, searchTextColumns, searchNumberColumns) => {
   const searchValues = search.split(' ');
-  const searchTextColumnNames = searchTextColumns?.split(',') || [];
-  const searchNumberColumnNames = searchNumberColumns?.split(',') || [];
+  const searchTextColumnNames = searchTextColumns ? searchTextColumns.split(',') : [];
+  const searchNumberColumnNames = searchNumberColumns ? searchNumberColumns.split(',') : [];
   const searchTextValues = [];
   const searchNumberValues = [];
 
   searchValues.forEach(value => {
     if (!isNaN(value)) {
       searchNumberValues.push(value);
-    } else {
-      searchTextValues.push(value);
     }
+    searchTextValues.push(value);
   });
 
   const textColumnsCombinations = combinations(searchTextColumnNames, searchTextValues.length)

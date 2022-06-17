@@ -9,9 +9,9 @@ import { CircularProgress } from '@mui/material';
 const url = '/employees';
 
 const columns = {
-  id: {
-    name: 'ID',
-    type: 'number',
+  contract: {
+    name: 'Нумар кантракту',
+    type: 'text',
   },
   firstName: {
     name: 'Имя',

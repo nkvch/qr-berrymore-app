@@ -28,7 +28,15 @@ module.exports = function(sequelize, DataTypes) {
     lastName: {
       type: DataTypes.STRING(50),
       allowNull: false
-    }
+    },
+    roleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'roles',
+        key: 'id',
+      },
+    },
   }, {
     sequelize,
     tableName: 'users',
@@ -57,6 +65,13 @@ module.exports = function(sequelize, DataTypes) {
         fields: [
           { name: "email" },
         ]
+      },
+      {
+        name: "users_role_fkey",
+        using: "BTREE",
+        fields: [
+          { name: "roleId" },
+        ],
       },
     ]
   });

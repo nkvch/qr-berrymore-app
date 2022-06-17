@@ -1,18 +1,40 @@
 import searchManyColumnsManyValues from '../apiWrapper/utils/searchManyColumnsManyValues';
 import db from '../db/models';
+import util from 'util';
 
-const paginated = modelName => async req => {
+const paginated = (modelName, requiredParams) => async req => {
   const { query: { page, qty, search, searchTextColumns, searchNumberColumns, selectColumns } } = req;
 
   let where = {};
+  const include = [];
 
   if (search) {
     where = searchManyColumnsManyValues(search, searchTextColumns, searchNumberColumns);
   }
 
+  if (requiredParams) {
+    const { foreignParams, ...ownParams } = requiredParams;
+
+    Object.assign(where, ownParams);
+
+    if (foreignParams) {
+      Object.entries(foreignParams).forEach(([_modelName, params]) => {
+        const { as, where } = params;
+
+        include.push({
+          model: db[_modelName],
+          as,
+          where,
+        });
+      });
+    }
+  }
+
   const allResults = qty === '-1';
 
   const attributes = selectColumns?.split(',');
+
+  console.log((util.inspect(where, { depth: 5 })));
 
   const getParams = {
     ...(!allResults && {
@@ -20,6 +42,7 @@ const paginated = modelName => async req => {
       limit: Number(qty),
     }),
     where,
+    include,
     attributes,
   };
 

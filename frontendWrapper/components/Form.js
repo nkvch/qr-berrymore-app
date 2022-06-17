@@ -5,6 +5,8 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import DroppableImageContainer from './DroppableImageContainer';
 import styles from '../../styles/Form.module.scss';
 import FetchSelect from './FetchSelect';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/material.css';
 
 const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
   const [field, config] = fieldData;
@@ -45,6 +47,8 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
           }}
           showInOption={showInOption}
           showInValue={showInValue}
+          value={values[field]}
+          returnValue={returnValue}
         />
       );
 
@@ -61,6 +65,24 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
           type="datetime-local"
           InputLabelProps={{
             shrink: true
+          }}
+        />
+      );
+      break;
+    case 'phone':
+      fieldToRender = (
+        <PhoneInput
+          country={'by'}
+          name={field}
+          onChange={phoneNumber => setFieldValue(field, phoneNumber)}
+          value={values[field]}
+          specialLabel={label}
+          isValid={(value, country) => country.iso2 === 'by' && !!value.match(/^\d{12}$/)}
+          style={{
+            marginBottom: '8px',
+          }}
+          inputStyle={{
+            width: '100%',
           }}
         />
       );

@@ -26,6 +26,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-drag-drop-files": "^2.2.4",
+    "react-phone-input-2": "^2.15.0",
     "react-transition-group": "^4.4.2",
     "sass": "^1.43.4",
     "sequelize": "^6.20.1",

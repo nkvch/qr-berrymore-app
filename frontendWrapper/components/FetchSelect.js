@@ -8,7 +8,7 @@ import styles from '../../styles/FetchSelect.module.scss';
 const debouncer = new Debouncer(500);
 
 const FetchSelect = props => {
-  const { url, columns, label, onChange, showInOption, showInValue, style } = props;
+  const { url, columns, label, onChange, showInOption, showInValue, style, value, returnValue } = props;
 
   const [search, setSearch] = useState('');
 
@@ -52,7 +52,7 @@ const FetchSelect = props => {
   };
 
   const handleInputChange = (e, value) => {
-    e.preventDefault();
+    e?.preventDefault();
 
     debouncer.debounce(() => setSearch(value));
   };
@@ -64,8 +64,13 @@ const FetchSelect = props => {
       style={style}
       options={data?.pageData || []}
       autoHighlight
+      value={value}
       filterOptions={option => option}
-      getOptionLabel={selected => showInValue.map(field => selected[field]).join(' ')}
+      getOptionLabel={selected => {
+        const fullOption = data?.pageData.find(o => o[returnValue] === selected);
+
+        return fullOption ? showInValue.map(field => fullOption[field]).join(' ') : '';
+      }}
       onChange={onChange}
       onInputChange={handleInputChange}
       loading={loading}

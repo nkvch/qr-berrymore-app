@@ -16,9 +16,9 @@ app.prepare().then(async () => {
 
     await db.sequelize.authenticate();
 
-    // await db.sequelize.sync({ alter: true });
+    await db.sequelize.sync({ alter: true });
   } catch (err) {
-    console.err(err);
+    console.log(err);
   }
 
   createServer(async (req, res) => {

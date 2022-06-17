@@ -7,6 +7,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
+    contract: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     firstName: {
       type: DataTypes.STRING(50),
       allowNull: false
@@ -14,6 +18,22 @@ module.exports = function(sequelize, DataTypes) {
     lastName: {
       type: DataTypes.STRING(50),
       allowNull: false
+    },
+    address: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+    },
+    phone: {
+      type: DataTypes.STRING(30),
+      allowNull: true,
+    },
+    foremanId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
     },
     berryId: {
       type: DataTypes.STRING(36),
@@ -34,7 +54,14 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id" },
-        ]
+        ],
+      },
+      {
+        name: "employees_foreman_fkey",
+        using: "BTREE",
+        fields: [
+          { name: "foremanId" },
+        ],
       },
     ]
   });
