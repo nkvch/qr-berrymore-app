@@ -5,6 +5,7 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import PeopleIcon from '@mui/icons-material/People';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import request from './utils/request';
 import sleep from './utils/sleep';
 import AddTaskIcon from '@mui/icons-material/AddTask';
@@ -24,6 +25,10 @@ const authMenuOptions = [{
   text: 'Продукты',
   linkUrl: '/products',
   icon: <ManageSearchIcon />,
+}, {
+  text: 'Бригадиры',
+  linkUrl: '/foremen',
+  icon: <SupervisorAccountIcon />,
 }, {
   text: 'Статистика',
   linkUrl: '/stats',

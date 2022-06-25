@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useDeepEffect from './useDeepEffect';
 import request from '../request';
+import util from 'util';
 
 const useApi = (config, searchParams, disabled) => {
   const [data, setData] = useState(null);
@@ -12,9 +13,9 @@ const useApi = (config, searchParams, disabled) => {
     searchParams,
     callback: (status, response) => {
       if (status === 'ok') {
-        setData(response.data)
+        setData(response.data);
       } else {
-        setFetchError(response.message)
+        setFetchError(response.message);
       }
 
       setLoading(false);

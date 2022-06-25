@@ -7,6 +7,7 @@ import styles from '../../styles/Form.module.scss';
 import FetchSelect from './FetchSelect';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
+import getLocalDateTimeString from '../utils/getLocalDateTimeString';
 
 const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
   const [field, config] = fieldData;
@@ -30,7 +31,8 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
       break;
     case 'fetch-select':
       const {
-        fetchSelectConfig: { url, columns, showInOption, showInValue, returnValue },
+        fetchSelectConfig: { url, columns, showInOption, showInValue, returnValue, className },
+        onChangeCallback,
       } = config;
 
       fieldToRender = (
@@ -38,7 +40,12 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
           url={url}
           columns={columns}
           label={label}
+          className={className}
           onChange={(_, value) => {
+            if (typeof onChangeCallback === 'function') {
+              onChangeCallback(value)
+            }
+
             if (value) {
               setFieldValue(field, value[returnValue]);
             } else {
@@ -60,8 +67,12 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
           name={field}
           label={label}
           variant="outlined"
-          onChange={handleChange}
-          value={values[field]}
+          onChange={e => {
+            const localDateTimeString = e.target.value;
+
+            setFieldValue(field, localDateTimeString ? new Date(localDateTimeString) : null);
+          }}
+          value={values[field] ? getLocalDateTimeString(values[field]) : null}
           type="datetime-local"
           InputLabelProps={{
             shrink: true
@@ -105,7 +116,7 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
   return fieldToRender;
 };
 
-const Form = ({ onSubmit, submitText, fieldsData, className }) => (
+const Form = ({ onSubmit, submitText, fieldsData, className, submitable }) => (
   <Formik
     {...({
       initialValues: Object.fromEntries(
@@ -123,15 +134,19 @@ const Form = ({ onSubmit, submitText, fieldsData, className }) => (
           { 
             Object.entries(fieldsData).map(
               fieldData => renderField(fieldData, { values, handleChange, setFieldValue })
-            ) 
+            )
           }
-          <Button
-            type="submit"
-            variant="contained"
-            className={styles['form-submit']}
-          >
-            {submitText}
-          </Button>
+          {
+            submitable !== false && (
+              <Button
+                type="submit"
+                variant="contained"
+                className={styles['form-submit']}
+              >
+                {submitText}
+              </Button>
+            )
+          }
         </form>
       )
     }

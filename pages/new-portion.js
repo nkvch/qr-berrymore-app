@@ -1,7 +1,6 @@
 import Context from '../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import Form from '../frontendWrapper/components/Form';
-import getLocalDateTime from '../frontendWrapper/utils/getLocalDateTime';
 import request from '../frontendWrapper/utils/request';
 import { notification } from '../frontendWrapper/components/notifications';
 import router from 'next/router';
@@ -70,7 +69,7 @@ const fieldsData = {
   dateTime: {
     label: 'Дата и время',
     type: 'datetime',
-    defaultValue: getLocalDateTime().toISOString().slice(0, -8),
+    defaultValue: new Date(),
   }
 };
 
@@ -82,7 +81,7 @@ const AddPortion = props => {
   }, []);
 
   const handleSubmit = values => {
-    values.dateTime += ':00.000Z';
+    values.dateTime = values.dateTime?.toISOString();
 
     request({
       url: '/history',

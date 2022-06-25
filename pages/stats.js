@@ -15,6 +15,7 @@ import request from '../frontendWrapper/utils/request';
 import FetchSelect from '../frontendWrapper/components/FetchSelect';
 import styles from '../styles/Form.module.scss';
 import { useRouter } from 'next/router';
+import getLocalDateTimeString from '../frontendWrapper/utils/getLocalDateTimeString';
 
 const url = '/history';
 
@@ -76,10 +77,12 @@ const columns = {
     type: 'number',
   },
   employeeId: {
-    type: 'hidden',
+    type: 'number',
+    hidden: true,
   },
   productId: {
-    type: 'hidden',
+    type: 'number',
+    hidden: true,
   },
   amount: {
     name: 'Количество (кг)',
@@ -91,12 +94,12 @@ const columns = {
   },
   employee: {
     name: 'Сотрудник',
-    type: 'object',
+    type: 'included',
     parse: emp => emp ? `${emp.firstName} ${emp.lastName}` : 'Нет данных',
   },
   product: {
     name: 'Продукт',
-    type: 'object',
+    type: 'included',
     parse: prod => prod?.productName || 'Нет данных',
   },
 };
@@ -164,15 +167,6 @@ const Stats = props => {
     updateSubTitle('Статистика');
   }, []);
 
-  const selectColumns = Object.keys(columns);
-  const includeEntities = ['employee', 'product'];
-
-  const { loading, data, fetchError } = useApi({ url }, {
-    selectColumns,
-    includeEntities,
-    qty: '-1',
-  });
-
   const handleSortingChange = e => {
     const [sortColumn, sorting] = e.target.value.split(' ');
 
@@ -188,7 +182,7 @@ const Stats = props => {
 
     setFilters(prevFilters => ({
       ...prevFilters,
-      [`${which}DateTime`]: value,
+      [`${which}DateTime`]: value ? new Date(value) : null,
     }));
   };
 
@@ -196,6 +190,22 @@ const Stats = props => {
     ...prevFilters,
     [which]: value?.id,
   }));
+
+  const getFilters = () => {
+    const { fromDateTime, toDateTime, ...restFilters } = filters;
+
+    return {
+      ...restFilters,
+
+      ...(fromDateTime && {
+        fromDateTime: fromDateTime.toISOString(),
+      }),
+
+      ...(toDateTime && {
+        toDateTime: toDateTime.toISOString(),
+      }),
+    }
+  };
 
   return (
     <div className="block">
@@ -227,7 +237,7 @@ const Stats = props => {
           label="От"
           variant="outlined"
           onChange={handleDateTimeChange('from')}
-          value={filters.fromDateTime}
+          value={filters.fromDateTime ? getLocalDateTimeString(filters.fromDateTime) : null}
           type="datetime-local"
           InputLabelProps={{
             shrink: true
@@ -243,7 +253,7 @@ const Stats = props => {
           label="До"
           variant="outlined"
           onChange={handleDateTimeChange('to')}
-          value={filters.toDateTime}
+          value={filters.toDateTime ? getLocalDateTimeString(filters.toDateTime) : null}
           type="datetime-local"
           InputLabelProps={{
             shrink: true
@@ -290,15 +300,7 @@ const Stats = props => {
             columns={columns}
             actions={actions}
             noSearch
-            customFilters={{
-              ...filters,
-              ...(filters.fromDateTime && {
-                fromDateTime: `${filters.fromDateTime}:00.000Z`,
-              }),
-              ...(filters.toDateTime && {
-                toDateTime: `${filters.toDateTime}:00.000Z`,
-              }),
-            }}
+            customFilters={getFilters()}
             customAddButton={() => router.push('/new-portion')}
           />
         ) : null

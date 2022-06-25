@@ -3,7 +3,9 @@ import paginated from '../../../controllers/paginated';
 import addEmployee from '../../../controllers/employees/actions/addEmployee'
 
 const employeesHandler = {
-  get: paginated('employees'),
+  get: paginated('employees', { foreignParams: {
+    users: { as: 'foreman', where: {}, attributes: ['firstName', 'lastName'], required: false },
+  } }),
   post: addEmployee,
 };
 

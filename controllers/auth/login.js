@@ -9,7 +9,15 @@ const login = async req => {
   const { body } = req;
   const { username, password } = typeof body === 'string' ? JSON.parse(body) : body;
 
-  const existUser = await db.users.findOne({ where: { username }, raw: true });
+  const existUserModelData = await db.users.findOne({
+    where: { username },
+    include: [{
+      model: db.roles,
+      as: 'role',
+    }],
+  });
+
+  const existUser = existUserModelData.get({ plain: true });
 
   if (!existUser) {
     throw new NotFound('User does not exist.', { username });

@@ -25,10 +25,13 @@ a {
 }
 
 .block {
+  position: relative;
+  min-height: 100px;
   background-color: white;
   margin: 20px 20px 0 20px;
   padding: 20px;
   border-radius: 12px;
+  transition: height 2s;
   &.content-center {
     display: flex;
     justify-content: center;
@@ -77,4 +80,14 @@ a {
   display: flex;
   flex-flow: row;
   align-items: center;
+}
+
+
+.search70width {
+  width: 70%;
+  display: inline-flex;
+}
+
+.autocomplete-inline-flex {
+  display: inline-flex;
 }

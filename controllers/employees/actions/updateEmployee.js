@@ -6,7 +6,7 @@ import moveFile from '../../../apiWrapper/utils/moveFile';
 import db from '../../../db/models';
 
 const updateEmployee = async req => {
-  const { firstName, lastName, photo } = await parseFormWithPhoto(req);
+  const { firstName, lastName, photo, foremanId, address, phone, contract } = await parseFormWithPhoto(req);
   const { id } = req.query;
 
   let photoPath;
@@ -45,6 +45,10 @@ const updateEmployee = async req => {
     firstName,
     lastName,
     photoPath,
+    foremanId: foremanId || null,
+    contract,
+    address,
+    phone,
   };
 
   await db.employees.update(data, {

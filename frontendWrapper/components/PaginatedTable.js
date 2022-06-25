@@ -28,34 +28,35 @@ import { useState, useEffect, useRef } from 'react';
 import Debouncer from '../utils/debouncer';
 import { useRouter } from 'next/router';
 import useApi from '../utils/hooks/useApi';
+import Form from './Form';
+// import styles from '../../styles/PaginatedTable.module.scss';
 
 const debouncer = new Debouncer(500);
 
 const PaginatedTable = props => {
-  const { url, columns, actions, noSearch, customFilters, customAddButton } = props;
+  const { url, columns, actions, noSearch, customFilters, customAddButton, filters, classNames } = props;
 
   const [page, setPage] = useState(1);
   const [qty, setQty] = useState(10);
   const [search, setSearch] = useState('');
 
+  const searchInputId = `${url.split('/').pop()}-search`;
+
   const router = useRouter();
 
-  const searchTextColumns = Object.entries(columns)
-    .filter(([, { type }]) => type === 'text')
+  const searchColumns = Object.entries(columns)
+    .filter(([, { type }]) => ['text', 'number'].includes(type))
     .map(([key]) => key);
 
-  const searchNumberColumns = Object.entries(columns)
-    .filter(([, { type }]) => type === 'number')
+  const selectColumns = Object.entries(columns)
+    .filter(([, { type }]) => type !== 'included')
     .map(([key]) => key);
-
-  const selectColumns = Object.keys(columns);
 
   const { loading, data, fetchError, refetch, forceLoading } = useApi({ url }, {
     page,
     qty,
     search,
-    searchTextColumns,
-    searchNumberColumns,
+    searchColumns,
     selectColumns,
     ...(customFilters),
   });
@@ -98,7 +99,7 @@ const PaginatedTable = props => {
       setPage(1);
     });
 
-    const [clearBtn] = document.getElementsByClassName('MuiAutocomplete-clearIndicator');
+    const [clearBtn] = document.getElementById(searchInputId).parentElement.getElementsByClassName('MuiAutocomplete-clearIndicator');
     clearBtn?.addEventListener('click', clearSearch);
   };
 
@@ -107,9 +108,9 @@ const PaginatedTable = props => {
     setPage(1);
   };
 
-  const filterHiddenFields = ([key]) => columns[key].type !== 'hidden';
+  const filterHiddenFields = ([key]) => columns[key].hidden !== true;
 
-  const filterHiddenHeaders = ({ type }) => type !== 'hidden';
+  const filterHiddenHeaders = ({ hidden }) => hidden !== true;
 
   const renderCellContend = (key, value) => {
     switch (columns[key].type) {
@@ -121,13 +122,12 @@ const PaginatedTable = props => {
             sx={{ width: 80, height: 80 }}
           />
         );
-      case 'object':
+      case 'included':
         return columns[key].parse(value);
       case 'dateTime':
         return new Intl.DateTimeFormat('ru-RU', {
           dateStyle: 'full',
           timeStyle: 'short',
-          timeZone: 'GMT',
         }).format(new Date(value));
       default:
         return value;
@@ -206,16 +206,23 @@ const PaginatedTable = props => {
         !noSearch && (
           <Autocomplete
             freeSolo
-            id={`${url.split('/').pop()}-search`}
+            id={searchInputId}
             options={[]}
             renderInput={(params) => (
               <TextField
                 {...params}
                 label="Поиск..."
                 onChange={handleChangeSearch}
+                className={classNames?.autocompleteTextField}
               />
             )}
+            className={classNames?.autocomplete}
           />
+        )
+      }
+      {
+        filters && (
+          <Form {...filters} />
         )
       }
       <TableContainer component={Paper}>
@@ -239,11 +246,7 @@ const PaginatedTable = props => {
           <TableBody className={loading ? 'table-rows dimmed' : 'table-rows'}>
             { loading ? <CircularProgress className="loading-spinner" /> : null }
             {rows.map((row, idx) => (
-              <TableRow
-                key={idx}
-                // className={actions?.edit ? 'table-row-hoverable' : ''}
-                // onClick={actions?.edit ? () => actions.edit.action(row) : null}
-              >
+              <TableRow key={idx}>
                 {
                   Object.entries(row).filter(filterHiddenFields).map(([key, value]) => (
                     <TableCell key={`${idx}${key}${value}`} scope="row">

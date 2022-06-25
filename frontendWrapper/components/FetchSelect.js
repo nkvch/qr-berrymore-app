@@ -8,16 +8,14 @@ import styles from '../../styles/FetchSelect.module.scss';
 const debouncer = new Debouncer(500);
 
 const FetchSelect = props => {
-  const { url, columns, label, onChange, showInOption, showInValue, style, value, returnValue } = props;
+  const { url, columns, label, onChange, showInOption, showInValue, style, value, returnValue, className } = props;
+
+  const autocompleteId = `${url}fetchSelect`;
 
   const [search, setSearch] = useState('');
 
-  const searchTextColumns = Object.entries(columns)
-    .filter(([, { type }]) => type === 'text')
-    .map(([key]) => key);
-
-  const searchNumberColumns = Object.entries(columns)
-    .filter(([, { type }]) => type === 'number')
+  const searchColumns = Object.entries(columns)
+    .filter(([, { type }]) => ['text', 'number'].includes(type))
     .map(([key]) => key);
 
   const selectColumns = Object.keys(columns);
@@ -26,8 +24,7 @@ const FetchSelect = props => {
     page: 1,
     qty: 10,
     search,
-    searchTextColumns,
-    searchNumberColumns,
+    searchColumns,
     selectColumns,
   });
 
@@ -55,16 +52,25 @@ const FetchSelect = props => {
     e?.preventDefault();
 
     debouncer.debounce(() => setSearch(value));
+
+    const [clearBtn] = document.getElementById(autocompleteId).parentElement.getElementsByClassName('MuiAutocomplete-clearIndicator');
+    clearBtn?.addEventListener('click', clearFetchSelect);
+  };
+
+  const clearFetchSelect = () => {
+    setSearch('');
+    onChange();
   };
 
   return (
     <Autocomplete
-      id={`${url}fetchSelect`}
+      id={autocompleteId}
       sx={{ marginBottom: '8px' }}
       style={style}
       options={data?.pageData || []}
       autoHighlight
       value={value}
+      className={className}
       filterOptions={option => option}
       getOptionLabel={selected => {
         const fullOption = data?.pageData.find(o => o[returnValue] === selected);

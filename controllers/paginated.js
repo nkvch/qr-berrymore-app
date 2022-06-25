@@ -1,30 +1,38 @@
 import searchManyColumnsManyValues from '../apiWrapper/utils/searchManyColumnsManyValues';
 import db from '../db/models';
+import { Op } from 'sequelize';
 import util from 'util';
 
 const paginated = (modelName, requiredParams) => async req => {
-  const { query: { page, qty, search, searchTextColumns, searchNumberColumns, selectColumns } } = req;
+  const { query: { page, qty, search, searchColumns, selectColumns, ...restParams } } = req;
 
-  let where = {};
+  let where = { [Op.and]: [] };
+
+  if (restParams) {
+    where[Op.and].push(restParams);
+  }
+
   const include = [];
 
   if (search) {
-    where = searchManyColumnsManyValues(search, searchTextColumns, searchNumberColumns);
+    where[Op.and].push(searchManyColumnsManyValues(search, searchColumns));
   }
 
   if (requiredParams) {
     const { foreignParams, ...ownParams } = requiredParams;
 
-    Object.assign(where, ownParams);
+    where[Op.and].push(ownParams);
 
     if (foreignParams) {
       Object.entries(foreignParams).forEach(([_modelName, params]) => {
-        const { as, where } = params;
+        const { as, where, attributes, required } = params;
 
         include.push({
           model: db[_modelName],
           as,
           where,
+          required,
+          attributes,
         });
       });
     }
@@ -33,8 +41,6 @@ const paginated = (modelName, requiredParams) => async req => {
   const allResults = qty === '-1';
 
   const attributes = selectColumns?.split(',');
-
-  console.log((util.inspect(where, { depth: 5 })));
 
   const getParams = {
     ...(!allResults && {
