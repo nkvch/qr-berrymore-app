@@ -9,16 +9,21 @@ const jwt = require('jsonwebtoken');
 const refreshSession = async req => {
   const id = await getUserIdByJwt(req);
 
-  const user = await db.users.findOne({
+  const userModelData = await db.users.findOne({
     where: { id },
-    raw: true,
+    include: [{
+      model: db.roles,
+      as: 'role',
+    }],
   });
+
+  const { password, ...user} = userModelData.get({ plain: true });
 
   if (!user) throw new NotFound('User does not exist', { username });
 
   const newToken = await generateJWT({ id });
 
-  return { ...user, token: newToken };
+  return { ...user, token: newToken, id };
 };
 
 export default refreshSession;

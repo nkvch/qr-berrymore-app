@@ -33,7 +33,7 @@ const login = async req => {
 
   const token = await generateJWT({ id });
   
-  return { ...userData, token };
+  return { ...userData, token, id };
 };
 
 export default login;

@@ -2,10 +2,15 @@ import db from '../../db/models';
 import { Op } from 'sequelize';
 
 const getHistory = async req => {
-  const { fromDateTime, toDateTime, sorting, sortColumn, product, employee, page, qty } = req.query;
+  const { fromDateTime, toDateTime, foreman, sorting, sortColumn, product, employee, page, qty } = req.query;
 
   const where = {};
+  const empWhere = {};
   let order = undefined;
+
+  if (foreman) {
+    empWhere.foremanId = foreman;
+  }
 
   if (employee) {
     where.employeeId = Number(employee) || undefined;
@@ -41,6 +46,7 @@ const getHistory = async req => {
     include: [{
       model: db.employees,
       as: 'employee',
+      where: empWhere,
     }, {
       model: db.products,
       as: 'product',
