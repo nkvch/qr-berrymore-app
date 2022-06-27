@@ -17,14 +17,15 @@ const addProduct = async req => {
       throw new GeneralError('Проблема с загрузкой фотографии на сервер');
     }
 
-    const productPhotoFolder = path.join(savedFilesFolder, productName);
+    const productPhotoFolder = path.join(savedFilesFolder, encodeURIComponent(productName));
+
     const productPhotoFolderCreated = await checkOrCreateFolder(productPhotoFolder);
 
     if (!productPhotoFolderCreated) {
       throw new GeneralError('Проблема с загрузкой фотографии на сервер');
     }
 
-    const photoName  = photo.originalFilename.replace(/[/\\?%*:|"<>]/g, '-');
+    const photoName  = photo.originalFilename.replace(/[/\\?%*:|"<>\s]/g, '-');
     const photo_save_path = path.join(productPhotoFolder, photoName);
 
     const movedFileToSaveDir = await moveFile(photo.filepath, photo_save_path);

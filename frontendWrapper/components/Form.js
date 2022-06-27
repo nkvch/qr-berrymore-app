@@ -108,6 +108,9 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
           onChange={handleChange}
           value={values[field]}
           type={type}
+          style={{
+            marginBottom: '8px',
+          }}
         />
       );
       break;

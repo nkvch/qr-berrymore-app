@@ -4,6 +4,7 @@ import parseFormWithPhoto from '../../parseFormWithPhoto';
 import checkOrCreateFolder from '../../../apiWrapper/utils/checkOrCreateFolder';
 import moveFile from '../../../apiWrapper/utils/moveFile';
 import db from '../../../db/models';
+import fs from 'fs';
 
 const updateEmployee = async req => {
   const { firstName, lastName, photo, foremanId, address, phone, contract } = await parseFormWithPhoto(req);
@@ -20,7 +21,7 @@ const updateEmployee = async req => {
       throw new GeneralError('Проблема с загрузкой фотографии на сервер');
     }
 
-    const employeePhotoFolder = path.join(savedFilesFolder, `${firstName}_${lastName}`);
+    const employeePhotoFolder = path.join(savedFilesFolder, encodeURIComponent(`${firstName}_${lastName}`));
 
     const employeePhotoFolderCreated = await checkOrCreateFolder(employeePhotoFolder);
 
@@ -28,7 +29,7 @@ const updateEmployee = async req => {
       throw new GeneralError('Проблема с загрузкой фотографии на сервер');
     }
 
-    const photoName  = photo.originalFilename.replace(/[/\\?%*:|"<>]/g, '-');
+    const photoName  = photo.originalFilename.replace(/[/\\?%*:|"<>\s]/g, '-');
 
     const photo_save_path = path.join(employeePhotoFolder, photoName);
 

@@ -1,6 +1,8 @@
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
+const fs = require('fs');
+const path = require('path');
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -30,6 +32,24 @@ app.prepare().then(async () => {
         await app.render(req, res, '/a', query);
       } else if (pathname === '/b') {
         await app.render(req, res, '/b', query);
+      } else if (pathname.includes('savedFiles')) {
+        const ext = pathname.split('.').pop();
+
+        res.writeHead(200, { 'content-type': `image/${ext}` });
+
+        const path_ = path.join(__dirname, `public${pathname}`);
+
+        if (!fs.existsSync(path_)) {
+          return res.end();
+        }
+
+        const stream = fs.createReadStream(path_);
+
+        stream.on('open', () => stream.pipe(res));
+
+        stream.on('error', err => {
+          res.end(err);
+        });
       } else {
         await handle(req, res, parsedUrl);
       }

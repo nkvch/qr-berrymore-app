@@ -20,7 +20,7 @@ const updateProduct = async req => {
       throw new GeneralError('Проблема с загрузкой фотографии на сервер');
     }
 
-    const productPhotoFolder = path.join(savedFilesFolder, productName);
+    const productPhotoFolder = path.join(savedFilesFolder, encodeURIComponent(productName));
 
     const productPhotoFolderCreated = await checkOrCreateFolder(productPhotoFolder);
 
@@ -28,7 +28,7 @@ const updateProduct = async req => {
       throw new GeneralError('Проблема с загрузкой фотографии на сервер');
     }
 
-    const photoName  = photo.originalFilename.replace(/[/\\?%*:|"<>]/g, '-');
+    const photoName  = photo.originalFilename.replace(/[/\\?%*:|"<>\s]/g, '-');
 
     const photo_save_path = path.join(productPhotoFolder, photoName);
 
@@ -51,7 +51,7 @@ const updateProduct = async req => {
     where: { id: Number(id) },
   });
 
-  const modelData = db.products.findOne({
+  const modelData = await db.products.findOne({
     where: { id: Number(id) },
   });
 
