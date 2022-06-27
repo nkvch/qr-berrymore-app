@@ -19,7 +19,9 @@ const addEmployee = async req => {
       throw new GeneralError('Проблема с загрузкой фотографии на сервер');
     }
 
-    const employeePhotoFolder = path.join(savedFilesFolder, encodeURIComponent(`${firstName}_${lastName}`));
+    const randomFolderName = uuidv4();
+
+    const employeePhotoFolder = path.join(savedFilesFolder, randomFolderName);
   
     const employeePhotoFolderCreated = await checkOrCreateFolder(employeePhotoFolder);
   

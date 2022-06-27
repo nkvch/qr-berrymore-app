@@ -4,6 +4,7 @@ import parseFormWithPhoto from '../../parseFormWithPhoto';
 import checkOrCreateFolder from '../../../apiWrapper/utils/checkOrCreateFolder';
 import moveFile from '../../../apiWrapper/utils/moveFile';
 import db from '../../../db/models';
+import { v4 as uuidv4 } from 'uuid';
 
 const updateProduct = async req => {
   const { productName, productPrice, photo } = await parseFormWithPhoto(req);
@@ -20,7 +21,9 @@ const updateProduct = async req => {
       throw new GeneralError('Проблема с загрузкой фотографии на сервер');
     }
 
-    const productPhotoFolder = path.join(savedFilesFolder, encodeURIComponent(productName));
+    const randomFolderName = uuidv4();
+
+    const productPhotoFolder = path.join(savedFilesFolder, randomFolderName);
 
     const productPhotoFolderCreated = await checkOrCreateFolder(productPhotoFolder);
 
