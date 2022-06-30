@@ -2,6 +2,7 @@ import searchManyColumnsManyValues from '../apiWrapper/utils/searchManyColumnsMa
 import db from '../db/models';
 import { Op } from 'sequelize';
 import util from 'util';
+import parseQueryParams from '../apiWrapper/utils/parseQueryParams';
 
 const paginated = (modelName, requiredParams) => async req => {
   const { query: { page, qty, search, searchColumns, selectColumns, ...restParams } } = req;
@@ -9,7 +10,7 @@ const paginated = (modelName, requiredParams) => async req => {
   let where = { [Op.and]: [] };
 
   if (restParams) {
-    where[Op.and].push(restParams);
+    where[Op.and].push(parseQueryParams(restParams));
   }
 
   const include = [];

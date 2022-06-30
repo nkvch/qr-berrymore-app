@@ -34,7 +34,7 @@ import Form from './Form';
 const debouncer = new Debouncer(500);
 
 const PaginatedTable = props => {
-  const { url, columns, actions, noSearch, customFilters, customAddButton, filters, classNames } = props;
+  const { url, columns, actions, noSearch, customFilters, customAddButton, filters, classNames, pageActions } = props;
 
   const [page, setPage] = useState(1);
   const [qty, setQty] = useState(10);
@@ -135,12 +135,25 @@ const PaginatedTable = props => {
   };
 
   const renderActions = (actions, idx) => Object.entries(actions)
-    .map(([, { icon, tooltip, action }]) => (
+    .map(([, { icon, tooltip, action, customRender }]) => customRender ? customRender(rows[idx], router, refetch, forceLoading) : (
       <Tooltip key={`${action}${idx}`} title={tooltip}>
         <IconButton onClick={() => action(rows[idx], router, refetch, forceLoading)}>
           { icon }
         </IconButton>
       </Tooltip>
+    ));
+
+  const renderPageActions = actions => Object.entries(actions)
+    .map(([, { icon, title, action, customRender }]) => customRender ? customRender(rows, router, refetch, forceLoading) : (
+      <Button
+        key={`pageaction${action}`}
+        startIcon={icon}
+        variant="outlined"
+        style={{ marginTop: '1em', marginLeft: '1em' }}
+        onClick={() => action(rows, router, refetch, forceLoading)}
+      >
+        {title}
+      </Button>
     ));
 
   const totallyPages = (qty === -1 || total === 0)
@@ -295,6 +308,11 @@ const PaginatedTable = props => {
       >
         Добавить
       </Button>
+      {
+        rows.length && pageActions ? (
+          renderPageActions(pageActions)
+        ) : null
+      }
     </>
   )
 };
