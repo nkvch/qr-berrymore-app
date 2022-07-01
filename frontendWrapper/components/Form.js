@@ -1,5 +1,5 @@
 import { Formik } from 'formik';
-import { TextField, Button, Autocomplete } from '@mui/material';
+import { TextField, Button, Autocomplete, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { FileUploader } from 'react-drag-drop-files';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import DroppableImageContainer from './DroppableImageContainer';
@@ -9,9 +9,37 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
 import getLocalDateTimeString from '../utils/getLocalDateTimeString';
 
-const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
+const renderField = (fieldData, {
+  values,
+  handleChange: handleChangeWithoutCallback,
+  onChangeCallback,
+  setFieldValue: setFieldValueWithoutCallback,
+}) => {
   const [field, config] = fieldData;
-  const { label, type } = config;
+  const { label, type, style } = config;
+
+  let setFieldValue;
+  let handleChange;
+
+  if (onChangeCallback) {
+    setFieldValue = (_field, _value) => {
+      setFieldValueWithoutCallback(_field, _value);
+      onChangeCallback({
+        ...values,
+        [_field]: _value,
+      });
+    }
+    handleChange = (event, ...rest) => {
+      handleChangeWithoutCallback(event, ...rest);
+      onChangeCallback({
+        ...values,
+        [event.target.name]: event.target.value,
+      });
+    }
+  } else {
+    setFieldValue = setFieldValueWithoutCallback;
+    handleChange = handleChangeWithoutCallback;
+  }
 
   let fieldToRender;
 
@@ -29,6 +57,27 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
         </FileUploader>
       );
       break;
+    case 'select':
+      const { selectConfig: { options } } = config;
+
+      fieldToRender = (
+        <FormControl style={style}>
+          <InputLabel>{label}</InputLabel>
+          <Select
+            value={values[field]}
+            name={field}
+            label={label}
+            onChange={handleChange}
+          >
+            {
+              options.map(({ value, text }, idx) => (
+                <MenuItem key={`selectitem${idx}${value}${text}`} value={value}>{text}</MenuItem>
+              ))
+            }
+          </Select>
+        </FormControl>
+      )
+      break;
     case 'fetch-select':
       const {
         fetchSelectConfig: { url, columns, showInOption, showInValue, returnValue, className },
@@ -37,6 +86,7 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
 
       fieldToRender = (
         <FetchSelect
+          style={style}
           url={url}
           columns={columns}
           label={label}
@@ -67,6 +117,7 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
           name={field}
           label={label}
           variant="outlined"
+          style={style}
           onChange={e => {
             const localDateTimeString = e.target.value;
 
@@ -91,6 +142,7 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
           isValid={(value, country) => country.iso2 === 'by' && !!value.match(/^\d{12}$/)}
           style={{
             marginBottom: '8px',
+            ...(style),
           }}
           inputStyle={{
             width: '100%',
@@ -110,6 +162,7 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
           type={type}
           style={{
             marginBottom: '8px',
+            ...(style),
           }}
         />
       );
@@ -119,7 +172,7 @@ const renderField = (fieldData, { values, handleChange, setFieldValue }) => {
   return fieldToRender;
 };
 
-const Form = ({ onSubmit, submitText, fieldsData, className, submitable }) => (
+const Form = ({ onSubmit, submitText, fieldsData, className, submitable, onChangeCallback, resetable, intable, resetFilters, resetText, resetStyle }) => (
   <Formik
     {...({
       initialValues: Object.fromEntries(
@@ -129,14 +182,14 @@ const Form = ({ onSubmit, submitText, fieldsData, className, submitable }) => (
     })}
   >
     {
-      ({ values, handleChange, handleSubmit, setFieldValue }) => (
+      ({ values, handleChange, handleSubmit, setFieldValue, resetForm }) => (
         <form
           onSubmit={handleSubmit}
           className={`${styles.form} ${className ? styles[className] : ''}`}
         >
           { 
             Object.entries(fieldsData).map(
-              fieldData => renderField(fieldData, { values, handleChange, setFieldValue })
+              fieldData => renderField(fieldData, { values, handleChange, setFieldValue, onChangeCallback })
             )
           }
           {
@@ -149,6 +202,25 @@ const Form = ({ onSubmit, submitText, fieldsData, className, submitable }) => (
                 {submitText}
               </Button>
             )
+          }
+          {
+            (resetable || intable) ? (
+              <Button
+                type="reset"
+                variant="outlined"
+                color="warning"
+                style={{ marginBottom: '8px', ...(resetStyle)}}
+                onClick={() => {
+                  resetForm();
+
+                  if (intable) {
+                    resetFilters();
+                  }
+                }}
+              >
+                {resetText}
+              </Button>
+            ) : null
           }
         </form>
       )

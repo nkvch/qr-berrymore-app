@@ -1,23 +1,26 @@
-import db from '../../db/models';
+import db, { sequelize } from '../../db/models';
 import { Op } from 'sequelize';
 
 const getHistory = async req => {
-  const { fromDateTime, toDateTime, foreman, sorting, sortColumn, product, employee, page, qty } = req.query;
+  const { fromDateTime, toDateTime, foreman, sorting, sortColumn, product, employee, page, qty, summarize } = req.query;
 
   const where = {};
   const empWhere = {};
-  let order = undefined;
+  let order;
+  let group;
+  let attributes;
+  let productAttrs;
 
   if (foreman) {
     empWhere.foremanId = foreman;
   }
 
   if (employee) {
-    where.employeeId = Number(employee) || undefined;
+    where.employeeId = Number(employee);
   }
 
   if (product) {
-    where.productId = Number(product) || undefined;
+    where.productId = Number(product);
   }
 
   if (fromDateTime || toDateTime) {
@@ -35,6 +38,21 @@ const getHistory = async req => {
     order = [[sortColumn, sorting]];
   }
 
+  if (summarize === 'true') {
+    group = 'employeeId';
+    attributes = [
+      'employeeId',
+      sequelize.col('employee.firstName'),
+      sequelize.col('employee.lastName'),  
+      [sequelize.fn('sum', sequelize.col('amount')), 'allAmount'],
+      [sequelize.literal('sum(amount * product.productPrice)'), 'allPrice'],
+      [sequelize.fn('max', sequelize.col('amount')), 'maxAmount'],
+      [sequelize.fn('count', sequelize.col('*')), 'numPortions'],
+    ]
+    order = undefined;
+    productAttrs = [];
+  }
+
   const allResults = qty === '-1';
 
   const getParams = {
@@ -43,6 +61,7 @@ const getHistory = async req => {
       limit: Number(qty),
     }),
     where,
+    attributes,
     include: [{
       model: db.employees,
       as: 'employee',
@@ -50,8 +69,10 @@ const getHistory = async req => {
     }, {
       model: db.products,
       as: 'product',
+      attributes: productAttrs,
     }],
     order,
+    group,
   };
 
   const { count: total, rows } = await db.history.findAndCountAll(getParams);
@@ -60,7 +81,7 @@ const getHistory = async req => {
 
   return {
     pageData,
-    total,
+    total: summarize === 'true' ? total.length : total,
   };
 };
 

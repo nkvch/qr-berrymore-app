@@ -108,12 +108,12 @@ const PaginatedTable = props => {
     setPage(1);
   };
 
-  const filterHiddenFields = ([key]) => columns[key].hidden !== true;
+  const filterHiddenFields = ([key]) => columns[key]?.hidden !== true;
 
   const filterHiddenHeaders = ({ hidden }) => hidden !== true;
 
   const renderCellContend = (key, value) => {
-    switch (columns[key].type) {
+    switch (columns[key]?.type) {
       case 'image':
         return (
           <Avatar
@@ -129,8 +129,10 @@ const PaginatedTable = props => {
           dateStyle: 'full',
           timeStyle: 'short',
         }).format(new Date(value));
+      case 'custom':
+        return columns[key].render(value);
       default:
-        return value;
+        return value.toString();
     }
   };
 

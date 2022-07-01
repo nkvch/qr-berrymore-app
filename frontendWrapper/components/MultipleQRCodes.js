@@ -14,13 +14,11 @@ const hasBottomBorder = (idx, num, numRows) => {
   const isInRow = Math.ceil((idx + 1) / inRow);
   const thisRowIsLast = isInRow === numRows ;
   const nextRowIsLast = isInRow === numRows - 1;
-  const nextRowHas = num % (isInRow * inRow);
+  const nextRowHas = nextRowIsLast ? num - (isInRow * inRow) : inRow;
   const myNumInRow = isInRow === 1 ? idx : idx%(inRow*(isInRow-1));
   const isNotCoveredWithNextRow = nextRowIsLast && (myNumInRow >= nextRowHas);
 
   const isOnBottmEdge = isInRow === inColumn;
-
-  console.log({ idx, num, numRows, isInRow, thisRowIsLast, nextRowIsLast, nextRowHas, myNumInRow, isNotCoveredWithNextRow, isOnBottmEdge });
 
   return !isOnBottmEdge && (isNotCoveredWithNextRow || thisRowIsLast);
 };

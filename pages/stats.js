@@ -2,7 +2,7 @@ import Context from '../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
 import useApi from '../frontendWrapper/utils/hooks/useApi';
 import PaginatedTable from '../frontendWrapper/components/PaginatedTable';
-import { ModeEdit, Delete } from '@mui/icons-material';
+import { ModeEdit, Delete, PriceCheck, ManageSearch } from '@mui/icons-material';
 import {
   VictoryPie as Pie,
   VictoryLegend as Legend,
@@ -16,6 +16,7 @@ import FetchSelect from '../frontendWrapper/components/FetchSelect';
 import styles from '../styles/Form.module.scss';
 import { useRouter } from 'next/router';
 import getLocalDateTimeString from '../frontendWrapper/utils/getLocalDateTimeString';
+import Form from '../frontendWrapper/components/Form';
 
 const url = '/history';
 
@@ -53,22 +54,19 @@ const productColumns = {
   },
 };
 
-const employeeSelectConfig = {
-  label: 'Сотрудник',
-  url: '/employees',
-  columns: employeeColumns,
-  showInOption: ['photoPath', 'firstName', 'lastName'],
-  showInValue: ['firstName', 'lastName'],
-  returnValue: 'id',
-};
-
-const productSelectConfig = {
-  label: 'Продукт',
-  url: '/products',
-  columns: productColumns,
-  showInOption: ['photoPath', 'productName'],
-  showInValue: ['productName'],
-  returnValue: 'id',
+const foremanColumns = {
+  id: {
+    name: 'id',
+    type: 'number',
+  },
+  firstName: {
+    name: 'Имя',
+    type: 'text',
+  },
+  lastName: {
+    name: 'Фамилия',
+    type: 'text',
+  },
 };
 
 const columns = {
@@ -101,6 +99,37 @@ const columns = {
     name: 'Продукт',
     type: 'included',
     parse: prod => prod?.productName || 'Нет данных',
+  },
+};
+
+const summarizeCols = {
+  employeeId: {
+    type: 'number',
+    hidden: true,
+  },
+  allAmount: {
+    name: 'Все количество',
+    type: 'custom',
+    render: num => `${num} кг`,
+  },
+  allPrice: {
+    name: 'Вся сумма',
+    type: 'custom',
+    render: num => `${num} руб.`,
+  },
+  maxAmount: {
+    name: 'Максимальное количество',
+    type: 'custom',
+    render: num => `${num} кг`,
+  },
+  numPortions: {
+    name: 'Всего приносов',
+    type: 'number',
+  },
+  employee: {
+    name: 'Сотрудник',
+    type: 'included',
+    parse: emp => emp ? `${emp.firstName} ${emp.lastName}` : 'Нет данных',
   },
 };
 
@@ -162,40 +191,83 @@ const Stats = props => {
 
   const [tableMode, setTableMode] = useState(true);
   const [filters, setFilters] = useState(initFilters);
+  const [summarize, setSummarize] = useState(false);
 
   useEffect(() => {
     updateSubTitle('Статистика');
   }, []);
 
-  const handleSortingChange = e => {
-    const [sortColumn, sorting] = e.target.value.split(' ');
-
-    setFilters(prevFilters => ({
-      ...prevFilters,
-      sortColumn,
-      sorting,
-    }));
+  const filtersConfig = {
+    fieldsData: {
+      employee: {
+        label: 'Выберите сотрудника',
+        type: 'fetch-select',
+        fetchSelectConfig: {
+          url: '/employees',
+          columns: employeeColumns,
+          showInOption: ['photoPath', 'firstName', 'lastName'],
+          showInValue: ['firstName', 'lastName'],
+          returnValue: 'id',
+        },
+        style: { width: '15%' },
+      },
+      product: {
+        label: 'Выберите продукт',
+        type: 'fetch-select',
+        fetchSelectConfig: {
+          url: '/products',
+          columns: productColumns,
+          showInOption: ['photoPath', 'productName'],
+          showInValue: ['productName'],
+          returnValue: 'id',
+        },
+        style: { width: '15%' },
+      },
+      foreman: {
+        label: 'Выберите бригадира',
+        type: 'fetch-select',
+        fetchSelectConfig: {
+          url: '/foremen',
+          columns: foremanColumns,
+          showInOption: ['firstName', 'lastName'],
+          showInValue: ['firstName', 'lastName'],
+          returnValue: 'id',
+        },
+        style: { width: '15%' },
+      },
+      sortFilters: {
+        label: 'Сортировать',
+        type: 'select',
+        selectConfig: {
+          options: [
+            { value: 'dateTime desc', text: 'От недавнего' },
+            { value: 'dateTIme asc', text: 'От давнего' },
+            { value: 'amount desc', text: 'От самого большого' },
+            { value: 'amount asc', text: 'От самого маленького' },
+          ],
+        },
+        style: { width: '15%' },
+      },
+      fromDateTime: {
+        label: 'От',
+        type: 'datetime',
+        style: { width: '15%' },
+      },
+      toDateTime: {
+        label: 'До',
+        type: 'datetime',
+        style: { width: '15%' },
+      },
+    },
   };
 
-  const handleDateTimeChange = which => e => {
-    const value = e.target.value;
+  const onChangeFilters = values => {
+    const { fromDateTime, toDateTime, sortFilters, ...restFilters } = values;
 
-    setFilters(prevFilters => ({
-      ...prevFilters,
-      [`${which}DateTime`]: value ? new Date(value) : null,
-    }));
-  };
+    const [sortColumn, sorting] = sortFilters?.split(' ') || [];
 
-  const handleFetchSelectChange = which => (_, value) => setFilters(prevFilters => ({
-    ...prevFilters,
-    [which]: value?.id,
-  }));
-
-  const getFilters = () => {
-    const { fromDateTime, toDateTime, ...restFilters } = filters;
-
-    return {
-      ...restFilters,
+    setFilters({
+      ...Object.fromEntries(Object.entries({ ...restFilters, sortColumn, sorting }).filter(([_, val]) => val !== undefined)),
 
       ...(fromDateTime && {
         fromDateTime: fromDateTime.toISOString(),
@@ -204,103 +276,39 @@ const Stats = props => {
       ...(toDateTime && {
         toDateTime: toDateTime.toISOString(),
       }),
-    }
+    });
+  };
+
+  const pageActions = {
+    summarize: {
+      icon: summarize ? <ManageSearch /> : <PriceCheck />,
+      title: summarize ? 'Вернуться к истории' : 'Рассчитать',
+      action: () => setSummarize(prev => !prev),
+    },
   };
 
   return (
     <div className="block">
-      {/* <FormControlLabel control={(
-        <Switch
-          onChange={(_, checked) => setTableMode(checked)}
-        />
-      )} label="В виде таблицы" /> */}
-      <div>
-        <FetchSelect
-          {...employeeSelectConfig}
-          style={{
-            display: 'inline-block',
-            width: '25%',
-          }}
-          onChange={handleFetchSelectChange('employee')}
-        />
-        <FetchSelect
-          {...productSelectConfig}
-          style={{
-            display: 'inline-block',
-            width: '25%',
-          }}
-          onChange={handleFetchSelectChange('product')}
-        />
-        <TextField
-          className={styles['form-field']}
-          name="fromDateTime"
-          label="От"
-          variant="outlined"
-          onChange={handleDateTimeChange('from')}
-          value={filters.fromDateTime ? getLocalDateTimeString(filters.fromDateTime) : null}
-          type="datetime-local"
-          InputLabelProps={{
-            shrink: true
-          }}
-          style={{
-            display: 'inline-block',
-            width: 'fit-content',
-          }}
-        />
-        <TextField
-          className={styles['form-field']}
-          name="toDateTime"
-          label="До"
-          variant="outlined"
-          onChange={handleDateTimeChange('to')}
-          value={filters.toDateTime ? getLocalDateTimeString(filters.toDateTime) : null}
-          type="datetime-local"
-          InputLabelProps={{
-            shrink: true
-          }}
-          style={{
-            display: 'inline-block',
-            width: 'fit-content',
-          }}
-        />
-        <FormControl
-          style={{
-            display: 'inline-block',
-          }}
-        >
-          <InputLabel id="select-history-sorting-label">Сортировать</InputLabel>
-          <Select
-            labelId="select-history-sorting-label"
-            id="select-history-sorting"
-            value={`${filters.sortColumn} ${filters.sorting}`}
-            label="Сортировать"
-            onChange={handleSortingChange}
-          >
-            <MenuItem value="dateTime desc">От недавнего</MenuItem>
-            <MenuItem value="dateTime asc">От давнего</MenuItem>
-            <MenuItem value="amount desc">От самого большого</MenuItem>
-            <MenuItem value="amount asc">От самого маленького</MenuItem>
-          </Select>
-        </FormControl>
-        {/* <Button
-          type="button"
-          variant="contained"
-          style={{
-            display: 'block',
-          }}
-          onClick={() => setFilters(initFilters)}
-        >
-          Сбросить фильтры
-        </Button> */}
-      </div>
+      <Form
+        {...filtersConfig}
+        submitable={false}
+        className="row-form"
+        intable
+        resetText="Сбросить"
+        resetStyle={{ width: '10%' }}
+        resetFilters={() => setFilters(initFilters)}
+        onChangeCallback={onChangeFilters}
+      />
       {
         tableMode ? (
           <PaginatedTable
             url="/history"
-            columns={columns}
-            actions={actions}
+            columns={summarize ? summarizeCols : columns}
+            actions={summarize ? null : actions}
             noSearch
-            customFilters={getFilters()}
+            // filters={filtersConfig}
+            pageActions={pageActions}
+            customFilters={{ ...filters, summarize }}
             customAddButton={() => router.push('/new-portion')}
           />
         ) : null

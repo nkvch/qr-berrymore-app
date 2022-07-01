@@ -11,15 +11,12 @@ const Printqrs = () => {
   const router = useRouter();
   const { selected } = router.query;
 
-  console.log(selected);
   const { updateSubTitle } = useContext(Context);
 
   const { loading, data, fetchError } = useApi({ url: '/employees' }, {
     id: selected,
     qty: -1,
   });
-
-  console.log(data);
 
   const dataForPdf = data?.pageData.map(({ berryId, firstName, lastName }) => ({
     berryId,

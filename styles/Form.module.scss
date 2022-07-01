@@ -24,6 +24,11 @@
   display: inline-flex;
 }
 
+.row-form {
+  width: 100%;
+  flex-flow: row;
+}
+
 // .form-with-photo {
 //   display: grid;
 //   column-gap: 8px;
