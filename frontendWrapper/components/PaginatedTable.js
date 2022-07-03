@@ -14,6 +14,7 @@ import {
   Button,
   Avatar,
   Tooltip,
+  Chip,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTheme } from '@emotion/react';
@@ -34,7 +35,7 @@ import Form from './Form';
 const debouncer = new Debouncer(500);
 
 const PaginatedTable = props => {
-  const { url, columns, actions, noSearch, customFilters, customAddButton, filters, classNames, pageActions } = props;
+  const { url, columns, actions, noSearch, searchStyle, customFilters, customAddButton, filters, classNames, pageActions, chips } = props;
 
   const [page, setPage] = useState(1);
   const [qty, setQty] = useState(10);
@@ -132,7 +133,7 @@ const PaginatedTable = props => {
       case 'custom':
         return columns[key].render(value);
       default:
-        return value.toString();
+        return value?.toString() || 'Нет данных';
     }
   };
 
@@ -146,13 +147,14 @@ const PaginatedTable = props => {
     ));
 
   const renderPageActions = actions => Object.entries(actions)
-    .map(([, { icon, title, action, customRender }]) => customRender ? customRender(rows, router, refetch, forceLoading) : (
+    .map(([, { icon, title, action, disabled, customRender }]) => customRender ? customRender(rows, router, refetch, forceLoading) : (
       <Button
         key={`pageaction${action}`}
         startIcon={icon}
         variant="outlined"
         style={{ marginTop: '1em', marginLeft: '1em' }}
         onClick={() => action(rows, router, refetch, forceLoading)}
+        disabled={disabled}
       >
         {title}
       </Button>
@@ -232,6 +234,7 @@ const PaginatedTable = props => {
               />
             )}
             className={classNames?.autocomplete}
+            style={searchStyle}
           />
         )
       }
@@ -261,24 +264,31 @@ const PaginatedTable = props => {
           <TableBody className={loading ? 'table-rows dimmed' : 'table-rows'}>
             { loading ? <CircularProgress className="loading-spinner" /> : null }
             {rows.map((row, idx) => (
-              <TableRow key={idx}>
+              <>
                 {
-                  Object.entries(row).filter(filterHiddenFields).map(([key, value]) => (
-                    <TableCell key={`${idx}${key}${value}`} scope="row">
-                      {renderCellContend(key, value)}
-                    </TableCell>
-                  ))
+                  chips ? Object.values(chips).filter(({ show }) => show(row)).map(({ label }) => (
+                    <Chip key={`chip${idx}${label}`} label={label} />
+                  )) : null
                 }
-                {
-                  actions
-                    ? (
-                      <TableCell key={`${idx}-actions`} scope="row">
-                        {renderActions(actions, idx)}
+                <TableRow key={idx}>
+                  {
+                    Object.entries(row).filter(filterHiddenFields).map(([key, value]) => (
+                      <TableCell key={`${idx}${key}${value}`} scope="row">
+                        {renderCellContend(key, value)}
                       </TableCell>
-                    )
-                    : null
-                }
-              </TableRow>
+                    ))
+                  }
+                  {
+                    actions
+                      ? (
+                        <TableCell key={`${idx}-actions`} scope="row">
+                          {renderActions(actions, idx)}
+                        </TableCell>
+                      )
+                      : null
+                  }
+                </TableRow>
+              </>
             ))}
           </TableBody>
         </Table>

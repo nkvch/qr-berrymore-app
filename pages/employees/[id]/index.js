@@ -45,6 +45,11 @@ const getFieldsData = employeeData => ({
     type: 'text',
     defaultValue: employeeData?.address,
   },
+  pickUpAddress: {
+    label: 'Адрес посадки',
+    type: 'text',
+    defaultValue: employeeData?.pickUpAddress,
+  },
   phone: {
     label: 'Тэлефон',
     type: 'phone',

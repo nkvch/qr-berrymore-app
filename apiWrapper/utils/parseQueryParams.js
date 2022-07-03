@@ -9,6 +9,11 @@ const parseQueryParams = params => {
 
       const isParamArray = typeof value === 'string' && value.includes(',');
       const isParamBoolean = ['true', 'false'].includes(value);
+      const isParamNull = value === 'null';
+
+      if (isParamNull) {
+        mappedVal = null;
+      }
 
       if (isParamArray) {
         mappedVal = value.split(',');

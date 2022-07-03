@@ -1,7 +1,7 @@
 import PaginatedTable from '../../frontendWrapper/components/PaginatedTable';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
-import { QrCode2, ModeEdit, Delete } from '@mui/icons-material';
+import { QrCode2, ModeEdit, Delete, Work, WorkOff } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
 import { notification } from '../../frontendWrapper/components/notifications';
 import { Button, Checkbox, CircularProgress } from '@mui/material';
@@ -35,7 +35,18 @@ const columns = {
     name: 'Фамилия',
     type: 'text',
   },
+  address: {
+    name: 'Адрес',
+    type: 'text',
+  },
+  pickUpAddress: {
+    name: 'Адрес посадки',
+    type: 'text',
+  },
   berryId: {
+    hidden: true,
+  },
+  workTomorrow: {
     hidden: true,
   },
   photoPath: {
@@ -49,6 +60,13 @@ const columns = {
   },
 };
 
+const chips = {
+  workTomorrow: {
+    show: emp => emp.workTomorrow,
+    label: 'Работает завтра',
+  },
+};
+
 const Employees = props => {
   const { updateSubTitle } = useContext(Context);
 
@@ -58,17 +76,36 @@ const Employees = props => {
     updateSubTitle('Сотрудники');
   }, []);
 
-  const [foreman, setForeman] = useState(null);
+  const [customFilters, setCustomFilters] = useState({});
   const [selected, setSelected] = useState([]);
+
+  const onChangeFilters = values => {
+    const { foremanId, workTomorrow } = values;
+    setCustomFilters({
+      ...(typeof foremanId === 'number' && { foremanId }),
+      ...(workTomorrow !== 'null' && { workTomorrow }),
+    });
+  };
 
   const filters = {
     fieldsData: {
+      workTomorrow: {
+        label: 'Фильтровать',
+        type: 'select',
+        selectConfig: {
+          options: [
+            { value: 'true', text: 'Работающие завтра' },
+            { value: 'false', text: 'Не работающие завтра' },
+            { value: 'null', text: 'Все' },
+          ],
+        },
+        style: { width: '20%' },
+      },
       foremanId: {
         label: 'Фильтровать по бригаде',
         type: 'fetch-select',
         fetchSelectConfig: {
           url: '/foremen',
-          className: 'autocomplete-inline-flex',
           columns: {
             id: {
               name: 'id',
@@ -87,13 +124,15 @@ const Employees = props => {
           showInValue: ['firstName', 'lastName'],
           returnValue: 'id',
         },
+        style: { width: '20%', display: 'inline-block' },
         onChangeCallback: data => {
-          setForeman(data ? { foremanId: data?.id } : null);
+          setCustomFilters(data ? { foremanId: data?.id } : null);
         },
       },
     },
     className: 'inline-form',
     submitable: false,
+    onChangeCallback: onChangeFilters,
   };
 
 
@@ -152,13 +191,14 @@ const Employees = props => {
       action: (emp, router) => router.push(`${router.pathname}/${emp.id}/qrcode`),
     },
     select: {
-      customRender: ({ berryId, firstName, lastName }) => (
+      customRender: ({ id, berryId, firstName, lastName }) => (
         <Checkbox
           checked={!!selected.find(el => el.berryId === berryId)}
           disabled={selected.length >= 20 && !selected.includes(emp.id)}
           onChange={(_, checked) => {
             if (checked) {
               setSelected(curr => ([...curr, {
+                id,
                 berryId,
                 QRCodeHtmlID: `${berryId}qrcode`,
                 firstName,
@@ -173,68 +213,140 @@ const Employees = props => {
     },
   };
 
+  const pageActions = {
+    printAllPage: {
+      customRender: rows => {
+        const selectedData = rows.map(({ berryId, firstName, lastName }) => ({
+          berryId,
+          QRCodeHtmlID: `${berryId}qrcode`,
+          firstName,
+          lastName,
+        }));
+
+        return (
+          <>
+            <InvisibleQRCodes data={selectedData} />
+            <PDFDownloadLink
+              document={<MultipleQRCodes data={selectedData} />}
+              fileName={`QRs.pdf`}
+            >
+              <Button
+                variant="outlined"
+                style={{ marginTop: '1em', marginLeft: '1em' }}
+                startIcon={<QrCode2 />}
+                disabled={!rows.length}
+              >
+                Печатать всю страницу
+              </Button>
+            </PDFDownloadLink>
+          </>
+        );
+      }
+    },
+    printSelected: {
+      customRender: () => (
+        <>
+          <InvisibleQRCodes data={selected} />
+          <PDFDownloadLink
+            document={<MultipleQRCodes data={selected} />}
+            fileName={`QRs.pdf`}
+          >
+            <Button
+              variant="outlined"
+              style={{ marginTop: '1em', marginLeft: '1em' }}
+              startIcon={<QrCode2 />}
+              disabled={!selected.length}
+            >
+              Печатать ({selected.length} сотрудников)
+            </Button>
+          </PDFDownloadLink>
+        </>
+      ),
+    },
+    workTommorow: {
+      icon: <Work />,
+      title: `Поставить смену (${selected.length} сотрудников)`,
+      action: (_, __, refetch, forceLoading) => {
+        forceLoading(true);
+
+        request({
+          url: `/employees/workTomorrow`,
+          method: 'PUT',
+          body: {
+            ids: selected.map(({ id }) => id),
+            work: true,
+          },
+          callback: (status, response) => {
+            if (status === 'ok') {
+              notification.open({
+                type: 'success',
+                title: 'Информация о смене успешно обновлена',
+              });
+              refetch();
+
+              setSelected([]);
+            } else {
+              notification.open({
+                type: 'error',
+                title: 'Ошибка при обновлении информации о смене',
+                text: response.message,
+              });
+            };
+          },
+        });
+      },
+      disabled: !selected.length,
+    },
+    dontWorkTommorow: {
+      icon: <WorkOff />,
+      title: `Убрать смену (${selected.length} сотрудников)`,
+      action: (_, __, refetch, forceLoading) => {
+        forceLoading(true);
+
+        request({
+          url: `/employees/workTomorrow`,
+          method: 'PUT',
+          body: {
+            ids: selected.map(({ id }) => id),
+            work: false,
+          },
+          callback: (status, response) => {
+            if (status === 'ok') {
+              notification.open({
+                type: 'success',
+                title: 'Информация о смене успешно обновлена',
+              });
+              refetch();
+
+              setSelected([]);
+            } else {
+              notification.open({
+                type: 'error',
+                title: 'Ошибка при обновлении информации о смене',
+                text: response.message,
+              });
+            };
+          },
+        });
+      },
+      disabled: !selected.length,
+    },
+  };
+
   return (
     <div className="block">
       <PaginatedTable
         url={url}
         columns={columns}
         actions={actions}
-        pageActions={{
-          printAllPage: {
-            customRender: rows => {
-              const selectedData = rows.map(({ berryId, firstName, lastName }) => ({
-                berryId,
-                QRCodeHtmlID: `${berryId}qrcode`,
-                firstName,
-                lastName,
-              }));
-
-              return (
-                <>
-                  <InvisibleQRCodes data={selectedData} />
-                  <PDFDownloadLink
-                    document={<MultipleQRCodes data={selectedData} />}
-                    fileName={`QRs.pdf`}
-                  >
-                    <Button
-                      variant="outlined"
-                      style={{ marginTop: '1em', marginLeft: '1em' }}
-                      startIcon={<QrCode2 />}
-                      disabled={!rows.length}
-                    >
-                      Печатать всю страницу
-                    </Button>
-                  </PDFDownloadLink>
-                </>
-              );
-            }
-          },
-          printSelected: {
-            customRender: () => (
-              <>
-                <InvisibleQRCodes data={selected} />
-                <PDFDownloadLink
-                  document={<MultipleQRCodes data={selected} />}
-                  fileName={`QRs.pdf`}
-                >
-                  <Button
-                    variant="outlined"
-                    style={{ marginTop: '1em', marginLeft: '1em' }}
-                    startIcon={<QrCode2 />}
-                    disabled={!selected.length}
-                  >
-                    Печатать ({selected.length} сотрудников)
-                  </Button>
-                </PDFDownloadLink>
-              </>
-            ),
-          },
-        }}
+        pageActions={pageActions}
+        chips={chips}
         filters={filters}
-        customFilters={foreman}
-        classNames={{
-          autocomplete: 'search70width',
-        }}
+        customFilters={customFilters}
+        searchStyle={{ width: '60%', display: 'inline-block' }}
+        // classNames={{
+        //   autocomplete: 'search70width',
+        // }}
       />
     </div>
   )

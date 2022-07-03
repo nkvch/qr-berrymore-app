@@ -7,7 +7,7 @@ import moveFile from '../../../apiWrapper/utils/moveFile';
 import db from '../../../db/models';
 
 const addEmployee = async req => {
-  const { firstName, lastName, photo, foremanId, address, phone, contract } = await parseFormWithPhoto(req);
+  const { firstName, lastName, photo, foremanId, address, pickUpAddress, phone, contract } = await parseFormWithPhoto(req);
   let photoPath;
 
   if (photo) {
@@ -52,6 +52,7 @@ const addEmployee = async req => {
     foremanId,
     contract,
     address,
+    pickUpAddress,
     phone,
   };
 

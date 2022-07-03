@@ -14,11 +14,12 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(async () => {
   try {
+    const alter = process.env.DB_ALTER === 'true';
     const db = require('./db/models');
 
     await db.sequelize.authenticate();
 
-    await db.sequelize.sync({ alter: true });
+    await db.sequelize.sync({ alter });
   } catch (err) {
     console.log(err);
   }

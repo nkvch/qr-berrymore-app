@@ -7,7 +7,7 @@ import db from '../../../db/models';
 import { v4 as uuidv4 } from 'uuid';
 
 const updateEmployee = async req => {
-  const { firstName, lastName, photo, foremanId, address, phone, contract } = await parseFormWithPhoto(req);
+  const { firstName, lastName, photo, foremanId, address, pickUpAddress, phone, contract } = await parseFormWithPhoto(req);
   const { id } = req.query;
 
   let photoPath;
@@ -51,6 +51,7 @@ const updateEmployee = async req => {
     foremanId: foremanId || null,
     contract,
     address,
+    pickUpAddress,
     phone,
   };
 

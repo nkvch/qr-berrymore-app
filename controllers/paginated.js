@@ -5,8 +5,10 @@ import util from 'util';
 import parseQueryParams from '../apiWrapper/utils/parseQueryParams';
 
 const paginated = (modelName, requiredParams) => async req => {
-  const { query: { page, qty, search, searchColumns, selectColumns, ...restParams } } = req;
+  const { query: { page, qty, search, searchColumns, selectColumns, ...strRestParams } } = req;
 
+  const restParams = parseQueryParams(strRestParams);
+  
   let where = { [Op.and]: [] };
 
   if (restParams) {

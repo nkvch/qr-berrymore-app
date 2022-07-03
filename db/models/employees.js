@@ -23,6 +23,15 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(50),
       allowNull: true,
     },
+    pickUpAddress: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+    },
+    workTomorrow: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     phone: {
       type: DataTypes.STRING(30),
       allowNull: true,

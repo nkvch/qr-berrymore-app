@@ -30,15 +30,19 @@ const fieldsData = {
     type: 'text',
   },
   contract: {
-    label: 'Нумар кантракту',
+    label: 'Номер контракта',
     type: 'text',
   },
   address: {
-    label: 'Адрас',
+    label: 'Адрес',
+    type: 'text',
+  },
+  pickUpAddress: {
+    label: 'Адрес посадки',
     type: 'text',
   },
   phone: {
-    label: 'Тэлефон',
+    label: 'Телефон',
     type: 'phone',
   },
   foremanId: {
