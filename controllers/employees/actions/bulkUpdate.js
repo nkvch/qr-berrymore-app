@@ -1,12 +1,9 @@
-import parseQueryParams from '../../../apiWrapper/utils/parseQueryParams';
 import db from '../../../db/models';
 
-const workTomorrow = async req => {
-  const { ids, work } = req.body;
+const bulkUpdate = async req => {
+  const { ids, ...restParams } = req.body;
 
-  const data = {
-    workTomorrow: work,
-  };
+  const data = restParams;
 
   await db.employees.update(data, {
     where: { id: ids },
@@ -21,4 +18,4 @@ const workTomorrow = async req => {
   return updatedEmployees;
 };
 
-export default workTomorrow;
+export default bulkUpdate;

@@ -9,7 +9,7 @@ const notification = {
 const Notifications = () => {
   const [activeNotifications, setActiveNotifications] = useState([]);
 
-  const open = ({ type, title, text, actions }) => {
+  const open = ({ type, title, text, actions, time }) => {
     const key = `notification${Math.random()}`;
 
     setActiveNotifications([{
@@ -44,7 +44,7 @@ const Notifications = () => {
 
     setTimeout(() => {
       close(key);
-    }, 5000);
+    }, time || 5000);
 
     return key;
   };

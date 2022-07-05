@@ -32,6 +32,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: false,
     },
+    printedQR: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     phone: {
       type: DataTypes.STRING(30),
       allowNull: true,

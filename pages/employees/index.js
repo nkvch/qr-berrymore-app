@@ -1,7 +1,7 @@
 import PaginatedTable from '../../frontendWrapper/components/PaginatedTable';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
-import { QrCode2, ModeEdit, Delete, Work, WorkOff } from '@mui/icons-material';
+import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
 import { notification } from '../../frontendWrapper/components/notifications';
 import { Button, Checkbox, CircularProgress } from '@mui/material';
@@ -49,6 +49,9 @@ const columns = {
   workTomorrow: {
     hidden: true,
   },
+  printedQR: {
+    hidden: true,
+  },
   photoPath: {
     name: 'Фото',
     type: 'image',
@@ -64,7 +67,13 @@ const chips = {
   workTomorrow: {
     show: emp => emp.workTomorrow,
     label: 'Работает завтра',
+    color: 'error'
   },
+  printedQR: {
+    show: emp => emp.printedQR,
+    label: 'QR распечатан',
+    color: 'primary',
+  }
 };
 
 const Employees = props => {
@@ -80,17 +89,48 @@ const Employees = props => {
   const [selected, setSelected] = useState([]);
 
   const onChangeFilters = values => {
-    const { foremanId, workTomorrow } = values;
+    const { foremanId, workTomorrow, printedQR } = values;
     setCustomFilters({
       ...(typeof foremanId === 'number' && { foremanId }),
       ...(workTomorrow !== 'null' && { workTomorrow }),
+      ...(printedQR !== 'null' && { printedQR }),
+    });
+  };
+
+  const bulkUpdate = (data, refetch, forceLoading, forRows = null) => {
+    forceLoading(true);
+
+    request({
+      url: `/employees/bulkUpdate`,
+      method: 'PUT',
+      body: {
+        ids: (forRows || selected).map(({ id }) => id),
+        ...data,
+      },
+      callback: (status, response) => {
+        if (status === 'ok') {
+          notification.open({
+            type: 'success',
+            title: 'Информация успешно обновлена',
+          });
+          refetch();
+
+          setSelected([]);
+        } else {
+          notification.open({
+            type: 'error',
+            title: 'Ошибка при обновлении информации',
+            text: response.message,
+          });
+        };
+      },
     });
   };
 
   const filters = {
     fieldsData: {
       workTomorrow: {
-        label: 'Фильтровать',
+        label: 'Фильтровать по смене',
         type: 'select',
         selectConfig: {
           options: [
@@ -99,6 +139,20 @@ const Employees = props => {
             { value: 'null', text: 'Все' },
           ],
         },
+        defaultValue: 'null',
+        style: { width: '20%' },
+      },
+      printedQR: {
+        label: 'Фильтровать по QR',
+        type: 'select',
+        selectConfig: {
+          options: [
+            { value: 'true', text: 'Уже распечатан' },
+            { value: 'false', text: 'Еще не распечатан' },
+            { value: 'null', text: 'Все' },
+          ],
+        },
+        defaultValue: 'null',
         style: { width: '20%' },
       },
       foremanId: {
@@ -215,7 +269,7 @@ const Employees = props => {
 
   const pageActions = {
     printAllPage: {
-      customRender: rows => {
+      customRender: (rows, _, refetch, forceLoading) => {
         const selectedData = rows.map(({ berryId, firstName, lastName }) => ({
           berryId,
           QRCodeHtmlID: `${berryId}qrcode`,
@@ -235,6 +289,7 @@ const Employees = props => {
                 style={{ marginTop: '1em', marginLeft: '1em' }}
                 startIcon={<QrCode2 />}
                 disabled={!rows.length}
+                onClick={() => bulkUpdate({ printedQR: true }, refetch, forceLoading, rows)}
               >
                 Печатать всю страницу
               </Button>
@@ -244,7 +299,7 @@ const Employees = props => {
       }
     },
     printSelected: {
-      customRender: () => (
+      customRender: (_, __, refetch, forceLoading) => (
         <>
           <InvisibleQRCodes data={selected} />
           <PDFDownloadLink
@@ -256,6 +311,7 @@ const Employees = props => {
               style={{ marginTop: '1em', marginLeft: '1em' }}
               startIcon={<QrCode2 />}
               disabled={!selected.length}
+              onClick={() => bulkUpdate({ printedQR: true }, refetch, forceLoading)}
             >
               Печатать ({selected.length} сотрудников)
             </Button>
@@ -266,69 +322,19 @@ const Employees = props => {
     workTommorow: {
       icon: <Work />,
       title: `Поставить смену (${selected.length} сотрудников)`,
-      action: (_, __, refetch, forceLoading) => {
-        forceLoading(true);
-
-        request({
-          url: `/employees/workTomorrow`,
-          method: 'PUT',
-          body: {
-            ids: selected.map(({ id }) => id),
-            work: true,
-          },
-          callback: (status, response) => {
-            if (status === 'ok') {
-              notification.open({
-                type: 'success',
-                title: 'Информация о смене успешно обновлена',
-              });
-              refetch();
-
-              setSelected([]);
-            } else {
-              notification.open({
-                type: 'error',
-                title: 'Ошибка при обновлении информации о смене',
-                text: response.message,
-              });
-            };
-          },
-        });
-      },
+      action: (_, __, refetch, forceLoading) => bulkUpdate({ workTomorrow: true }, refetch, forceLoading),
       disabled: !selected.length,
     },
     dontWorkTommorow: {
       icon: <WorkOff />,
       title: `Убрать смену (${selected.length} сотрудников)`,
-      action: (_, __, refetch, forceLoading) => {
-        forceLoading(true);
-
-        request({
-          url: `/employees/workTomorrow`,
-          method: 'PUT',
-          body: {
-            ids: selected.map(({ id }) => id),
-            work: false,
-          },
-          callback: (status, response) => {
-            if (status === 'ok') {
-              notification.open({
-                type: 'success',
-                title: 'Информация о смене успешно обновлена',
-              });
-              refetch();
-
-              setSelected([]);
-            } else {
-              notification.open({
-                type: 'error',
-                title: 'Ошибка при обновлении информации о смене',
-                text: response.message,
-              });
-            };
-          },
-        });
-      },
+      action: (_, __, refetch, forceLoading) => bulkUpdate({ workTomorrow: false }, refetch, forceLoading),
+      disabled: !selected.length,
+    },
+    removeQRPrintedFlags: {
+      icon: <CancelPresentation />,
+      title: `Убрать метки "QR распечатан" (${selected.length} сотрудников)`,
+      action: (_, __, refetch, forceLoading) => bulkUpdate({ printedQR: false }, refetch, forceLoading),
       disabled: !selected.length,
     },
   };
@@ -343,7 +349,7 @@ const Employees = props => {
         chips={chips}
         filters={filters}
         customFilters={customFilters}
-        searchStyle={{ width: '60%', display: 'inline-block' }}
+        searchStyle={{ width: '40%', display: 'inline-block' }}
         // classNames={{
         //   autocomplete: 'search70width',
         // }}

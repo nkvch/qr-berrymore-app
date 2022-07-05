@@ -120,7 +120,7 @@ const PaginatedTable = props => {
           <Avatar
             alt="Аватар"
             src={value}
-            sx={{ width: 80, height: 80 }}
+            sx={{ width: 40, height: 40 }}
           />
         );
       case 'included':
@@ -240,10 +240,17 @@ const PaginatedTable = props => {
       }
       {
         filters && (
-          <Form {...filters} />
+          <Form {...filters} onChangeCallback={values => {
+            if (filters.onChangeCallback) {
+              filters.onChangeCallback(values);
+            }
+
+            setPage(1);
+          }} />
         )
       }
       <TableContainer component={Paper}>
+        { total !== undefined ? <Chip label={`Всего результатов: ${total}`} /> : null}
         <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
           <TableHead>
             <TableRow>
@@ -266,8 +273,8 @@ const PaginatedTable = props => {
             {rows.map((row, idx) => (
               <>
                 {
-                  chips ? Object.values(chips).filter(({ show }) => show(row)).map(({ label }) => (
-                    <Chip key={`chip${idx}${label}`} label={label} />
+                  chips ? Object.values(chips).filter(({ show }) => show(row)).map(({ label, color }) => (
+                    <Chip key={`chip${idx}${label}`} label={label} color={color} />
                   )) : null
                 }
                 <TableRow key={idx}>

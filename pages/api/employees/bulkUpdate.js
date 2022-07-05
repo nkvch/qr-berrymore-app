@@ -1,8 +1,8 @@
 import apiWrapper from '../../../apiWrapper/apiWrapper';
-import workTomorrow from '../../../controllers/employees/actions/workTomorrow';
+import bulkUpdate from '../../../controllers/employees/actions/bulkUpdate';
 
 const employeesHandler = {
-  put: workTomorrow,
+  put: bulkUpdate,
 };
 
 export default apiWrapper(employeesHandler);

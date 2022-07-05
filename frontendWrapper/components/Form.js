@@ -8,6 +8,7 @@ import FetchSelect from './FetchSelect';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
 import getLocalDateTimeString from '../utils/getLocalDateTimeString';
+import applyCallbackIfExists from '../utils/applyCallback';
 
 const renderField = (fieldData, {
   values,
@@ -18,28 +19,14 @@ const renderField = (fieldData, {
   const [field, config] = fieldData;
   const { label, type, style } = config;
 
-  let setFieldValue;
-  let handleChange;
-
-  if (onChangeCallback) {
-    setFieldValue = (_field, _value) => {
-      setFieldValueWithoutCallback(_field, _value);
-      onChangeCallback({
-        ...values,
-        [_field]: _value,
-      });
-    }
-    handleChange = (event, ...rest) => {
-      handleChangeWithoutCallback(event, ...rest);
-      onChangeCallback({
-        ...values,
-        [event.target.name]: event.target.value,
-      });
-    }
-  } else {
-    setFieldValue = setFieldValueWithoutCallback;
-    handleChange = handleChangeWithoutCallback;
-  }
+  const setFieldValue = applyCallbackIfExists(setFieldValueWithoutCallback, (_field, _value) => onChangeCallback({
+    ...values,
+    [_field]: _value,
+  }));
+  const handleChange = applyCallbackIfExists(handleChangeWithoutCallback, ev => onChangeCallback({
+    ...values,
+    [ev.target.name]: ev.target.value,
+  }));
 
   let fieldToRender;
 
@@ -215,6 +202,9 @@ const Form = ({ onSubmit, submitText, fieldsData, className, submitable, onChang
 
                   if (intable) {
                     resetFilters();
+                    onChangeCallback(Object.fromEntries(
+                      Object.entries(fieldsData).map(([field, { defaultValue }]) => ([field, defaultValue || '']))
+                    ));
                   }
                 }}
               >

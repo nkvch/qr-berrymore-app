@@ -287,18 +287,19 @@ const Stats = props => {
     },
   };
 
+  const filtersFormConfig = {
+    ...filtersConfig,
+    submitable: false,
+    className: "row-form",
+    intable: true,
+    resetText: "Сбросить",
+    resetStyle: { width: '10%' },
+    resetFilters: () => setFilters(initFilters),
+    onChangeCallback: onChangeFilters,
+  };
+
   return (
     <div className="block">
-      <Form
-        {...filtersConfig}
-        submitable={false}
-        className="row-form"
-        intable
-        resetText="Сбросить"
-        resetStyle={{ width: '10%' }}
-        resetFilters={() => setFilters(initFilters)}
-        onChangeCallback={onChangeFilters}
-      />
       {
         tableMode ? (
           <PaginatedTable
@@ -306,7 +307,7 @@ const Stats = props => {
             columns={summarize ? summarizeCols : columns}
             actions={summarize ? null : actions}
             noSearch
-            // filters={filtersConfig}
+            filters={filtersFormConfig}
             pageActions={pageActions}
             customFilters={{ ...filters, summarize }}
             customAddButton={() => router.push('/new-portion')}

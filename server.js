@@ -3,6 +3,7 @@ const { parse } = require('url');
 const next = require('next');
 const fs = require('fs');
 const path = require('path');
+const createRegularJob = require('./utils/createRegularJob');
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -20,6 +21,15 @@ app.prepare().then(async () => {
     await db.sequelize.authenticate();
 
     await db.sequelize.sync({ alter });
+    
+    createRegularJob(() => db.employees.update({
+      workTomorrow: false,
+    }, {
+      where: {
+        workTomorrow: true,
+      },
+    }), { hour: 7, minute: 0 });
+
   } catch (err) {
     console.log(err);
   }
