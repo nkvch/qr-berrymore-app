@@ -19,14 +19,18 @@ const renderField = (fieldData, {
   const [field, config] = fieldData;
   const { label, type, style } = config;
 
-  const setFieldValue = applyCallbackIfExists(setFieldValueWithoutCallback, (_field, _value) => onChangeCallback({
+  const setFieldValueCb = onChangeCallback ? (_field, _value) => onChangeCallback({
     ...values,
     [_field]: _value,
-  }));
-  const handleChange = applyCallbackIfExists(handleChangeWithoutCallback, ev => onChangeCallback({
+  }) : null;
+
+  const handleChangeCb = onChangeCallback ? ev => onChangeCallback({
     ...values,
     [ev.target.name]: ev.target.value,
-  }));
+  }) : null
+
+  const setFieldValue = applyCallbackIfExists(setFieldValueWithoutCallback, setFieldValueCb);
+  const handleChange = applyCallbackIfExists(handleChangeWithoutCallback, handleChangeCb);
 
   let fieldToRender;
 
