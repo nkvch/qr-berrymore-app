@@ -10,6 +10,7 @@ import request from './utils/request';
 import sleep from './utils/sleep';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import router, { useRouter } from 'next/router';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const unauthMenuOptions = [{
   text: 'Войти',
@@ -43,6 +44,21 @@ const ContextWrapper = ({ children }) => {
   const { pathname } = useRouter();
   const [user, setUser] = useState(null);
   const [subTitle, setSubTitle] = useState(null);
+  const [mode, setMode] = useState('dark');
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: mode,
+    },
+  });
+
+  useEffect(() => {
+    const themeFromLS = localStorage.getItem('colorTheme');
+
+    if (themeFromLS) {
+      setMode(themeFromLS);
+    }
+  }, []);
 
   const login = (token, user) => {
     localStorage.setItem('jwt', token);
@@ -80,19 +96,21 @@ const ContextWrapper = ({ children }) => {
   };
 
   return (
-    <Context.Provider value={{ user, login, logout, updateSubTitle }}>
-      <Wrapper
-        title="Berrymore"
-        menuItems={
-          user
-          ? authMenuOptions
-          : unauthMenuOptions
-        }
-        subTitle={subTitle}
-      >
-          {children}
-      </Wrapper>
-    </Context.Provider>
+    <ThemeProvider theme={darkTheme}>
+      <Context.Provider value={{ user, login, logout, updateSubTitle, mode, setMode }}>
+        <Wrapper
+          title="Berrymore"
+          menuItems={
+            user
+            ? authMenuOptions
+            : unauthMenuOptions
+          }
+          subTitle={subTitle}
+        >
+            {children}
+        </Wrapper>
+      </Context.Provider>
+    </ThemeProvider>
   );
 };
 

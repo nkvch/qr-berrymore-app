@@ -9,12 +9,14 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
 import getLocalDateTimeString from '../utils/getLocalDateTimeString';
 import applyCallbackIfExists from '../utils/applyCallback';
+import useTheme from '../utils/hooks/useTheme';
 
 const renderField = (fieldData, {
   values,
   handleChange: handleChangeWithoutCallback,
   onChangeCallback,
   setFieldValue: setFieldValueWithoutCallback,
+  theme,
 }) => {
   const [field, config] = fieldData;
   const { label, type, style } = config;
@@ -44,7 +46,7 @@ const renderField = (fieldData, {
           hoverTitle="Отпускайте"
           types={['JPG', 'PNG', 'GIF']}
         >
-          <DroppableImageContainer image={values[field]}/>
+          <DroppableImageContainer image={values[field]} theme={theme} />
         </FileUploader>
       );
       break;
@@ -130,6 +132,7 @@ const renderField = (fieldData, {
           onChange={phoneNumber => setFieldValue(field, phoneNumber)}
           value={values[field]}
           specialLabel={label}
+          className={theme}
           isValid={(value, country) => country.iso2 === 'by' && !!value.match(/^\d{12}$/)}
           style={{
             marginBottom: '8px',
@@ -137,6 +140,10 @@ const renderField = (fieldData, {
           }}
           inputStyle={{
             width: '100%',
+            ...(theme === 'dark' && {
+              backgroundColor: '#121212',
+              color: 'white',
+            }),
           }}
         />
       );
@@ -163,63 +170,67 @@ const renderField = (fieldData, {
   return fieldToRender;
 };
 
-const Form = ({ onSubmit, submitText, fieldsData, className, submitable, onChangeCallback, resetable, intable, resetFilters, resetText, resetStyle }) => (
-  <Formik
-    {...({
-      initialValues: Object.fromEntries(
-        Object.entries(fieldsData).map(([field, { defaultValue }]) => ([field, defaultValue || '']))
-      ),
-      onSubmit,
-    })}
-  >
-    {
-      ({ values, handleChange, handleSubmit, setFieldValue, resetForm }) => (
-        <form
-          onSubmit={handleSubmit}
-          className={`${styles.form} ${className ? styles[className] : ''}`}
-        >
-          { 
-            Object.entries(fieldsData).map(
-              fieldData => renderField(fieldData, { values, handleChange, setFieldValue, onChangeCallback })
-            )
-          }
-          {
-            submitable !== false && (
-              <Button
-                type="submit"
-                variant="contained"
-                className={styles['form-submit']}
-              >
-                {submitText}
-              </Button>
-            )
-          }
-          {
-            (resetable || intable) ? (
-              <Button
-                type="reset"
-                variant="outlined"
-                color="warning"
-                style={{ marginBottom: '8px', ...(resetStyle)}}
-                onClick={() => {
-                  resetForm();
+const Form = ({ onSubmit, submitText, fieldsData, className, submitable, onChangeCallback, resetable, intable, resetFilters, resetText, resetStyle }) => {
+  const theme = useTheme();
 
-                  if (intable) {
-                    resetFilters();
-                    onChangeCallback(Object.fromEntries(
-                      Object.entries(fieldsData).map(([field, { defaultValue }]) => ([field, defaultValue || '']))
-                    ));
-                  }
-                }}
-              >
-                {resetText}
-              </Button>
-            ) : null
-          }
-        </form>
-      )
-    }
-  </Formik>
-);
+  return (
+    <Formik
+      {...({
+        initialValues: Object.fromEntries(
+          Object.entries(fieldsData).map(([field, { defaultValue }]) => ([field, defaultValue || '']))
+        ),
+        onSubmit,
+      })}
+    >
+      {
+        ({ values, handleChange, handleSubmit, setFieldValue, resetForm }) => (
+          <form
+            onSubmit={handleSubmit}
+            className={`${styles.form} ${className ? styles[className] : ''}`}
+          >
+            { 
+              Object.entries(fieldsData).map(
+                fieldData => renderField(fieldData, { values, handleChange, setFieldValue, onChangeCallback, theme })
+              )
+            }
+            {
+              submitable !== false && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className={styles['form-submit']}
+                >
+                  {submitText}
+                </Button>
+              )
+            }
+            {
+              (resetable || intable) ? (
+                <Button
+                  type="reset"
+                  variant="outlined"
+                  color="warning"
+                  style={{ marginBottom: '8px', ...(resetStyle)}}
+                  onClick={() => {
+                    resetForm();
+  
+                    if (intable) {
+                      resetFilters();
+                      onChangeCallback(Object.fromEntries(
+                        Object.entries(fieldsData).map(([field, { defaultValue }]) => ([field, defaultValue || '']))
+                      ));
+                    }
+                  }}
+                >
+                  {resetText}
+                </Button>
+              ) : null
+            }
+          </form>
+        )
+      }
+    </Formik>
+  );
+}
 
 export default Form;

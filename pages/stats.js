@@ -17,6 +17,7 @@ import styles from '../styles/Form.module.scss';
 import { useRouter } from 'next/router';
 import getLocalDateTimeString from '../frontendWrapper/utils/getLocalDateTimeString';
 import Form from '../frontendWrapper/components/Form';
+import parsePrice from '../frontendWrapper/utils/parsePrice';
 
 const url = '/history';
 
@@ -110,21 +111,12 @@ const summarizeCols = {
   allAmount: {
     name: 'Все количество',
     type: 'custom',
-    render: num => `${num} кг`,
+    render: num => `${num.toFixed(2)} кг`,
   },
   allPrice: {
     name: 'Вся сумма',
     type: 'custom',
-    render: num => `${num} руб.`,
-  },
-  maxAmount: {
-    name: 'Максимальное количество',
-    type: 'custom',
-    render: num => `${num} кг`,
-  },
-  numPortions: {
-    name: 'Всего приносов',
-    type: 'number',
+    render: num => parsePrice(num),
   },
   employee: {
     name: 'Сотрудник',
@@ -298,6 +290,11 @@ const Stats = props => {
     onChangeCallback: onChangeFilters,
   };
 
+  const tableChips = [{
+    label: data => data?.totalAmount ? `Итого ${data.totalAmount.allAmount.toFixed(2)} кг или ${parsePrice(data.totalAmount.allPrice)}` : '',
+    color: 'success',
+  }];
+
   return (
     <div className="block">
       {
@@ -310,6 +307,7 @@ const Stats = props => {
             filters={filtersFormConfig}
             pageActions={pageActions}
             customFilters={{ ...filters, summarize }}
+            tableChips={tableChips}
             customAddButton={() => router.push('/new-portion')}
           />
         ) : null

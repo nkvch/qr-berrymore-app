@@ -35,7 +35,7 @@ import Form from './Form';
 const debouncer = new Debouncer(500);
 
 const PaginatedTable = props => {
-  const { url, columns, actions, noSearch, searchStyle, customFilters, customAddButton, filters, classNames, pageActions, chips } = props;
+  const { url, columns, actions, noSearch, searchStyle, customFilters, customAddButton, filters, classNames, pageActions, chips, tableChips } = props;
 
   const [page, setPage] = useState(1);
   const [qty, setQty] = useState(10);
@@ -66,6 +66,13 @@ const PaginatedTable = props => {
   const total = data?.total;
 
   useEffect(() => {
+    const qtyFromLS = localStorage.getItem(`${url.split('/').pop()}qty`);
+    if (qtyFromLS) {
+      setQty(Number(qtyFromLS));
+    }
+  }, [url]);
+
+  useEffect(() => {
     if (fetchError) {
       notification.open({
         type: 'error',
@@ -88,7 +95,9 @@ const PaginatedTable = props => {
   };
 
   const handleChangeRowsPerPage = event => {
-    setQty(Number(event.target.value));
+    const newQty = Number(event.target.value);
+    localStorage.setItem(`${url.split('/').pop()}qty`, newQty);
+    setQty(newQty);
     setPage(1);
   };
 
@@ -251,6 +260,7 @@ const PaginatedTable = props => {
       }
       <TableContainer component={Paper}>
         { total !== undefined ? <Chip label={`Всего результатов: ${total}`} /> : null}
+        { tableChips && data ? tableChips.map(({ label, color }, idx) => <Chip key={`customchip${idx}`} label={label(data)} color={color} />) : null }
         <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
           <TableHead>
             <TableRow>

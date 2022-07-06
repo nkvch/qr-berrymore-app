@@ -1,8 +1,8 @@
 import { Box } from '@mui/system';
 import styles from '../../styles/DroppableImageContainer.module.scss';
 
-const DroppableImageContainer = ({ image }) => (
-  <Box className={styles.box}>
+const DroppableImageContainer = ({ image, theme }) => (
+  <Box className={`${styles.box} ${theme === 'dark' ? styles.darkBox : ''}`}>
     <p className={styles.label}>
       {
         image

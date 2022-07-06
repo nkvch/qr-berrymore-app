@@ -15,6 +15,7 @@ import {
   Collapse,
   Button,
   CircularProgress,
+  FormControlLabel
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import Link from 'next/link';
@@ -23,18 +24,25 @@ import Image from 'next/image';
 import { TransitionGroup } from 'react-transition-group';
 import Context from './context';
 import Notifications from './components/notifications';
+import ThemeSwitch from './components/ThemeSwitch';
 
 const Wrapper = ({ children, title, menuItems, subTitle }) => {
-  const { user, logout } = useContext(Context);
+  const { user, logout, mode, setMode } = useContext(Context);
 
   const [sidebar, setSidebar] = useState(false);
 
   const switchSidebar = () => setSidebar(!sidebar);
+
+  const switchTheme = (_, isDark) => {
+    const theme = isDark ? 'dark' : 'light';
+    localStorage.setItem('colorTheme', theme);
+    setMode(theme);
+  };
   
   return (
-    <div className="container">
+    <div className={`container ${mode === 'dark' ? 'darkThemed' : ''}`}>
       <AppBar position="static">
-        <Toolbar style={{ backgroundColor: 'white' }}>
+        <Toolbar style={{ backgroundColor: mode === 'light' ? 'white' : '#121212' }}>
           <IconButton
             size="large"
             edge="start"
@@ -46,17 +54,27 @@ const Wrapper = ({ children, title, menuItems, subTitle }) => {
           </IconButton>
           <Typography className="text topbartitle" display="flex" variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <Image alt="icon" src="/icon.svg" width="40" height="40" />
-              <h1 className={styles.heading}>{title}  |</h1>
+              <h1 className={`${styles.heading} ${mode === 'dark' ? 'darkThemed': ''}`}>{title}  |</h1>
             <TransitionGroup>
                 {
                   subTitle && (
                     <Collapse orientation="horizontal" key={subTitle}>
-                      <h1 className={styles.heading}>{subTitle}</h1>
+                      <h1 className={`${styles.heading} ${mode === 'dark' ? 'darkThemed': ''}`}>{subTitle}</h1>
                     </Collapse>
                   )
                 }
             </TransitionGroup>
           </Typography>
+          <FormControlLabel
+            control={<ThemeSwitch sx={{ m: 1 }}
+              checked={mode === 'dark'}
+              onChange={switchTheme}
+            />}
+            label={mode === 'dark' ? 'Ночная тема' : 'Дневная тема'}
+            style={{
+              color: mode === 'dark' ? 'white' : 'black',
+            }}
+          />
           {
             user && <Button variant="text" onClick={logout}>Выйти</Button>
           }

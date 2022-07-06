@@ -16,6 +16,19 @@
   margin-bottom: 8px;
 }
 
+.darkBox {
+  border-color: rgba($color: #cfcfcf, $alpha: 0.3);
+
+  .label {
+    color: white;
+    .upload-button {
+      &:hover {
+        color: rgb(0, 135, 213);
+      }
+    }
+  }
+}
+
 .label {
   color: #000000;
   .upload-button {
