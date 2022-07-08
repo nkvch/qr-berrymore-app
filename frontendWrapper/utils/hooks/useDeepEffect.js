@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import isEqual from 'lodash.isEqual';
+import isEqual from 'lodash.isequal';
 
 function useDeepEffect(fn, deps) {
   const isFirst = useRef(true);

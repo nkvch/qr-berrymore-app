@@ -5,3 +5,7 @@ node_modules
 .next
 
 public/savedFiles
+
+*key.pem
+*.pub
+*.sh

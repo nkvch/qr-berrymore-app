@@ -10,7 +10,7 @@ import {
   VictoryChart as Chart,
 } from 'victory';
 import { Switch, FormControlLabel, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
-import { notification } from '../frontendWrapper/components/notifications';
+import { notification } from '../frontendWrapper/components/Notifications';
 import request from '../frontendWrapper/utils/request';
 import FetchSelect from '../frontendWrapper/components/FetchSelect';
 import styles from '../styles/Form.module.scss';

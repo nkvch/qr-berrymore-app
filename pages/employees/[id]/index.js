@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import useApi from '../../../frontendWrapper/utils/hooks/useApi';
-import { notification } from '../../../frontendWrapper/components/notifications';
+import { notification } from '../../../frontendWrapper/components/Notifications';
 import { useEffect, useContext } from 'react';
 import { CircularProgress } from '@mui/material';
 import Context from '../../../frontendWrapper/context';

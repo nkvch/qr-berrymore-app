@@ -1,6 +1,6 @@
 import Form from '../../frontendWrapper/components/Form';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/notifications';
+import { notification } from '../../frontendWrapper/components/Notifications';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/dist/client/router';

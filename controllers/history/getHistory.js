@@ -101,7 +101,7 @@ const getHistory = async req => {
   const totalAmount = totalAmountPerProduct.reduce((prev, curr) => ({
     allAmount: prev.allAmount + curr.allAmount,
     allPrice: prev.allPrice + curr.allPrice,
-  }));
+  }), { allAmount: 0, allPrice: 0 });
 
   const pageData = rows.map(row => row.get({ plain: true }));
 

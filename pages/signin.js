@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import { useContext, useEffect } from 'react';
 import request from '../frontendWrapper/utils/request';
 import Context from '../frontendWrapper/context';
-import { notification } from '../frontendWrapper/components/notifications';
+import { notification } from '../frontendWrapper/components/Notifications';
 import Form from '../frontendWrapper/components/Form';
 import { useRouter } from 'next/router';
 

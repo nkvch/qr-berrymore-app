@@ -3,7 +3,7 @@ import Context from '../../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
 import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/notifications';
+import { notification } from '../../frontendWrapper/components/Notifications';
 import { Button, Checkbox, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -34,6 +34,10 @@ const columns = {
   lastName: {
     name: 'Фамилия',
     type: 'text',
+  },
+  phone: {
+    type: 'number',
+    hidden: true,
   },
   address: {
     name: 'Адрес',
