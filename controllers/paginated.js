@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import util from 'util';
 import parseQueryParams from '../apiWrapper/utils/parseQueryParams';
 
-const paginated = (modelName, requiredParams) => async req => {
+const paginated = (modelName, requiredParams, order) => async req => {
   const { query: { page, qty, search, searchColumns, selectColumns, ...strRestParams } } = req;
 
   const restParams = parseQueryParams(strRestParams);
@@ -53,6 +53,7 @@ const paginated = (modelName, requiredParams) => async req => {
     where,
     include,
     attributes,
+    order,
   };
 
   const { count: total, rows } = await db[modelName].findAndCountAll(getParams);
