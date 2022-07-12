@@ -23,12 +23,12 @@ app.prepare().then(async () => {
     await db.sequelize.sync({ alter });
     
     createRegularJob(() => db.employees.update({
-      workTomorrow: false,
+      isWorking: false,
     }, {
       where: {
-        workTomorrow: true,
+        isWorking: true,
       },
-    }), { hour: 7, minute: 0 });
+    }), { hour: 15, minute: 0 });
 
   } catch (err) {
     console.log(err);

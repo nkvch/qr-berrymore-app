@@ -1,7 +1,7 @@
 import PaginatedTable from '../../frontendWrapper/components/PaginatedTable';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
-import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation } from '@mui/icons-material';
+import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation, SelectAll } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
 import { notification } from '../../frontendWrapper/components/Notifications';
 import { Button, Checkbox, CircularProgress } from '@mui/material';
@@ -10,34 +10,34 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import MultipleQRCodes from '../../frontendWrapper/components/MultipleQRCodes';
 import InvisibleQRCodes from '../../frontendWrapper/components/InvisibleQRCodes';
+import Form from '../../frontendWrapper/components/Form';
 
 const url = '/employees';
 
+const employeeFlags = [
+  { value: 'isWorking', text: 'Работает' },
+  { value: 'printedQR', text: 'QR распечатан' },
+  { value: 'blacklisted', text: 'Черный список' },
+  { value: 'goodWorker', text: 'Хороший работник' },
+  { value: 'workedBefore', text: 'Работал прежде' },
+];
+
 const columns = {
-  id: {
-    name: 'ID',
-    type: 'number',
-    hidden: true,
-  },
   contract: {
     name: 'Номер кантракта',
-    type: 'text',
-  },
-  foremanId: {
-    type: 'number',
-    hidden: true,
-  },
-  firstName: {
-    name: 'Имя',
     type: 'text',
   },
   lastName: {
     name: 'Фамилия',
     type: 'text',
   },
+  firstName: {
+    name: 'Имя',
+    type: 'text',
+  },
   phone: {
+    name: 'Телефон',
     type: 'number',
-    hidden: true,
   },
   address: {
     name: 'Адрес',
@@ -47,19 +47,6 @@ const columns = {
     name: 'Адрес посадки',
     type: 'text',
   },
-  berryId: {
-    hidden: true,
-  },
-  workTomorrow: {
-    hidden: true,
-  },
-  printedQR: {
-    hidden: true,
-  },
-  photoPath: {
-    name: 'Фото',
-    type: 'image',
-  },
   foreman: {
     name: 'Бригадир',
     type: 'included',
@@ -67,17 +54,43 @@ const columns = {
   },
 };
 
+const hiddenButRequiredData = [
+  'id',
+  'foremanId',
+  'berryId',
+  'isWorking',
+  'printedQR',
+  'goodWorker',
+  'blacklisted',
+  'workedBefore',
+];
+
 const chips = {
-  workTomorrow: {
-    show: emp => emp.workTomorrow,
-    label: 'Работает завтра',
-    color: 'error'
+  isWorking: {
+    show: emp => emp.isWorking,
+    label: 'Работает',
+    color: '#fc7303'
   },
   printedQR: {
     show: emp => emp.printedQR,
     label: 'QR распечатан',
-    color: 'primary',
-  }
+    color: '#03a5fc',
+  },
+  goodWorker: {
+    show: emp => emp.goodWorker,
+    label: 'Хороший работник',
+    color: '#1e9e05'
+  },
+  blacklisted: {
+    show: emp => emp.blacklisted,
+    label: 'В черном списке',
+    color: '#808080',
+  },
+  workedBefore: {
+    show: emp => emp.workedBefore,
+    label: 'Работал прежде',
+    color: '#d9c045',
+  },
 };
 
 const Employees = props => {
@@ -93,11 +106,20 @@ const Employees = props => {
   const [selected, setSelected] = useState([]);
 
   const onChangeFilters = values => {
-    const { foremanId, workTomorrow, printedQR } = values;
+    const { foremanId, flagsPresent, flagsAbsent } = values;
+
+    if (flagsPresent.some(flag => flagsAbsent.includes(flag))) {
+      notification.open({
+        type: 'warning',
+        text: 'Ошибка в фильтрах',
+        text: 'Один и тот же флаг не может присутствовать и отсутствовать одновременно. Результаты могут быть неправильными.'
+      });
+    }
+
     setCustomFilters({
       ...(typeof foremanId === 'number' && { foremanId }),
-      ...(workTomorrow !== 'null' && { workTomorrow }),
-      ...(printedQR !== 'null' && { printedQR }),
+      ...(Object.fromEntries(flagsPresent.map(flag => ([flag, true])))),
+      ...(Object.fromEntries(flagsAbsent.map(flag => ([flag, false])))),
     });
   };
 
@@ -133,31 +155,23 @@ const Employees = props => {
 
   const filters = {
     fieldsData: {
-      workTomorrow: {
-        label: 'Фильтровать по смене',
-        type: 'select',
-        selectConfig: {
-          options: [
-            { value: 'true', text: 'Работающие завтра' },
-            { value: 'false', text: 'Не работающие завтра' },
-            { value: 'null', text: 'Все' },
-          ],
+      flagsPresent: {
+        label: 'Фильтровать по наличию флага',
+        type: 'multiple-select',
+        defaultValue: [],
+        multipleSelectConfig: {
+          multipleOptions: employeeFlags,
         },
-        defaultValue: 'null',
-        style: { width: '20%' },
+        style: { width: '30%', display: 'inline-block' },
       },
-      printedQR: {
-        label: 'Фильтровать по QR',
-        type: 'select',
-        selectConfig: {
-          options: [
-            { value: 'true', text: 'Уже распечатан' },
-            { value: 'false', text: 'Еще не распечатан' },
-            { value: 'null', text: 'Все' },
-          ],
+      flagsAbsent: {
+        label: 'Фильтровать по отсутствию флага',
+        type: 'multiple-select',
+        defaultValue: [],
+        multipleSelectConfig: {
+          multipleOptions: employeeFlags,
         },
-        defaultValue: 'null',
-        style: { width: '20%' },
+        style: { width: '30%', display: 'inline-block' },
       },
       foremanId: {
         label: 'Фильтровать по бригаде',
@@ -323,23 +337,83 @@ const Employees = props => {
         </>
       ),
     },
-    workTommorow: {
+    isWorking: {
       icon: <Work />,
       title: `Поставить смену (${selected.length} сотрудников)`,
-      action: (_, __, refetch, forceLoading) => bulkUpdate({ workTomorrow: true }, refetch, forceLoading),
+      action: (_, __, refetch, forceLoading) => bulkUpdate({ isWorking: true }, refetch, forceLoading),
       disabled: !selected.length,
     },
-    dontWorkTommorow: {
+    isNotWorking: {
       icon: <WorkOff />,
       title: `Убрать смену (${selected.length} сотрудников)`,
-      action: (_, __, refetch, forceLoading) => bulkUpdate({ workTomorrow: false }, refetch, forceLoading),
+      action: (_, __, refetch, forceLoading) => bulkUpdate({ isWorking: false }, refetch, forceLoading),
       disabled: !selected.length,
     },
-    removeQRPrintedFlags: {
-      icon: <CancelPresentation />,
-      title: `Убрать метки "QR распечатан" (${selected.length} сотрудников)`,
-      action: (_, __, refetch, forceLoading) => bulkUpdate({ printedQR: false }, refetch, forceLoading),
-      disabled: !selected.length,
+    setFlags: {
+      customRender: (_, __, refetch, forceLoading) => {
+        return (
+          <Form
+            fieldsData={{
+              setFlags: {
+                label: 'Выберете флаги которые хотите установить',
+                type: 'multiple-select',
+                defaultValue: [],
+                multipleSelectConfig: {
+                  multipleOptions: employeeFlags,
+                },
+                style: { width: '25%', display: 'inline-block', marginLeft: '8px' },
+              },
+            }}
+            className="inline-form"
+            submitText="Установить"
+            submitStyle={{ marginTop: '12px', marginLeft: '8px' }}
+            disableSubmit={!selected.length}
+            onSubmit={({ setFlags }) => {
+              if (!setFlags.length) {
+                notification.open({
+                  type: 'warning',
+                  title: 'Не выбрано ни одного флага',
+                });
+              } else {
+                bulkUpdate(Object.fromEntries(setFlags.map(flag => ([flag, true]))), refetch, forceLoading);
+              }
+            }}
+          />
+        )
+      }
+    },
+    removeFlags: {
+      customRender: (_, __, refetch, forceLoading) => {
+        return (
+          <Form
+            fieldsData={{
+              removeFlags: {
+                label: 'Выберете флаги которые хотите убрать',
+                type: 'multiple-select',
+                defaultValue: [],
+                multipleSelectConfig: {
+                  multipleOptions: employeeFlags,
+                },
+                style: { width: '25%', display: 'inline-block', marginLeft: '8px' },
+              },
+            }}
+            className="inline-form"
+            submitText="Убрать"
+            submitStyle={{ marginTop: '12px', marginLeft: '8px' }}
+            disableSubmit={!selected.length}
+            onSubmit={({ removeFlags }) => {
+              if (!removeFlags.length) {
+                notification.open({
+                  type: 'warning',
+                  title: 'Не выбрано ни одного флага',
+                });
+              } else {
+                bulkUpdate(Object.fromEntries(removeFlags.map(flag => ([flag, false]))), refetch, forceLoading);
+              }
+            }}
+          />
+        )
+      }
     },
   };
 
@@ -348,15 +422,13 @@ const Employees = props => {
       <PaginatedTable
         url={url}
         columns={columns}
+        hiddenButRequiredData={hiddenButRequiredData}
         actions={actions}
         pageActions={pageActions}
         chips={chips}
         filters={filters}
         customFilters={customFilters}
-        searchStyle={{ width: '40%', display: 'inline-block' }}
-        // classNames={{
-        //   autocomplete: 'search70width',
-        // }}
+        searchStyle={{ width: '20%', display: 'inline-block' }}
       />
     </div>
   )

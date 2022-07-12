@@ -27,7 +27,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(50),
       allowNull: true,
     },
-    workTomorrow: {
+    isWorking: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
@@ -38,6 +38,16 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: false,
     },
     blacklisted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    goodWorker: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    workedBefore: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,

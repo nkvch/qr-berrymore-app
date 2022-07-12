@@ -35,7 +35,7 @@ import Form from './Form';
 const debouncer = new Debouncer(500);
 
 const PaginatedTable = props => {
-  const { url, columns, actions, noSearch, searchStyle, customFilters, customAddButton, filters, classNames, pageActions, chips, tableChips } = props;
+  const { url, columns, hiddenButRequiredData = [], actions, noSearch, searchStyle, customFilters, customAddButton, filters, classNames, pageActions, chips, tableChips } = props;
 
   const [page, setPage] = useState(1);
   const [qty, setQty] = useState(10);
@@ -51,7 +51,8 @@ const PaginatedTable = props => {
 
   const selectColumns = Object.entries(columns)
     .filter(([, { type }]) => type !== 'included')
-    .map(([key]) => key);
+    .map(([key]) => key)
+    .concat(hiddenButRequiredData);
 
   const { loading, data, fetchError, refetch, forceLoading } = useApi({ url }, {
     page,
@@ -118,9 +119,9 @@ const PaginatedTable = props => {
     setPage(1);
   };
 
-  const filterHiddenFields = ([key]) => columns[key]?.hidden !== true;
+  const filterHiddenFields = ([key]) => !!columns[key];
 
-  const filterHiddenHeaders = ({ hidden }) => hidden !== true;
+  const sortColumns = ([key1], [key2]) => Object.keys(columns).indexOf(key1) - Object.keys(columns).indexOf(key2);
 
   const renderCellContend = (key, value) => {
     switch (columns[key]?.type) {
@@ -265,7 +266,7 @@ const PaginatedTable = props => {
           <TableHead>
             <TableRow>
               {
-                Object.values(columns).filter(filterHiddenHeaders).map(({ name }) => (
+                Object.values(columns).map(({ name }) => (
                   <TableCell key={name}>{name}</TableCell>
                 ))
               }
@@ -284,12 +285,12 @@ const PaginatedTable = props => {
               <>
                 {
                   chips ? Object.values(chips).filter(({ show }) => show(row)).map(({ label, color }) => (
-                    <Chip key={`chip${idx}${label}`} label={label} color={color} />
+                    <Chip key={`chip${idx}${label}`} label={label} style={{ backgroundColor: color }} />
                   )) : null
                 }
                 <TableRow key={idx}>
                   {
-                    Object.entries(row).filter(filterHiddenFields).map(([key, value]) => (
+                    Object.entries(row).filter(filterHiddenFields).sort(sortColumns).map(([key, value]) => (
                       <TableCell key={`${idx}${key}${value}`} scope="row">
                         {renderCellContend(key, value)}
                       </TableCell>

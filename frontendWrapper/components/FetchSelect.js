@@ -8,7 +8,7 @@ import styles from '../../styles/FetchSelect.module.scss';
 const debouncer = new Debouncer(500);
 
 const FetchSelect = props => {
-  const { url, columns, label, onChange, showInOption, showInValue, style, value, returnValue, className } = props;
+  const { url, multiple, columns, label, onChange, showInOption, showInValue, style, value, returnValue, className } = props;
 
   const autocompleteId = `${url}fetchSelect`;
 
@@ -64,6 +64,7 @@ const FetchSelect = props => {
 
   return (
     <Autocomplete
+      multiple={multiple}
       id={autocompleteId}
       sx={{ marginBottom: '8px' }}
       style={style}

@@ -9,6 +9,14 @@ import request from '../../../frontendWrapper/utils/request';
 
 const url = '/employees';
 
+const employeeFlags = [
+  { value: 'isWorking', text: 'Работает' },
+  { value: 'printedQR', text: 'QR распечатан' },
+  { value: 'blacklisted', text: 'Черный список' },
+  { value: 'goodWorker', text: 'Хороший работник' },
+  { value: 'workedBefore', text: 'Работал прежде' },
+];
+
 const foremanColumns = {
   id: {
     name: 'id',
@@ -67,6 +75,18 @@ const getFieldsData = employeeData => ({
     },
     defaultValue: employeeData?.foremanId,
   },
+  flags: {
+    label: 'Флаги',
+    type: 'multiple-select',
+    defaultValue: employeeData ? Object.entries(employeeData).filter(([key, value]) => employeeFlags
+      .map(flag => flag.value)
+      .includes(key) && value === true)
+      .map(([key]) => key) : [],
+    multipleSelectConfig: {
+      multipleOptions: employeeFlags,
+    },
+    style: { marginBottom: '8px' },
+  },
   photo: {
     label: 'Выберите или перетащите сюда фотографию',
     type: 'file',
@@ -102,9 +122,15 @@ const EditEmployee = props => {
     const withNewPhoto = values.photo instanceof File;
     const formData = new FormData();
 
-    Object.entries(values).forEach(([key, value]) =>
-      formData.append(key, value)
-    );
+    Object.entries(values).forEach(([key, value]) => {
+      if (key === 'flags') {
+        employeeFlags.forEach(flag => {
+          formData.append(flag.value, value.includes(flag.value));
+        });
+      } else {
+        formData.append(key, value);
+      }
+    });
 
     if (!withNewPhoto) {
       formData.delete('photo');

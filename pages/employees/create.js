@@ -8,6 +8,14 @@ import Debouncer from '../../frontendWrapper/utils/debouncer';
 
 const nameCheckDebouncer = new Debouncer(2000);
 
+const employeeFlags = [
+  { value: 'isWorking', text: 'Работает' },
+  { value: 'printedQR', text: 'QR распечатан' },
+  { value: 'blacklisted', text: 'Черный список' },
+  { value: 'goodWorker', text: 'Хороший работник' },
+  { value: 'workedBefore', text: 'Работал прежде' },
+];
+
 const foremanColumns = {
   id: {
     name: 'id',
@@ -59,6 +67,15 @@ const fieldsData = {
       returnValue: 'id',
     }
   },
+  flags: {
+    label: 'Флаги',
+    type: 'multiple-select',
+    defaultValue: [],
+    multipleSelectConfig: {
+      multipleOptions: employeeFlags,
+    },
+    style: { marginBottom: '8px' },
+  },
   photo: {
     label: 'Выберите или перетащите сюда фотографию',
     type: 'file',
@@ -79,9 +96,15 @@ const CreateEmployee = props => {
   const onSubmit = values => {
     const formData = new FormData();
     
-    Object.entries(values).forEach(([key, value]) =>
-      formData.append(key, value)
-    );
+    Object.entries(values).forEach(([key, value]) => {
+      if (key === 'flags') {
+        employeeFlags.forEach(flag => {
+          formData.append(flag.value, value.includes(flag.value));
+        });
+      } else {
+        formData.append(key, value);
+      }
+    });
 
     request({
       url: '/employees',

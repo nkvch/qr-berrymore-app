@@ -18,6 +18,7 @@ import { useRouter } from 'next/router';
 import getLocalDateTimeString from '../frontendWrapper/utils/getLocalDateTimeString';
 import Form from '../frontendWrapper/components/Form';
 import parsePrice from '../frontendWrapper/utils/parsePrice';
+import getStartOfToday from '../frontendWrapper/utils/getStartOfToday';
 
 const url = '/history';
 
@@ -75,14 +76,6 @@ const columns = {
     name: 'ID',
     type: 'number',
   },
-  employeeId: {
-    type: 'number',
-    hidden: true,
-  },
-  productId: {
-    type: 'number',
-    hidden: true,
-  },
   amount: {
     name: 'Количество (кг)',
     type: 'number',
@@ -103,11 +96,9 @@ const columns = {
   },
 };
 
+const hiddenButRequiredData = ['employeeId', 'productId'];
+
 const summarizeCols = {
-  employeeId: {
-    type: 'number',
-    hidden: true,
-  },
   allAmount: {
     name: 'Все количество',
     type: 'custom',
@@ -174,6 +165,8 @@ const actions = {
 const initFilters = {
   sortColumn: 'dateTime',
   sorting: 'desc',
+  fromDateTime: getStartOfToday().toISOString(),
+  isWorking: 'true',
 };
 
 const Stats = props => {
@@ -203,16 +196,17 @@ const Stats = props => {
         },
         style: { width: '15%' },
       },
-      product: {
-        label: 'Выберите продукт',
-        type: 'fetch-select',
-        fetchSelectConfig: {
-          url: '/products',
-          columns: productColumns,
-          showInOption: ['photoPath', 'productName'],
-          showInValue: ['productName'],
-          returnValue: 'id',
+      isWorking: {
+        label: 'Фильтровать по смене',
+        type: 'select',
+        selectConfig: {
+          options: [
+            { value: 'true', text: 'Работающие' },
+            { value: 'false', text: 'Не работающие' },
+            { value: 'null', text: 'Все' },
+          ],
         },
+        defaultValue: 'true',
         style: { width: '15%' },
       },
       foreman: {
@@ -243,6 +237,7 @@ const Stats = props => {
       fromDateTime: {
         label: 'От',
         type: 'datetime',
+        defaultValue: getStartOfToday(),
         style: { width: '15%' },
       },
       toDateTime: {
@@ -309,6 +304,7 @@ const Stats = props => {
             customFilters={{ ...filters, summarize }}
             tableChips={tableChips}
             customAddButton={() => router.push('/new-portion')}
+            hiddenButRequiredData={hiddenButRequiredData}
           />
         ) : null
       }

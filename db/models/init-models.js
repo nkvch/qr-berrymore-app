@@ -5,6 +5,7 @@ var _products = require("./products");
 var _users = require("./users");
 var _roles = require("./roles");
 
+
 function initModels(sequelize) {
   var roles = _roles(sequelize, DataTypes);
   var employees = _employees(sequelize, DataTypes);

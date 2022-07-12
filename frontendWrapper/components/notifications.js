@@ -12,6 +12,8 @@ const Notifications = () => {
   const open = ({ type, title, text, actions, time }) => {
     const key = `notification${Math.random()}`;
 
+    window.scrollTo(0, 0);
+
     setActiveNotifications([{
       key,
       content: (

@@ -6,11 +6,6 @@ import request from '../../frontendWrapper/utils/request';
 import { notification } from '../../frontendWrapper/components/Notifications';
 
 const columns = {
-  id: {
-    name: 'ID',
-    type: 'number',
-    hidden: true,
-  },
   firstName: {
     name: 'Имя',
     type: 'text',
@@ -19,11 +14,9 @@ const columns = {
     name: 'Фамилия',
     type: 'text',
   },
-  role: {
-    type: 'included',
-    hidden: true,
-  },
 };
+
+const hiddenButRequiredData = ['id'];
 
 const actions = {
   edit: {
@@ -89,6 +82,7 @@ const Products = props => {
         url="/foremen"
         columns={columns}
         actions={actions}
+        hiddenButRequiredData={hiddenButRequiredData}
       />
     </div>
   )

@@ -3,7 +3,7 @@ import { Op } from 'sequelize';
 import parseQueryParams from '../../apiWrapper/utils/parseQueryParams';
 
 const getHistory = async req => {
-  const { fromDateTime, toDateTime, foreman, sorting, sortColumn, product, employee, page, qty, summarize } = parseQueryParams(req.query);
+  const { fromDateTime, toDateTime, foreman, sorting, sortColumn, product, employee, page, qty, summarize, isWorking } = parseQueryParams(req.query);
 
   const where = {};
   const empWhere = {};
@@ -22,6 +22,14 @@ const getHistory = async req => {
 
   if (product) {
     where.productId = Number(product);
+  }
+
+  if (isWorking) {
+    empWhere.isWorking = true;
+  }
+
+  if (isWorking === false) {
+    empWhere.isWorking = false;
   }
 
   if (fromDateTime || toDateTime) {

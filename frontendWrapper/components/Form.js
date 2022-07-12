@@ -1,5 +1,5 @@
 import { Formik } from 'formik';
-import { TextField, Button, Autocomplete, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { TextField, Button, Autocomplete, FormControl, InputLabel, Select, MenuItem, Input, Box } from '@mui/material';
 import { FileUploader } from 'react-drag-drop-files';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import DroppableImageContainer from './DroppableImageContainer';
@@ -71,15 +71,44 @@ const renderField = (fieldData, {
         </FormControl>
       )
       break;
+    case 'multiple-select':
+      const { multipleSelectConfig: { multipleOptions } } = config;
+
+      fieldToRender = (
+        <Autocomplete
+          multiple
+          options={multipleOptions.filter(({ value }) => !values[field].includes(value))}
+          style={style}
+          getOptionLabel={value => multipleOptions.find(opt => opt.value === value)?.text}
+          value={values[field]}
+          onChange={(_, selected) => setFieldValue(field, selected.map(sel => typeof sel === 'object' ? sel.value : sel))}
+          renderOption={(props, option) => (
+            <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} className={styles.option} {...props}>
+              {
+                option.text
+              }
+            </Box>
+          )}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label={label}
+              placeholder="Выберите интересующие вас значения"
+            />
+          )}
+        />
+      );
+      break;
     case 'fetch-select':
       const {
-        fetchSelectConfig: { url, columns, showInOption, showInValue, returnValue, className },
+        fetchSelectConfig: { url, multiple = false, columns, showInOption, showInValue, returnValue, className },
         onChangeCallback,
       } = config;
 
       fieldToRender = (
         <FetchSelect
           style={style}
+          multiple={multiple}
           url={url}
           columns={columns}
           label={label}
@@ -89,10 +118,20 @@ const renderField = (fieldData, {
               onChangeCallback(value)
             }
 
-            if (value) {
-              setFieldValue(field, value[returnValue]);
+            if (!multiple) {
+              if (value) {
+                setFieldValue(field, value[returnValue]);
+              } else {
+                setFieldValue(field, undefined);
+              }
             } else {
-              setFieldValue(field, undefined);
+              if (value.length) {
+                const values = value.map(entry => typeof entry === 'object' ? entry[returnValue] : entry);
+
+                setFieldValue(field, values);
+              } else {
+                setFieldValue(field, []);
+              }
             }
           }}
           showInOption={showInOption}
@@ -170,7 +209,7 @@ const renderField = (fieldData, {
   return fieldToRender;
 };
 
-const Form = ({ onSubmit, submitText, fieldsData, className, submitable, onChangeCallback, resetable, intable, resetFilters, resetText, resetStyle }) => {
+const Form = ({ onSubmit, submitText, submitStyle, disableSubmit, fieldsData, className, submitable, onChangeCallback, resetable, intable, resetFilters, resetText, resetStyle }) => {
   const theme = useTheme();
 
   return (
@@ -199,6 +238,8 @@ const Form = ({ onSubmit, submitText, fieldsData, className, submitable, onChang
                   type="submit"
                   variant="contained"
                   className={styles['form-submit']}
+                  style={submitStyle}
+                  disabled={disableSubmit}
                 >
                   {submitText}
                 </Button>
