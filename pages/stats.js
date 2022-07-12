@@ -99,6 +99,11 @@ const columns = {
 const hiddenButRequiredData = ['employeeId', 'productId'];
 
 const summarizeCols = {
+  employee: {
+    name: 'Сотрудник',
+    type: 'included',
+    parse: emp => emp ? `${emp.firstName} ${emp.lastName}` : 'Нет данных',
+  },
   allAmount: {
     name: 'Все количество',
     type: 'custom',
@@ -108,11 +113,6 @@ const summarizeCols = {
     name: 'Вся сумма',
     type: 'custom',
     render: num => parsePrice(num),
-  },
-  employee: {
-    name: 'Сотрудник',
-    type: 'included',
-    parse: emp => emp ? `${emp.firstName} ${emp.lastName}` : 'Нет данных',
   },
 };
 
@@ -166,7 +166,7 @@ const initFilters = {
   sortColumn: 'dateTime',
   sorting: 'desc',
   fromDateTime: getStartOfToday().toISOString(),
-  isWorking: 'true',
+  isWorking: 'null',
 };
 
 const Stats = props => {
@@ -206,7 +206,7 @@ const Stats = props => {
             { value: 'null', text: 'Все' },
           ],
         },
-        defaultValue: 'true',
+        defaultValue: 'null',
         style: { width: '15%' },
       },
       foreman: {
