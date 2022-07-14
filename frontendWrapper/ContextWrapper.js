@@ -98,6 +98,7 @@ const ContextWrapper = ({ children }) => {
   return (
     <ThemeProvider theme={darkTheme}>
       <Context.Provider value={{ user, login, logout, updateSubTitle, mode, setMode }}>
+        <title>{`Berrymore|${subTitle || ''}`}</title>
         <Wrapper
           title="Berrymore"
           menuItems={

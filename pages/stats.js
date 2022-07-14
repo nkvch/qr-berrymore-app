@@ -22,6 +22,14 @@ import getStartOfToday from '../frontendWrapper/utils/getStartOfToday';
 
 const url = '/history';
 
+const employeeFlags = [
+  { value: 'isWorking', text: 'Работает', color: '#fc7303' },
+  { value: 'printedQR', text: 'QR распечатан', color: '#03a5fc' },
+  { value: 'blacklisted', text: 'Черный список', color: '#808080' },
+  { value: 'goodWorker', text: 'Хороший работник', color: '#1e9e05' },
+  { value: 'workedBefore', text: 'Работал прежде', color: '#d9c045' },
+];
+
 const employeeColumns = {
   id: {
     name: 'id',
@@ -162,21 +170,25 @@ const actions = {
   },
 };
 
-const initFilters = {
-  sortColumn: 'dateTime',
-  sorting: 'desc',
-  fromDateTime: getStartOfToday().toISOString(),
-  isWorking: 'null',
-};
-
 const Stats = props => {
   const { updateSubTitle } = useContext(Context);
 
   const router = useRouter();
 
+  const [summarize, setSummarize] = useState(true);
+
+  const defaultSort = summarize ? 'allAmount desc' : 'history.dateTime desc';
+
+  const [defaultSortColumn, defaultSorting] = defaultSort.split(' ');
+
+  const initFilters = {
+    sortColumn: defaultSortColumn,
+    sorting: defaultSorting,
+    fromDateTime: getStartOfToday().toISOString(),
+  };
+
   const [tableMode, setTableMode] = useState(true);
   const [filters, setFilters] = useState(initFilters);
-  const [summarize, setSummarize] = useState(false);
 
   useEffect(() => {
     updateSubTitle('Статистика');
@@ -194,20 +206,7 @@ const Stats = props => {
           showInValue: ['firstName', 'lastName'],
           returnValue: 'id',
         },
-        style: { width: '15%' },
-      },
-      isWorking: {
-        label: 'Фильтровать по смене',
-        type: 'select',
-        selectConfig: {
-          options: [
-            { value: 'true', text: 'Работающие' },
-            { value: 'false', text: 'Не работающие' },
-            { value: 'null', text: 'Все' },
-          ],
-        },
-        defaultValue: 'null',
-        style: { width: '15%' },
+        style: { width: '12%' },
       },
       foreman: {
         label: 'Выберите бригадира',
@@ -219,37 +218,66 @@ const Stats = props => {
           showInValue: ['firstName', 'lastName'],
           returnValue: 'id',
         },
-        style: { width: '15%' },
+        style: { width: '12%' },
+      },
+      flagsPresent: {
+        label: 'Фильтровать по наличию флага',
+        type: 'multiple-select',
+        defaultValue: [],
+        multipleSelectConfig: {
+          multipleOptions: employeeFlags.map(({ value, text }) => ({ value, text })),
+        },
+        style: { width: '18%', display: 'inline-block' },
+      },
+      flagsAbsent: {
+        label: 'Фильтровать по отсутствию флага',
+        type: 'multiple-select',
+        defaultValue: [],
+        multipleSelectConfig: {
+          multipleOptions: employeeFlags.map(({ value, text }) => ({ value, text })),
+        },
+        style: { width: '18%', display: 'inline-block' },
       },
       sortFilters: {
         label: 'Сортировать',
         type: 'select',
         selectConfig: {
-          options: [
-            { value: 'dateTime desc', text: 'От недавнего' },
-            { value: 'dateTIme asc', text: 'От давнего' },
-            { value: 'amount desc', text: 'От самого большого' },
-            { value: 'amount asc', text: 'От самого маленького' },
+          options: summarize ? [
+            { value: 'employee.lastName asc', text: 'По алфавиту' },
+            { value: 'allAmount desc', text: 'От самого большого' },
+            { value: 'allAmount asc', text: 'От самого маленького' },
+          ] : [
+            { value: 'history.dateTime desc', text: 'От недавнего' },
+            { value: 'history.dateTIme asc', text: 'От давнего' }
           ],
         },
-        style: { width: '15%' },
+        defaultValue: defaultSort,
+        style: { width: '11%' },
       },
       fromDateTime: {
         label: 'От',
         type: 'datetime',
         defaultValue: getStartOfToday(),
-        style: { width: '15%' },
+        style: { width: '12%' },
       },
       toDateTime: {
         label: 'До',
         type: 'datetime',
-        style: { width: '15%' },
+        style: { width: '12%' },
       },
     },
   };
 
   const onChangeFilters = values => {
-    const { fromDateTime, toDateTime, sortFilters, ...restFilters } = values;
+    const { fromDateTime, toDateTime, sortFilters, flagsPresent, flagsAbsent, ...restFilters } = values;
+
+    if (flagsPresent.some(flag => flagsAbsent.includes(flag))) {
+      notification.open({
+        type: 'warning',
+        title: 'Ошибка в фильтрах',
+        text: 'Один и тот же флаг не может присутствовать и отсутствовать одновременно. Результаты могут быть неправильными.'
+      });
+    }
 
     const [sortColumn, sorting] = sortFilters?.split(' ') || [];
 
@@ -263,14 +291,27 @@ const Stats = props => {
       ...(toDateTime && {
         toDateTime: toDateTime.toISOString(),
       }),
+
+      ...(Object.fromEntries(flagsPresent.map(flag => ([flag, true])))),
+      ...(Object.fromEntries(flagsAbsent.map(flag => ([flag, false])))),
     });
   };
 
   const pageActions = {
     summarize: {
       icon: summarize ? <ManageSearch /> : <PriceCheck />,
-      title: summarize ? 'Вернуться к истории' : 'Рассчитать',
-      action: () => setSummarize(prev => !prev),
+      title: summarize ? 'История' : 'Рассчитать',
+      action: () => {
+        const newSummarize = !summarize;
+
+        setFilters(({ sortColumn, ...rest }) => ({
+          ...rest,
+          sortColumn: newSummarize ? 'allAmount' : 'history.dateTime',
+          sorting: 'desc',
+        }));
+
+        setSummarize(newSummarize);
+      },
     },
   };
 
@@ -280,7 +321,7 @@ const Stats = props => {
     className: "row-form",
     intable: true,
     resetText: "Сбросить",
-    resetStyle: { width: '10%' },
+    resetStyle: { width: '6%' },
     resetFilters: () => setFilters(initFilters),
     onChangeCallback: onChangeFilters,
   };

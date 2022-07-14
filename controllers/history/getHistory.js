@@ -3,7 +3,8 @@ import { Op } from 'sequelize';
 import parseQueryParams from '../../apiWrapper/utils/parseQueryParams';
 
 const getHistory = async req => {
-  const { fromDateTime, toDateTime, foreman, sorting, sortColumn, product, employee, page, qty, summarize, isWorking } = parseQueryParams(req.query);
+  const { fromDateTime, toDateTime, foreman, sorting, sortColumn, product, employee, page, qty, summarize,
+    search, searchColumns, selectColumns, ...flags } = parseQueryParams(req.query);
 
   const where = {};
   const empWhere = {};
@@ -24,13 +25,7 @@ const getHistory = async req => {
     where.productId = Number(product);
   }
 
-  if (isWorking) {
-    empWhere.isWorking = true;
-  }
-
-  if (isWorking === false) {
-    empWhere.isWorking = false;
-  }
+  Object.assign(empWhere, flags);
 
   if (fromDateTime || toDateTime) {
     where.dateTime = {
@@ -44,7 +39,7 @@ const getHistory = async req => {
   }
 
   if (sorting && sortColumn) {
-    order = [[sortColumn, sorting]];
+    order = [[sequelize.literal(sortColumn), sorting]];
   }
 
   if (summarize) {
@@ -56,7 +51,7 @@ const getHistory = async req => {
       [sequelize.fn('sum', sequelize.col('amount')), 'allAmount'],
       [sequelize.literal('sum(amount * product.productPrice)'), 'allPrice'],
     ]
-    order = undefined;
+    order = [[sequelize.literal(sortColumn), sorting]];
     productAttrs = [];
   }
 

@@ -15,6 +15,7 @@ import {
   Avatar,
   Tooltip,
   Chip,
+  Grid,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTheme } from '@emotion/react';
@@ -260,6 +261,13 @@ const PaginatedTable = props => {
         )
       }
       <TableContainer component={Paper}>
+        <Button
+          variant="contained"
+          style={{ marginTop: '1em', marginBottom: '1em', marginRight: '1em' }}
+          onClick={customAddButton || (() => router.push(`${url}/create`))}
+        >
+          Добавить
+        </Button>
         { total !== undefined ? <Chip label={`Всего результатов: ${total}`} /> : null}
         { tableChips && data ? tableChips.map(({ label, color }, idx) => <Chip key={`customchip${idx}`} label={label(data)} color={color} />) : null }
         <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">

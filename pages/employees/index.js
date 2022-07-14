@@ -15,11 +15,11 @@ import Form from '../../frontendWrapper/components/Form';
 const url = '/employees';
 
 const employeeFlags = [
-  { value: 'isWorking', text: 'Работает' },
-  { value: 'printedQR', text: 'QR распечатан' },
-  { value: 'blacklisted', text: 'Черный список' },
-  { value: 'goodWorker', text: 'Хороший работник' },
-  { value: 'workedBefore', text: 'Работал прежде' },
+  { value: 'isWorking', text: 'Работает', color: '#fc7303' },
+  { value: 'printedQR', text: 'QR распечатан', color: '#03a5fc' },
+  { value: 'blacklisted', text: 'Черный список', color: '#808080' },
+  { value: 'goodWorker', text: 'Хороший работник', color: '#1e9e05' },
+  { value: 'workedBefore', text: 'Работал прежде', color: '#d9c045' },
 ];
 
 const columns = {
@@ -58,40 +58,17 @@ const hiddenButRequiredData = [
   'id',
   'foremanId',
   'berryId',
-  'isWorking',
-  'printedQR',
-  'goodWorker',
-  'blacklisted',
-  'workedBefore',
+  ...(employeeFlags.map(({ value }) => value)),
 ];
 
-const chips = {
-  isWorking: {
-    show: emp => emp.isWorking,
-    label: 'Работает',
-    color: '#fc7303'
+const chips = Object.fromEntries(employeeFlags.map(({ value, text, color }) => ([
+  value,
+  {
+    show: emp => emp[value],
+    label: text,
+    color,
   },
-  printedQR: {
-    show: emp => emp.printedQR,
-    label: 'QR распечатан',
-    color: '#03a5fc',
-  },
-  goodWorker: {
-    show: emp => emp.goodWorker,
-    label: 'Хороший работник',
-    color: '#1e9e05'
-  },
-  blacklisted: {
-    show: emp => emp.blacklisted,
-    label: 'В черном списке',
-    color: '#808080',
-  },
-  workedBefore: {
-    show: emp => emp.workedBefore,
-    label: 'Работал прежде',
-    color: '#d9c045',
-  },
-};
+])));
 
 const Employees = props => {
   const { updateSubTitle } = useContext(Context);
@@ -111,7 +88,7 @@ const Employees = props => {
     if (flagsPresent.some(flag => flagsAbsent.includes(flag))) {
       notification.open({
         type: 'warning',
-        text: 'Ошибка в фильтрах',
+        title: 'Ошибка в фильтрах',
         text: 'Один и тот же флаг не может присутствовать и отсутствовать одновременно. Результаты могут быть неправильными.'
       });
     }
@@ -160,7 +137,7 @@ const Employees = props => {
         type: 'multiple-select',
         defaultValue: [],
         multipleSelectConfig: {
-          multipleOptions: employeeFlags,
+          multipleOptions: employeeFlags.map(({ value, text }) => ({ value, text })),
         },
         style: { width: '30%', display: 'inline-block' },
       },
@@ -169,7 +146,7 @@ const Employees = props => {
         type: 'multiple-select',
         defaultValue: [],
         multipleSelectConfig: {
-          multipleOptions: employeeFlags,
+          multipleOptions: employeeFlags.map(({ value, text }) => ({ value, text })),
         },
         style: { width: '30%', display: 'inline-block' },
       },
@@ -359,7 +336,7 @@ const Employees = props => {
                 type: 'multiple-select',
                 defaultValue: [],
                 multipleSelectConfig: {
-                  multipleOptions: employeeFlags,
+                  multipleOptions: employeeFlags.map(({ value, text }) => ({ value, text })),
                 },
                 style: { width: '25%', display: 'inline-block', marginLeft: '8px' },
               },
@@ -392,7 +369,7 @@ const Employees = props => {
                 type: 'multiple-select',
                 defaultValue: [],
                 multipleSelectConfig: {
-                  multipleOptions: employeeFlags,
+                  multipleOptions: employeeFlags.map(({ value, text }) => ({ value, text })),
                 },
                 style: { width: '25%', display: 'inline-block', marginLeft: '8px' },
               },
