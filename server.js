@@ -61,6 +61,15 @@ app.prepare().then(async () => {
         stream.on('error', err => {
           res.end(err);
         });
+      } else if (pathname === '/downloadAndroidApp') {
+        const path_ = path.join(__dirname, 'public/AndroidApp/BerrymoreApp.apk');
+        var stat = fs.statSync(path_);
+        res.writeHead(200, {
+            'Content-Type': 'application/vnd.android.package-archive',
+            'Content-Length': stat.size
+        });
+        const stream = fs.createReadStream(path_);
+        stream.pipe(res);
       } else {
         await handle(req, res, parsedUrl);
       }

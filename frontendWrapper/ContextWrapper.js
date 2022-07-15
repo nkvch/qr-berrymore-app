@@ -11,6 +11,7 @@ import sleep from './utils/sleep';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import router, { useRouter } from 'next/router';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Download } from '@mui/icons-material';
 
 const unauthMenuOptions = [{
   text: 'Войти',
@@ -38,6 +39,10 @@ const authMenuOptions = [{
   text: 'Новая порция',
   linkUrl: '/new-portion',
   icon: <AddTaskIcon />,
+}, {
+  text: 'Скачать приложение',
+  linkUrl: '/download',
+  icon: <Download />,
 }];
 
 const ContextWrapper = ({ children }) => {
