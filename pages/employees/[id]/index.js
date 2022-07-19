@@ -15,6 +15,7 @@ const employeeFlags = [
   { value: 'blacklisted', text: 'Черный список' },
   { value: 'goodWorker', text: 'Хороший работник' },
   { value: 'workedBefore', text: 'Работал прежде' },
+  { value: 'wontWork', text: 'Не будет работать' },
 ];
 
 const foremanColumns = {
@@ -62,6 +63,11 @@ const getFieldsData = employeeData => ({
     label: 'Тэлефон',
     type: 'phone',
     defaultValue: employeeData?.phone,
+  },
+  additionalPhone: {
+    label: 'Дополнительный телефон (необязательно)',
+    type: 'phone',
+    defaultValue: employeeData?.additionalPhone,
   },
   foremanId: {
     label: 'Выберите бригадира',

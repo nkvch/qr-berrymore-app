@@ -20,6 +20,7 @@ const employeeFlags = [
   { value: 'blacklisted', text: 'Черный список', color: '#808080' },
   { value: 'goodWorker', text: 'Хороший работник', color: '#1e9e05' },
   { value: 'workedBefore', text: 'Работал прежде', color: '#d9c045' },
+  { value: 'wontWork', text: 'Не будет работать', color: '#BF156C' },
 ];
 
 const columns = {
@@ -37,7 +38,13 @@ const columns = {
   },
   phone: {
     name: 'Телефон',
-    type: 'number',
+    type: 'custom',
+    render: number => number ? `+${number}` : 'Нет данных',
+  },
+  additionalPhone: {
+    name: 'Дополнительный телефон',
+    type: 'custom',
+    render: number => number ? `+${number}` : 'Нет данных',
   },
   address: {
     name: 'Адрес',
