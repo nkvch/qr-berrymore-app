@@ -10,7 +10,7 @@ import {
   VictoryChart as Chart,
 } from 'victory';
 import { Switch, FormControlLabel, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
-import { notification } from '../frontendWrapper/components/Notifications';
+import { notification } from '../frontendWrapper/components/notifications';
 import request from '../frontendWrapper/utils/request';
 import FetchSelect from '../frontendWrapper/components/FetchSelect';
 import styles from '../styles/Form.module.scss';
@@ -95,7 +95,7 @@ const columns = {
   employee: {
     name: 'Сотрудник',
     type: 'included',
-    parse: emp => emp ? `${emp.firstName} ${emp.lastName}` : 'Нет данных',
+    parse: emp => emp ? `${emp.lastName} ${emp.firstName} ` : 'Нет данных',
   },
   product: {
     name: 'Продукт',
@@ -110,7 +110,7 @@ const summarizeCols = {
   employee: {
     name: 'Сотрудник',
     type: 'included',
-    parse: emp => emp ? `${emp.firstName} ${emp.lastName}` : 'Нет данных',
+    parse: emp => emp ? `${emp.lastName} ${emp.firstName}` : 'Нет данных',
   },
   allAmount: {
     name: 'Все количество',

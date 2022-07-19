@@ -3,7 +3,7 @@ import Context from '../../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import { ModeEdit, Delete } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/Notifications';
+import { notification } from '../../frontendWrapper/components/notifications';
 
 const columns = {
   id: {

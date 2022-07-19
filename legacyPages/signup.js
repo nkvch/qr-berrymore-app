@@ -2,7 +2,7 @@ import Form from "../frontendWrapper/components/Form";
 import request from '../frontendWrapper/utils/request';
 import Context from '../frontendWrapper/context';
 import { useContext, useEffect } from "react";
-import { notification } from '../frontendWrapper/components/Notifications';
+import { notification } from '../frontendWrapper/components/notifications';
 import { useRouter } from 'next/router';
 
 const SignUp = () => {

@@ -5,12 +5,14 @@ const bulkUpdate = async req => {
 
   const data = restParams;
 
+  const where = ids ? { id: ids } : {};
+
   await db.employees.update(data, {
-    where: { id: ids },
+    where,
   });
 
   const modelData = await db.employees.findAll({
-    where: { id: ids },
+    where,
   });
 
   const updatedEmployees = modelData.map(entry => entry.get({ plain: true }));

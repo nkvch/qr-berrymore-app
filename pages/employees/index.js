@@ -3,7 +3,7 @@ import Context from '../../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
 import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation, SelectAll } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/Notifications';
+import { notification } from '../../frontendWrapper/components/notifications';
 import { Button, Checkbox, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -107,14 +107,16 @@ const Employees = props => {
     });
   };
 
-  const bulkUpdate = (data, refetch, forceLoading, forRows = null) => {
+  const bulkUpdate = (data, refetch, forceLoading, forRows = null, all = false) => {
     forceLoading(true);
 
     request({
       url: `/employees/bulkUpdate`,
       method: 'PUT',
       body: {
-        ids: (forRows || selected).map(({ id }) => id),
+        ...(!all && {
+          ids: (forRows || selected).map(({ id }) => id),
+        }),
         ...data,
       },
       callback: (status, response) => {
@@ -332,6 +334,11 @@ const Employees = props => {
       title: `Убрать смену (${selected.length} сотрудников)`,
       action: (_, __, refetch, forceLoading) => bulkUpdate({ isWorking: false }, refetch, forceLoading),
       disabled: !selected.length,
+    },
+    allNotWorking: {
+      icon: <WorkOff />,
+      title: 'Убрать смену (у всех)',
+      action: (_, __, refetch, forceLoading) => bulkUpdate({ isWorking: false }, refetch, forceLoading, null, true),
     },
     setFlags: {
       customRender: (_, __, refetch, forceLoading) => {

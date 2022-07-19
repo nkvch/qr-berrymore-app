@@ -23,7 +23,7 @@ import { useContext, useState } from "react";
 import Image from 'next/image';
 import { TransitionGroup } from 'react-transition-group';
 import Context from './context';
-import Notifications from './components/Notifications';
+import Notifications from './components/notifications';
 import ThemeSwitch from './components/ThemeSwitch';
 
 const Wrapper = ({ children, title, menuItems, subTitle }) => {

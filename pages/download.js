@@ -3,7 +3,7 @@ import { Button, LinearProgress } from "@mui/material";
 import { useState } from "react";
 import LinearProgressWithLabel from "../frontendWrapper/components/LinearProgessWithLabel";
 import LinearWithValueLabel from "../frontendWrapper/components/LinearProgessWithLabel";
-import { notification } from '../frontendWrapper/components/Notifications';
+import { notification } from '../frontendWrapper/components/notifications';
 import withInterval from "../frontendWrapper/utils/withInterval";
 
 const DownloadPage = () => {

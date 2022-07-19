@@ -25,7 +25,7 @@ import {
   KeyboardArrowLeft, 
   KeyboardArrowRight,
 } from '@mui/icons-material';
-import { notification } from './Notifications';
+import { notification } from './notifications';
 import { useState, useEffect, useRef } from 'react';
 import Debouncer from '../utils/debouncer';
 import { useRouter } from 'next/router';

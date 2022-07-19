@@ -2,7 +2,7 @@ import Context from '../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import Form from '../frontendWrapper/components/Form';
 import request from '../frontendWrapper/utils/request';
-import { notification } from '../frontendWrapper/components/Notifications';
+import { notification } from '../frontendWrapper/components/notifications';
 import router from 'next/router';
 
 const employeeColumns = {
