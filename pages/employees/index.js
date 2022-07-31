@@ -1,7 +1,7 @@
 import PaginatedTable from '../../frontendWrapper/components/PaginatedTable';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
-import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation, SelectAll } from '@mui/icons-material';
+import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation, SelectAll, PhoneDisabled } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
 import { notification } from '../../frontendWrapper/components/notifications';
 import { Button, Checkbox, CircularProgress } from '@mui/material';
@@ -21,6 +21,7 @@ const employeeFlags = [
   { value: 'goodWorker', text: 'Хороший работник', color: '#1e9e05' },
   { value: 'workedBefore', text: 'Работал прежде', color: '#d9c045' },
   { value: 'wontWork', text: 'Не будет работать', color: '#BF156C' },
+  { value: 'called', text: 'Звонили', color: '#c75fed' },
 ];
 
 const columns = {
@@ -339,6 +340,11 @@ const Employees = props => {
       icon: <WorkOff />,
       title: 'Убрать смену (у всех)',
       action: (_, __, refetch, forceLoading) => bulkUpdate({ isWorking: false }, refetch, forceLoading, null, true),
+    },
+    forgetCalls: {
+      icon: <PhoneDisabled />,
+      title: 'Отчистить историю звонков',
+      action: (_, __, refetch, forceLoading) => bulkUpdate({ called: false }, refetch, forceLoading, null, true),
     },
     setFlags: {
       customRender: (_, __, refetch, forceLoading) => {

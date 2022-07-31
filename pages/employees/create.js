@@ -15,6 +15,7 @@ const employeeFlags = [
   { value: 'goodWorker', text: 'Хороший работник' },
   { value: 'workedBefore', text: 'Работал прежде' },
   { value: 'wontWork', text: 'Не будет работать' },
+  { value: 'called', text: 'Звонили' },
 ];
 
 const foremanColumns = {
