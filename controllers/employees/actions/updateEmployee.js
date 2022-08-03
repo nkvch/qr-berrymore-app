@@ -7,7 +7,7 @@ import db from '../../../db/models';
 import { v4 as uuidv4 } from 'uuid';
 
 const updateEmployee = async req => {
-  const { firstName, lastName, photo, foremanId, address, pickUpAddress, phone, additionalPhone, contract, ...flags } = await parseFormWithPhoto(req);
+  const { firstName, lastName, photo, foremanId, address, pickUpAddress, phone, contract, ...flags } = await parseFormWithPhoto(req);
   const { id } = req.query;
 
   let photoPath;
@@ -18,7 +18,7 @@ const updateEmployee = async req => {
     const savedFilesFolderExists = await checkOrCreateFolder(savedFilesFolder);
 
     if (!savedFilesFolderExists) {
-      throw new GeneralError('Проблема с загрузкой фотографии на сервер');
+      throw new GeneralError('Problem has occured while trying to upload image');
     }
 
     const randomFolderName = uuidv4();
@@ -28,7 +28,7 @@ const updateEmployee = async req => {
     const employeePhotoFolderCreated = await checkOrCreateFolder(employeePhotoFolder);
 
     if (!employeePhotoFolderCreated) {
-      throw new GeneralError('Проблема с загрузкой фотографии на сервер');
+      throw new GeneralError('Problem has occured while trying to upload image');
     }
 
     const photoName  = photo.originalFilename.replace(/[/\\?%*:|"<>\s]/g, '-');
@@ -38,7 +38,7 @@ const updateEmployee = async req => {
     const movedFileToSaveDir = await moveFile(photo.filepath, photo_save_path);
 
     if (!movedFileToSaveDir) {
-      throw new GeneralError('Проблема с сохранением фотографии');
+      throw new GeneralError('Problem occured while saving the photo');
     }
   
     photoPath = photo_save_path.replace('public', '');
@@ -53,7 +53,6 @@ const updateEmployee = async req => {
     address,
     pickUpAddress,
     phone,
-    additionalPhone,
     ...flags,
   };
 

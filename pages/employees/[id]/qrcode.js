@@ -21,7 +21,7 @@ const QrCode = props => {
 
   useEffect(() => {
     if (firstName && lastName) {
-      updateSubTitle(`QR код: ${firstName} ${lastName}`);
+      updateSubTitle(`QR code: ${firstName} ${lastName}`);
     }
   }, [firstName, lastName]);
 
@@ -46,7 +46,7 @@ const QrCode = props => {
                 variant="contained"
                 style={{ marginTop: '10px' }}
               >
-                Скачать PDF
+                Download PDF
               </Button>
             </PDFDownloadLink>
           </>

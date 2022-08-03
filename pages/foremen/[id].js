@@ -1,6 +1,6 @@
 import Form from '../../frontendWrapper/components/Form';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/notifications';
+import { notification } from '../../frontendWrapper/components/Notifications';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/dist/client/router';
@@ -11,12 +11,12 @@ const url = '/foremen';
 
 const getFieldsData = data => ({
   firstName: {
-    label: 'Имя',
+    label: 'First Name',
     type: 'text',
     defaultValue: data?.firstName,
   },
   lastName: {
-    label: 'Фамилия',
+    label: 'Last Name',
     type: 'text',
     defaultValue: data?.lastName,
   },
@@ -34,14 +34,14 @@ const UpdateForeman = props => {
   }, {}, disableFetching);
 
   useEffect(() => {
-    updateSubTitle('Редактирование бригадира');
+    updateSubTitle('Foreman edit');
   }, []);
 
   useEffect(() => {
     if (fetchError) {
       notification.open({
         type: 'error',
-        title: `Ошибка: ${fetchError}`,
+        title: `Error: ${fetchError}`,
       });
     }
   }, [fetchError]);
@@ -57,7 +57,7 @@ const UpdateForeman = props => {
 
           notification.open({
             type: 'success',
-            title: `Информация о бригадире ${firstName} ${lastName} успешно обновлена`,
+            title: `Foreman ${firstName} ${lastName} data was successfully updated`,
           });
 
           router.back();
@@ -66,7 +66,7 @@ const UpdateForeman = props => {
 
           notification.open({
             type: 'error',
-            title: `Ошибка: ${message}`,
+            title: `Error: ${message}`,
           });
         }
       },
@@ -81,7 +81,7 @@ const UpdateForeman = props => {
           : (
             <Form
               onSubmit={onSubmit}
-              submitText="Сохранить"
+              submitText="Save"
               fieldsData={getFieldsData(data)}
             />
           )

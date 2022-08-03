@@ -3,7 +3,7 @@ import Context from '../../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import { ModeEdit, Delete } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/notifications';
+import { notification } from '../../frontendWrapper/components/Notifications';
 
 const columns = {
   id: {
@@ -11,15 +11,15 @@ const columns = {
     type: 'number',
   },
   productName: {
-    name: 'Продукт',
+    name: 'Product',
     type: 'text',
   },
   productPrice: {
-    name: 'Цена',
+    name: 'Price',
     type: 'number',
   },
   photoPath: {
-    name: 'Фото',
+    name: 'Photo',
     type: 'image',
   },
 };
@@ -27,19 +27,19 @@ const columns = {
 const actions = {
   edit: {
     icon: <ModeEdit />,
-    tooltip: 'Редактировать',
+    tooltip: 'Edit',
     action: (prod, router) => router.push(`${router.pathname}/${prod.id}`),
   },
   delete: {
     icon: <Delete />,
-    tooltip: 'Удалить',
+    tooltip: 'Delete',
     action: (prod, _, refetch, forceLoading) => {
       const dialogKey = notification.open({
         type: 'warning',
-        title: 'Удаление продукта',
-        text: `Вы действительно хотите удалить продукт ${prod.productName}?`,
+        title: 'Deleting product',
+        text: `Are you sure you want to delete product ${prod.productName}?`,
         actions: [{
-          title: 'Удалить',
+          title: 'Delete',
           action: () => {
             notification.close(dialogKey);
 
@@ -52,13 +52,13 @@ const actions = {
                 if (status === 'ok') {
                   notification.open({
                     type: 'success',
-                    title: 'Продукт успешно удален',
+                    title: 'Product was deleted successfully',
                   });
                   refetch();
                 } else {
                   notification.open({
                     type: 'error',
-                    title: 'Ошибка при удалении продукта',
+                    title: 'Error while deleting product',
                     text: response.message,
                   });
                 };
@@ -66,7 +66,7 @@ const actions = {
             });
           },
         }, {
-          title: 'Отменить',
+          title: 'Cancel',
           action: () => notification.close(dialogKey),
         }],
       });
@@ -79,7 +79,7 @@ const Products = props => {
   const { updateSubTitle } = useContext(Context);
 
   useEffect(() => {
-    updateSubTitle('Продукты');
+    updateSubTitle('Products');
   }, []);
 
   return (

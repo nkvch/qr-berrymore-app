@@ -2,7 +2,7 @@ import Form from "../frontendWrapper/components/Form";
 import request from '../frontendWrapper/utils/request';
 import Context from '../frontendWrapper/context';
 import { useContext, useEffect } from "react";
-import { notification } from '../frontendWrapper/components/notifications';
+import { notification } from '../frontendWrapper/components/Notifications';
 import { useRouter } from 'next/router';
 
 const SignUp = () => {
@@ -10,16 +10,16 @@ const SignUp = () => {
   const router = useRouter();
 
   useEffect(() => {
-    updateSubTitle('Регистрация');
+    updateSubTitle('New account');
   }, []);
 
   const fieldsData = {
     firstName: {
-      label: 'Имя',
+      label: 'First Name',
       type: 'text',
     },
     lastName: {
-      label: 'Фамилия',
+      label: 'Last Name',
       type: 'text',
     },
     email: {
@@ -27,11 +27,11 @@ const SignUp = () => {
       type: 'email',
     },
     username: {
-      label: 'Имя пользователя',
+      label: 'Username',
       type: 'text',
     },
     password: {
-      label: 'Пароль',
+      label: 'Password',
       type: 'password',
     },
   };
@@ -46,7 +46,7 @@ const SignUp = () => {
 
           notification.open({
             type: 'success',
-            title: 'Успешная регистрация',
+            title: 'Successfully created new account',
           });
           router.push('/signin');
         } else if (status === 'error') {
@@ -63,7 +63,7 @@ const SignUp = () => {
     <div className="block content-center">
       <Form
         onSubmit={onSubmit}
-        submitText="Зарегистрироваться"
+        submitText="Create account"
         fieldsData={fieldsData}
       />
     </div>

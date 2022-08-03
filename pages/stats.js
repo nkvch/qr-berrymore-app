@@ -10,7 +10,7 @@ import {
   VictoryChart as Chart,
 } from 'victory';
 import { Switch, FormControlLabel, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
-import { notification } from '../frontendWrapper/components/notifications';
+import { notification } from '../frontendWrapper/components/Notifications';
 import request from '../frontendWrapper/utils/request';
 import FetchSelect from '../frontendWrapper/components/FetchSelect';
 import styles from '../styles/Form.module.scss';
@@ -18,16 +18,15 @@ import { useRouter } from 'next/router';
 import getLocalDateTimeString from '../frontendWrapper/utils/getLocalDateTimeString';
 import Form from '../frontendWrapper/components/Form';
 import parsePrice from '../frontendWrapper/utils/parsePrice';
-import getStartOfToday from '../frontendWrapper/utils/getStartOfToday';
 
 const url = '/history';
 
 const employeeFlags = [
-  { value: 'isWorking', text: 'Работает', color: '#fc7303' },
-  { value: 'printedQR', text: 'QR распечатан', color: '#03a5fc' },
-  { value: 'blacklisted', text: 'Черный список', color: '#808080' },
-  { value: 'goodWorker', text: 'Хороший работник', color: '#1e9e05' },
-  { value: 'workedBefore', text: 'Работал прежде', color: '#d9c045' },
+  { value: 'isWorking', text: 'Working', color: '#fc7303' },
+  { value: 'printedQR', text: 'QR printed', color: '#03a5fc' },
+  { value: 'blacklisted', text: 'Blacklisted', color: '#808080' },
+  { value: 'goodWorker', text: 'Good worker', color: '#1e9e05' },
+  { value: 'workedBefore', text: 'Worked before', color: '#d9c045' },
   { value: 'called', text: 'Звонили', color: '#c75fed' },
 ];
 
@@ -37,15 +36,15 @@ const employeeColumns = {
     type: 'number',
   },
   photoPath: {
-    name: 'Фото',
+    name: 'Photo',
     type: 'image',
   },
   firstName: {
-    name: 'Имя',
+    name: 'First Name',
     type: 'text',
   },
   lastName: {
-    name: 'Фамилия',
+    name: 'Last Name',
     type: 'text',
   },
 };
@@ -56,11 +55,11 @@ const productColumns = {
     type: 'number',
   },
   photoPath: {
-    name: 'Фото',
+    name: 'Photo',
     type: 'image',
   },
   productName: {
-    name: 'Имя',
+    name: 'First Name',
     type: 'text',
   },
 };
@@ -71,11 +70,11 @@ const foremanColumns = {
     type: 'number',
   },
   firstName: {
-    name: 'Имя',
+    name: 'First Name',
     type: 'text',
   },
   lastName: {
-    name: 'Фамилия',
+    name: 'Last Name',
     type: 'text',
   },
 };
@@ -86,22 +85,22 @@ const columns = {
     type: 'number',
   },
   amount: {
-    name: 'Количество (кг)',
+    name: 'Amount (kg)',
     type: 'number',
   },
   dateTime: {
-    name: 'Дата и время',
+    name: 'Date and time',
     type: 'dateTime',
   },
   employee: {
-    name: 'Сотрудник',
+    name: 'Employee',
     type: 'included',
-    parse: emp => emp ? `${emp.lastName} ${emp.firstName} ` : 'Нет данных',
+    parse: emp => emp ? `${emp.firstName} ${emp.lastName}` : 'No data',
   },
   product: {
-    name: 'Продукт',
+    name: 'Product',
     type: 'included',
-    parse: prod => prod?.productName || 'Нет данных',
+    parse: prod => prod?.productName || 'No data',
   },
 };
 
@@ -109,17 +108,17 @@ const hiddenButRequiredData = ['employeeId', 'productId'];
 
 const summarizeCols = {
   employee: {
-    name: 'Сотрудник',
+    name: 'Employee',
     type: 'included',
-    parse: emp => emp ? `${emp.lastName} ${emp.firstName}` : 'Нет данных',
+    parse: emp => emp ? `${emp.firstName} ${emp.lastName}` : 'No data',
   },
   allAmount: {
-    name: 'Все количество',
+    name: 'All amount',
     type: 'custom',
-    render: num => `${num.toFixed(2)} кг`,
+    render: num => `${num.toFixed(2)} kg`,
   },
   allPrice: {
-    name: 'Вся сумма',
+    name: 'All price',
     type: 'custom',
     render: num => parsePrice(num),
   },
@@ -128,14 +127,14 @@ const summarizeCols = {
 const actions = {
   delete: {
     icon: <Delete />,
-    tooltip: 'Удалить',
+    tooltip: 'Delete',
     action: (rec, _, refetch, forceLoading) => {
       const dialogKey = notification.open({
         type: 'warning',
-        title: 'Удаление записи из истории',
-        text: `Вы действительно хотите запись ${rec.id} ${rec.employee?.firstName || ''} ${rec.employee?.lastName || ''} ${rec.product?.productName || ''} ${rec.amount}?`,
+        title: 'Deleting record from history',
+        text: `Are you sure you want to record ${rec.id} ${rec.employee?.firstName || ''} ${rec.employee?.lastName || ''} ${rec.product?.productName || ''} ${rec.amount}?`,
         actions: [{
-          title: 'Удалить',
+          title: 'Delete',
           action: () => {
             notification.close(dialogKey);
 
@@ -148,13 +147,13 @@ const actions = {
                 if (status === 'ok') {
                   notification.open({
                     type: 'success',
-                    title: 'Запись успешно удалена',
+                    title: 'Record was deleted successfullyа',
                   });
                   refetch();
                 } else {
                   notification.open({
                     type: 'error',
-                    title: 'Ошибка при удалении записи',
+                    title: 'Error while deleting record',
                     text: response.message,
                   });
                 };
@@ -162,7 +161,7 @@ const actions = {
             });
           },
         }, {
-          title: 'Отменить',
+          title: 'Cancel',
           action: () => notification.close(dialogKey),
         }],
       });
@@ -185,20 +184,19 @@ const Stats = props => {
   const initFilters = {
     sortColumn: defaultSortColumn,
     sorting: defaultSorting,
-    fromDateTime: getStartOfToday().toISOString(),
   };
 
   const [tableMode, setTableMode] = useState(true);
   const [filters, setFilters] = useState(initFilters);
 
   useEffect(() => {
-    updateSubTitle('Статистика');
+    updateSubTitle('Statistics');
   }, []);
 
   const filtersConfig = {
     fieldsData: {
       employee: {
-        label: 'Выберите сотрудника',
+        label: 'Choose employee',
         type: 'fetch-select',
         fetchSelectConfig: {
           url: '/employees',
@@ -209,8 +207,20 @@ const Stats = props => {
         },
         style: { width: '12%' },
       },
+      product: {
+        label: 'Choose product',
+        type: 'fetch-select',
+        fetchSelectConfig: {
+          url: '/products',
+          columns: productColumns,
+          showInOption: ['photoPath', 'productName'],
+          showInValue: ['productName'],
+          returnValue: 'id',
+        },
+        style: { width: '15%' },
+      },
       foreman: {
-        label: 'Выберите бригадира',
+        label: 'Choose foreman',
         type: 'fetch-select',
         fetchSelectConfig: {
           url: '/foremen',
@@ -222,16 +232,7 @@ const Stats = props => {
         style: { width: '12%' },
       },
       flagsPresent: {
-        label: 'Фильтровать по наличию флага',
-        type: 'multiple-select',
-        defaultValue: [],
-        multipleSelectConfig: {
-          multipleOptions: employeeFlags.map(({ value, text }) => ({ value, text })),
-        },
-        style: { width: '18%', display: 'inline-block' },
-      },
-      flagsAbsent: {
-        label: 'Фильтровать по отсутствию флага',
+        label: 'Filter by flag presence',
         type: 'multiple-select',
         defaultValue: [],
         multipleSelectConfig: {
@@ -240,29 +241,28 @@ const Stats = props => {
         style: { width: '18%', display: 'inline-block' },
       },
       sortFilters: {
-        label: 'Сортировать',
+        label: 'Sort',
         type: 'select',
         selectConfig: {
           options: summarize ? [
-            { value: 'employee.lastName asc', text: 'По алфавиту' },
-            { value: 'allAmount desc', text: 'От самого большого' },
-            { value: 'allAmount asc', text: 'От самого маленького' },
+            { value: 'employee.lastName asc', text: 'By last name' },
+            { value: 'allAmount desc', text: 'From the most' },
+            { value: 'allAmount asc', text: 'From the least' },
           ] : [
-            { value: 'history.dateTime desc', text: 'От недавнего' },
-            { value: 'history.dateTIme asc', text: 'От давнего' }
+            { value: 'history.dateTime desc', text: 'From latest' },
+            { value: 'history.dateTIme asc', text: 'From oldest' }
           ],
         },
         defaultValue: defaultSort,
         style: { width: '11%' },
       },
       fromDateTime: {
-        label: 'От',
+        label: 'From',
         type: 'datetime',
-        defaultValue: getStartOfToday(),
         style: { width: '12%' },
       },
       toDateTime: {
-        label: 'До',
+        label: 'To',
         type: 'datetime',
         style: { width: '12%' },
       },
@@ -275,8 +275,8 @@ const Stats = props => {
     if (flagsPresent.some(flag => flagsAbsent.includes(flag))) {
       notification.open({
         type: 'warning',
-        title: 'Ошибка в фильтрах',
-        text: 'Один и тот же флаг не может присутствовать и отсутствовать одновременно. Результаты могут быть неправильными.'
+        title: 'Filters contain mistake',
+        text: 'Same flag cannot be present and absent in the same time. Results might be wrong.'
       });
     }
 
@@ -294,14 +294,13 @@ const Stats = props => {
       }),
 
       ...(Object.fromEntries(flagsPresent.map(flag => ([flag, true])))),
-      ...(Object.fromEntries(flagsAbsent.map(flag => ([flag, false])))),
     });
   };
 
   const pageActions = {
     summarize: {
       icon: summarize ? <ManageSearch /> : <PriceCheck />,
-      title: summarize ? 'История' : 'Рассчитать',
+      title: summarize ? 'Back to history' : 'Summarize',
       action: () => {
         const newSummarize = !summarize;
 
@@ -321,14 +320,14 @@ const Stats = props => {
     submitable: false,
     className: "row-form",
     intable: true,
-    resetText: "Сбросить",
-    resetStyle: { width: '6%' },
+    resetText: "Clear",
+    resetStyle: { width: '10%' },
     resetFilters: () => setFilters(initFilters),
     onChangeCallback: onChangeFilters,
   };
 
   const tableChips = [{
-    label: data => data?.totalAmount ? `Итого ${data.totalAmount.allAmount.toFixed(2)} кг или ${parsePrice(data.totalAmount.allPrice)}` : '',
+    label: data => data?.totalAmount ? `Total ${data.totalAmount.allAmount.toFixed(2)} kg or ${parsePrice(data.totalAmount.allPrice)}` : '',
     color: 'success',
   }];
 

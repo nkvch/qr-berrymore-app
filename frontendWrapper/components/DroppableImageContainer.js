@@ -6,8 +6,8 @@ const DroppableImageContainer = ({ image, theme }) => (
     <p className={styles.label}>
       {
         image
-          ? <>Фотография заружена. <span className={styles['upload-button']}>Выбрать другую?</span></>
-          : <><span className={styles['upload-button']}>Выберите</span> или перетащите сюда фотографию</>
+          ? <>Image is uploaded. <span className={styles['upload-button']}>Choose another one?</span></>
+          : <><span className={styles['upload-button']}>Choose</span> or drop image here</>
       }
     </p>
     {

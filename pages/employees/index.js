@@ -1,9 +1,9 @@
 import PaginatedTable from '../../frontendWrapper/components/PaginatedTable';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
-import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation, SelectAll, PhoneDisabled } from '@mui/icons-material';
+import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation, SelectAll } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/notifications';
+import { notification } from '../../frontendWrapper/components/Notifications';
 import { Button, Checkbox, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -26,15 +26,15 @@ const employeeFlags = [
 
 const columns = {
   contract: {
-    name: 'Номер кантракта',
+    name: 'Contract #',
     type: 'text',
   },
   lastName: {
-    name: 'Фамилия',
+    name: 'Last Name',
     type: 'text',
   },
   firstName: {
-    name: 'Имя',
+    name: 'First Name',
     type: 'text',
   },
   phone: {
@@ -42,23 +42,18 @@ const columns = {
     type: 'custom',
     render: number => number ? `+${number}` : 'Нет данных',
   },
-  additionalPhone: {
-    name: 'Дополнительный телефон',
-    type: 'custom',
-    render: number => number ? `+${number}` : 'Нет данных',
-  },
   address: {
-    name: 'Адрес',
+    name: 'Address',
     type: 'text',
   },
   pickUpAddress: {
-    name: 'Адрес посадки',
+    name: 'Pick up address',
     type: 'text',
   },
   foreman: {
-    name: 'Бригадир',
+    name: 'Foreman',
     type: 'included',
-    parse: foreman => foreman ? `${foreman.firstName} ${foreman.lastName}` : 'Нет данных',
+    parse: foreman => foreman ? `${foreman.firstName} ${foreman.lastName}` : 'No data',
   },
 };
 
@@ -84,7 +79,7 @@ const Employees = props => {
   const router = useRouter();
 
   useEffect(() => {
-    updateSubTitle('Сотрудники');
+    updateSubTitle('Employees');
   }, []);
 
   const [customFilters, setCustomFilters] = useState({});
@@ -96,8 +91,8 @@ const Employees = props => {
     if (flagsPresent.some(flag => flagsAbsent.includes(flag))) {
       notification.open({
         type: 'warning',
-        title: 'Ошибка в фильтрах',
-        text: 'Один и тот же флаг не может присутствовать и отсутствовать одновременно. Результаты могут быть неправильными.'
+        title: 'Filters contain mistake',
+        text: 'The same flag can\'t be present and absent at the same time. Results may be wrong.'
       });
     }
 
@@ -108,7 +103,7 @@ const Employees = props => {
     });
   };
 
-  const bulkUpdate = (data, refetch, forceLoading, forRows = null, all = false) => {
+  const bulkUpdate = (data, refetch, forceLoading, forRows = null) => {
     forceLoading(true);
 
     request({
@@ -124,7 +119,7 @@ const Employees = props => {
         if (status === 'ok') {
           notification.open({
             type: 'success',
-            title: 'Информация успешно обновлена',
+            title: 'Successfully updated data',
           });
           refetch();
 
@@ -132,7 +127,7 @@ const Employees = props => {
         } else {
           notification.open({
             type: 'error',
-            title: 'Ошибка при обновлении информации',
+            title: 'Error while updating data',
             text: response.message,
           });
         };
@@ -143,7 +138,7 @@ const Employees = props => {
   const filters = {
     fieldsData: {
       flagsPresent: {
-        label: 'Фильтровать по наличию флага',
+        label: 'Filter by flag presence',
         type: 'multiple-select',
         defaultValue: [],
         multipleSelectConfig: {
@@ -152,7 +147,7 @@ const Employees = props => {
         style: { width: '30%', display: 'inline-block' },
       },
       flagsAbsent: {
-        label: 'Фильтровать по отсутствию флага',
+        label: 'Filter by flag absence',
         type: 'multiple-select',
         defaultValue: [],
         multipleSelectConfig: {
@@ -161,7 +156,7 @@ const Employees = props => {
         style: { width: '30%', display: 'inline-block' },
       },
       foremanId: {
-        label: 'Фильтровать по бригаде',
+        label: 'Filter by brigade',
         type: 'fetch-select',
         fetchSelectConfig: {
           url: '/foremen',
@@ -171,11 +166,11 @@ const Employees = props => {
               type: 'number',
             },
             firstName: {
-              name: 'Имя',
+              name: 'First Name',
               type: 'text',
             },
             lastName: {
-              name: 'Фамилия',
+              name: 'Last Name',
               type: 'text',
             },
           },
@@ -198,19 +193,19 @@ const Employees = props => {
   const actions = {
     edit: {
       icon: <ModeEdit />,
-      tooltip: 'Редактировать',
+      tooltip: 'Edit',
       action: (emp, router) => router.push(`${router.pathname}/${emp.id}`),
     },
     delete: {
       icon: <Delete />,
-      tooltip: 'Удалить',
+      tooltip: 'Delete',
       action: (emp, _, refetch, forceLoading) => {
         const dialogKey = notification.open({
           type: 'warning',
-          title: 'Удаление сотрудника',
-          text: `Вы действительно хотите удалить сотрудника ${emp.firstName} ${emp.lastName}?`,
+          title: 'Deleting employee',
+          text: `Are you sure you want to delete employee ${emp.firstName} ${emp.lastName}?`,
           actions: [{
-            title: 'Удалить',
+            title: 'Delete',
             action: () => {
               notification.close(dialogKey);
 
@@ -223,13 +218,13 @@ const Employees = props => {
                   if (status === 'ok') {
                     notification.open({
                       type: 'success',
-                      title: 'Сотрудник успешно удален',
+                      title: 'Employee was deleted successfully',
                     });
                     refetch();
                   } else {
                     notification.open({
                       type: 'error',
-                      title: 'Ошибка при удалении сотрудника',
+                      title: 'Error while deleting employee',
                       text: response.message,
                     });
                   };
@@ -237,7 +232,7 @@ const Employees = props => {
               });
             },
           }, {
-            title: 'Отменить',
+            title: 'Cancel',
             action: () => notification.close(dialogKey),
           }],
         });
@@ -246,7 +241,7 @@ const Employees = props => {
     },
     qrcode: {
       icon: <QrCode2 />,
-      tooltip: 'Показать QR-код',
+      tooltip: 'Show QR-code',
       action: (emp, router) => router.push(`${router.pathname}/${emp.id}/qrcode`),
     },
     select: {
@@ -296,7 +291,7 @@ const Employees = props => {
                 disabled={!rows.length}
                 onClick={() => bulkUpdate({ printedQR: true }, refetch, forceLoading, rows)}
               >
-                Печатать всю страницу
+                Print whole page
               </Button>
             </PDFDownloadLink>
           </>
@@ -318,7 +313,7 @@ const Employees = props => {
               disabled={!selected.length}
               onClick={() => bulkUpdate({ printedQR: true }, refetch, forceLoading)}
             >
-              Печатать ({selected.length} сотрудников)
+              Print ({selected.length} employees)
             </Button>
           </PDFDownloadLink>
         </>
@@ -326,13 +321,13 @@ const Employees = props => {
     },
     isWorking: {
       icon: <Work />,
-      title: `Поставить смену (${selected.length} сотрудников)`,
+      title: `Work (${selected.length} employees)`,
       action: (_, __, refetch, forceLoading) => bulkUpdate({ isWorking: true }, refetch, forceLoading),
       disabled: !selected.length,
     },
     isNotWorking: {
       icon: <WorkOff />,
-      title: `Убрать смену (${selected.length} сотрудников)`,
+      title: `Don't work (${selected.length} employees)`,
       action: (_, __, refetch, forceLoading) => bulkUpdate({ isWorking: false }, refetch, forceLoading),
       disabled: !selected.length,
     },
@@ -352,7 +347,7 @@ const Employees = props => {
           <Form
             fieldsData={{
               setFlags: {
-                label: 'Выберете флаги которые хотите установить',
+                label: 'Choose flags to set',
                 type: 'multiple-select',
                 defaultValue: [],
                 multipleSelectConfig: {
@@ -362,14 +357,14 @@ const Employees = props => {
               },
             }}
             className="inline-form"
-            submitText="Установить"
+            submitText="Set"
             submitStyle={{ marginTop: '12px', marginLeft: '8px' }}
             disableSubmit={!selected.length}
             onSubmit={({ setFlags }) => {
               if (!setFlags.length) {
                 notification.open({
                   type: 'warning',
-                  title: 'Не выбрано ни одного флага',
+                  title: 'No flags selected',
                 });
               } else {
                 bulkUpdate(Object.fromEntries(setFlags.map(flag => ([flag, true]))), refetch, forceLoading);
@@ -385,7 +380,7 @@ const Employees = props => {
           <Form
             fieldsData={{
               removeFlags: {
-                label: 'Выберете флаги которые хотите убрать',
+                label: 'Choose flags to remove',
                 type: 'multiple-select',
                 defaultValue: [],
                 multipleSelectConfig: {
@@ -395,14 +390,14 @@ const Employees = props => {
               },
             }}
             className="inline-form"
-            submitText="Убрать"
+            submitText="Remove"
             submitStyle={{ marginTop: '12px', marginLeft: '8px' }}
             disableSubmit={!selected.length}
             onSubmit={({ removeFlags }) => {
               if (!removeFlags.length) {
                 notification.open({
                   type: 'warning',
-                  title: 'Не выбрано ни одного флага',
+                  title: 'No flags selected',
                 });
               } else {
                 bulkUpdate(Object.fromEntries(removeFlags.map(flag => ([flag, false]))), refetch, forceLoading);

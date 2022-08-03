@@ -11,38 +11,33 @@ import sleep from './utils/sleep';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import router, { useRouter } from 'next/router';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Download } from '@mui/icons-material';
 
 const unauthMenuOptions = [{
-  text: 'Войти',
+  text: 'Sign in',
   linkUrl: '/signin',
   icon: <ExitToAppIcon />,
 }];
 
 const authMenuOptions = [{
-  text: 'Сотрудники',
+  text: 'Employees',
   linkUrl: '/employees',
   icon: <PeopleIcon />,
 }, {
-  text: 'Продукты',
+  text: 'Products',
   linkUrl: '/products',
   icon: <ManageSearchIcon />,
 }, {
-  text: 'Бригадиры',
+  text: 'Foremen',
   linkUrl: '/foremen',
   icon: <SupervisorAccountIcon />,
 }, {
-  text: 'Статистика',
+  text: 'Statistics',
   linkUrl: '/stats',
   icon: <EqualizerIcon />,
 }, {
-  text: 'Новая порция',
+  text: 'New portion',
   linkUrl: '/new-portion',
   icon: <AddTaskIcon />,
-}, {
-  text: 'Скачать приложение',
-  linkUrl: '/download',
-  icon: <Download />,
 }];
 
 const ContextWrapper = ({ children }) => {
@@ -103,7 +98,7 @@ const ContextWrapper = ({ children }) => {
   return (
     <ThemeProvider theme={darkTheme}>
       <Context.Provider value={{ user, login, logout, updateSubTitle, mode, setMode }}>
-        <title>{`Berrymore|${subTitle || ''}`}</title>
+        <title>{`Berrymore${subTitle ? `|${subTitle}` : ''}`}</title>
         <Wrapper
           title="Berrymore"
           menuItems={

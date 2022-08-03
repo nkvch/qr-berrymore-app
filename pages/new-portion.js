@@ -2,7 +2,7 @@ import Context from '../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import Form from '../frontendWrapper/components/Form';
 import request from '../frontendWrapper/utils/request';
-import { notification } from '../frontendWrapper/components/notifications';
+import { notification } from '../frontendWrapper/components/Notifications';
 import router from 'next/router';
 
 const employeeColumns = {
@@ -11,15 +11,15 @@ const employeeColumns = {
     type: 'number',
   },
   photoPath: {
-    name: 'Фото',
+    name: 'Photo',
     type: 'image',
   },
   firstName: {
-    name: 'Имя',
+    name: 'First Name',
     type: 'text',
   },
   lastName: {
-    name: 'Фамилия',
+    name: 'Last Name',
     type: 'text',
   },
 };
@@ -30,18 +30,18 @@ const productColumns = {
     type: 'number',
   },
   photoPath: {
-    name: 'Фото',
+    name: 'Photo',
     type: 'image',
   },
   productName: {
-    name: 'Имя',
+    name: 'First Name',
     type: 'text',
   },
 };
 
 const fieldsData = {
   employeeId: {
-    label: 'Выберите сотрудника',
+    label: 'Choose employee',
     type: 'fetch-select',
     fetchSelectConfig: {
       url: '/employees',
@@ -52,7 +52,7 @@ const fieldsData = {
     }
   },
   productId: {
-    label: 'Выберите продукт',
+    label: 'Choose product',
     type: 'fetch-select',
     fetchSelectConfig: {
       url: '/products',
@@ -63,11 +63,11 @@ const fieldsData = {
     }
   },
   amount: {
-    label: 'Количество продукта (кг)',
+    label: 'Amount of the product (kg)',
     type: 'number',
   },
   dateTime: {
-    label: 'Дата и время',
+    label: 'Date and time',
     type: 'datetime',
     defaultValue: new Date(),
   }
@@ -77,7 +77,7 @@ const AddPortion = props => {
   const { updateSubTitle } = useContext(Context);
 
   useEffect(() => {
-    updateSubTitle('Новая порция');
+    updateSubTitle('New portion');
   }, []);
 
   const handleSubmit = values => {
@@ -91,7 +91,7 @@ const AddPortion = props => {
         if (status === 'ok') {
           notification.open({
             type: 'success',
-            title: 'Данные успешно записаны',
+            title: 'Successfully saved record',
           });
           router.push('/stats');
         } else if (status === 'error') {
@@ -108,7 +108,7 @@ const AddPortion = props => {
     <div className="block">
       <Form
         onSubmit={handleSubmit}
-        submitText="Сохранить"
+        submitText="Save"
         fieldsData={fieldsData}
         className="wide"
       />

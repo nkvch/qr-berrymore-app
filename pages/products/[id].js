@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import useApi from '../../frontendWrapper/utils/hooks/useApi';
-import { notification } from '../../frontendWrapper/components/notifications';
+import { notification } from '../../frontendWrapper/components/Notifications';
 import { useEffect, useContext } from 'react';
 import { CircularProgress } from '@mui/material';
 import Context from '../../frontendWrapper/context';
@@ -11,17 +11,17 @@ const url = '/products';
 
 const getFieldsData = productData => ({
   productName: {
-    label: 'Название продукта',
+    label: 'Name of the product',
     type: 'text',
     defaultValue: productData?.productName,
   },
   productPrice: {
-    label: 'Цена продукта',
+    label: 'Price of the product',
     type: 'number',
     defaultValue: productData?.productPrice,
   },
   photo: {
-    label: 'Выберите или перетащите сюда фотографию',
+    label: 'Choose or drop photo here',
     type: 'file',
     defaultValue: productData?.photoPath,
   },
@@ -39,14 +39,14 @@ const EditProduct = props => {
   }, {}, disableFetching);
 
   useEffect(() => {
-    updateSubTitle('Редактирование продукта');
+    updateSubTitle('Edit product');
   }, []);
 
   useEffect(() => {
     if (fetchError) {
       notification.open({
         type: 'error',
-        title: `Ошибка: ${fetchError}`,
+        title: `Error: ${fetchError}`,
       });
     }
   }, [fetchError]);
@@ -74,7 +74,7 @@ const EditProduct = props => {
 
           notification.open({
             type: 'success',
-            title: `Данные о продукте ${productName} успешно обновлены`,
+            title: `Product ${productName} was successfully updated`,
           });
 
           router.back();
@@ -83,7 +83,7 @@ const EditProduct = props => {
 
           notification.open({
             type: 'error',
-            title: `Ошибка: ${message}`,
+            title: `Error: ${message}`,
           });
         }
       },
@@ -97,7 +97,7 @@ const EditProduct = props => {
         : (
           <Form
             onSubmit={onSubmit}
-            submitText="Сохранить"
+            submitText="Save"
             fieldsData={getFieldsData(data)}
             className="wide"
           />

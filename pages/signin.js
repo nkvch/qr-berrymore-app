@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import { useContext, useEffect } from 'react';
 import request from '../frontendWrapper/utils/request';
 import Context from '../frontendWrapper/context';
-import { notification } from '../frontendWrapper/components/notifications';
+import { notification } from '../frontendWrapper/components/Notifications';
 import Form from '../frontendWrapper/components/Form';
 import { useRouter } from 'next/router';
 
@@ -11,7 +11,7 @@ const SignIn = () => {
   const { login, offLoading, updateSubTitle } = useContext(Context);
 
   useEffect(() => {
-    updateSubTitle('Вход');
+    updateSubTitle('Sign in');
   }, []);
 
   const router = useRouter();
@@ -23,11 +23,11 @@ const SignIn = () => {
 
   const fieldsData = {
     username: {
-      label: 'Имя пользователя',
+      label: 'Username',
       type: 'text',
     },
     password: {
-      label: 'Пароль',
+      label: 'Password',
       type: 'password',
     },
   };
@@ -45,7 +45,7 @@ const SignIn = () => {
 
           notification.open({
             type: 'success',
-            title: 'Вход успешно выполнен',
+            title: 'Successfully signed in',
           });
 
           router.push('/stats');
@@ -64,7 +64,7 @@ const SignIn = () => {
       <Form
         initialValues={initialValues}
         onSubmit={onSubmit}
-        submitText="Войти"
+        submitText="Sign in"
         fieldsData={fieldsData}
       />
     </div>

@@ -3,15 +3,15 @@ import Context from '../../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import { ModeEdit, Delete } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/notifications';
+import { notification } from '../../frontendWrapper/components/Notifications';
 
 const columns = {
   firstName: {
-    name: 'Имя',
+    name: 'First Name',
     type: 'text',
   },
   lastName: {
-    name: 'Фамилия',
+    name: 'Last Name',
     type: 'text',
   },
 };
@@ -21,19 +21,19 @@ const hiddenButRequiredData = ['id'];
 const actions = {
   edit: {
     icon: <ModeEdit />,
-    tooltip: 'Редактировать',
+    tooltip: 'Edit',
     action: (foreman, router) => router.push(`${router.pathname}/${foreman.id}`),
   },
   delete: {
     icon: <Delete />,
-    tooltip: 'Удалить',
+    tooltip: 'Delete',
     action: (foreman, _, refetch, forceLoading) => {
       const dialogKey = notification.open({
         type: 'warning',
-        title: 'Удаление продукта',
-        text: `Вы действительно хотите удалить бригадира ${foreman.firstName} ${foreman.lastName}?`,
+        title: 'Deleting product',
+        text: `Are you sure you want to delete foreman ${foreman.firstName} ${foreman.lastName}?`,
         actions: [{
-          title: 'Удалить',
+          title: 'Delete',
           action: () => {
             notification.close(dialogKey);
 
@@ -46,13 +46,13 @@ const actions = {
                 if (status === 'ok') {
                   notification.open({
                     type: 'success',
-                    title: 'Бригадир успешно удален',
+                    title: 'Foreman was deleted successfully',
                   });
                   refetch();
                 } else {
                   notification.open({
                     type: 'error',
-                    title: 'Ошибка при удалении бригадира',
+                    title: 'Error while deleting foreman',
                     text: response.message,
                   });
                 };
@@ -60,7 +60,7 @@ const actions = {
             });
           },
         }, {
-          title: 'Отменить',
+          title: 'Cancel',
           action: () => notification.close(dialogKey),
         }],
       });
@@ -73,7 +73,7 @@ const Products = props => {
   const { updateSubTitle } = useContext(Context);
 
   useEffect(() => {
-    updateSubTitle('Бригадиры');
+    updateSubTitle('Foremen');
   }, []);
 
   return (

@@ -35,7 +35,7 @@ const FetchSelect = props => {
       case 'image':
         cell = (
           <Avatar
-            alt="Аватар"
+            alt="Profile image"
             src={value}
             sx={{ width: 20, height: 20 }}
           />
@@ -81,8 +81,8 @@ const FetchSelect = props => {
       onChange={onChange}
       onInputChange={handleInputChange}
       loading={loading}
-      loadingText="Загрузка"
-      noOptionsText="Не найдено"
+      loadingText="Loading"
+      noOptionsText="No results found"
       renderOption={(props, option) => (
         <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} className={styles.option} {...props}>
           {

@@ -1,6 +1,6 @@
 import Form from '../../frontendWrapper/components/Form';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/notifications';
+import { notification } from '../../frontendWrapper/components/Notifications';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/dist/client/router';
@@ -24,46 +24,42 @@ const foremanColumns = {
     type: 'number',
   },
   firstName: {
-    name: 'Имя',
+    name: 'First Name',
     type: 'text',
   },
   lastName: {
-    name: 'Фамилия',
+    name: 'Last Name',
     type: 'text',
   },
 };
 
 const fieldsData = {
   firstName: {
-    label: 'Имя сотрудника',
+    label: 'Name of the employee',
     type: 'text',
   },
   lastName: {
-    label: 'Фамилия сотрудника',
+    label: 'Last Name employee',
     type: 'text',
   },
   contract: {
-    label: 'Номер контракта',
+    label: 'Contract #',
     type: 'text',
   },
   address: {
-    label: 'Адрес',
+    label: 'Address',
     type: 'text',
   },
   pickUpAddress: {
-    label: 'Адрес посадки',
+    label: 'Pick up address',
     type: 'text',
   },
   phone: {
-    label: 'Телефон',
-    type: 'phone',
-  },
-  additionalPhone: {
-    label: 'Дополнительный телефон (необязательно)',
+    label: 'Phone',
     type: 'phone',
   },
   foremanId: {
-    label: 'Выберите бригадира',
+    label: 'Choose foreman',
     type: 'fetch-select',
     fetchSelectConfig: {
       url: '/foremen',
@@ -74,7 +70,7 @@ const fieldsData = {
     }
   },
   flags: {
-    label: 'Флаги',
+    label: 'Flags',
     type: 'multiple-select',
     defaultValue: [],
     multipleSelectConfig: {
@@ -83,7 +79,7 @@ const fieldsData = {
     style: { marginBottom: '8px' },
   },
   photo: {
-    label: 'Выберите или перетащите сюда фотографию',
+    label: 'Choose or drop photo here',
     type: 'file',
   },
 };
@@ -96,7 +92,7 @@ const CreateEmployee = props => {
   const [lastName, setLastName] = useState('');
 
   useEffect(() => {
-    updateSubTitle('Новый сотрудник');
+    updateSubTitle('New Employee');
   }, []);
 
   const onSubmit = values => {
@@ -123,7 +119,7 @@ const CreateEmployee = props => {
 
           notification.open({
             type: 'success',
-            title: `Сотрудник ${firstName} ${lastName} успешно добавлен`,
+            title: `Employee ${firstName} ${lastName} was successfully added`,
           });
 
           router.back();
@@ -132,7 +128,7 @@ const CreateEmployee = props => {
 
           notification.open({
             type: 'error',
-            title: `Ошибка: ${message}`,
+            title: `Error: ${message}`,
           });
         }
       },
@@ -150,7 +146,7 @@ const CreateEmployee = props => {
           if (foundData) {
             notification.open({
               type: 'warning',
-              title: `Сотрудник с именем ${foundData.firstName} ${foundData.lastName} уже существует`,
+              title: `Employee named ${foundData.firstName} ${foundData.lastName} already exists`,
               time: 10000,
             });
           }
@@ -160,7 +156,7 @@ const CreateEmployee = props => {
 
           notification.open({
             type: 'error',
-            title: `Ошибка: ${message}`,
+            title: `Error: ${message}`,
           });
         }
       },
@@ -180,7 +176,7 @@ const CreateEmployee = props => {
     <div className="block">
       <Form
         onSubmit={onSubmit}
-        submitText="Сохранить"
+        submitText="Save"
         fieldsData={fieldsData}
         className="wide"
         onChangeCallback={updateNames}

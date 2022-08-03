@@ -55,7 +55,7 @@ const Printqrs = () => {
                 variant="contained"
                 style={{ marginTop: '10px' }}
               >
-                Скачать PDF
+                Download PDF
               </Button>
             </PDFDownloadLink>
           </>

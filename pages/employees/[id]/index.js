@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import useApi from '../../../frontendWrapper/utils/hooks/useApi';
-import { notification } from '../../../frontendWrapper/components/notifications';
+import { notification } from '../../../frontendWrapper/components/Notifications';
 import { useEffect, useContext } from 'react';
 import { CircularProgress } from '@mui/material';
 import Context from '../../../frontendWrapper/context';
@@ -25,53 +25,48 @@ const foremanColumns = {
     type: 'number',
   },
   firstName: {
-    name: 'Имя',
+    name: 'First Name',
     type: 'text',
   },
   lastName: {
-    name: 'Фамилия',
+    name: 'Last Name',
     type: 'text',
   },
 };
 
 const getFieldsData = employeeData => ({
   firstName: {
-    label: 'Имя сотрудника',
+    label: 'Name of the employee',
     type: 'text',
     defaultValue: employeeData?.firstName,
   },
   lastName: {
-    label: 'Фамилия сотрудника',
+    label: 'Last name of the employee',
     type: 'text',
     defaultValue: employeeData?.lastName,
   },
   contract: {
-    label: 'Нумар кантракту',
+    label: 'Contract #',
     type: 'text',
     defaultValue: employeeData?.contract,
   },
   address: {
-    label: 'Адрас',
+    label: 'Address',
     type: 'text',
     defaultValue: employeeData?.address,
   },
   pickUpAddress: {
-    label: 'Адрес посадки',
+    label: 'Pick up address',
     type: 'text',
     defaultValue: employeeData?.pickUpAddress,
   },
   phone: {
-    label: 'Тэлефон',
+    label: 'Phone',
     type: 'phone',
     defaultValue: employeeData?.phone,
   },
-  additionalPhone: {
-    label: 'Дополнительный телефон (необязательно)',
-    type: 'phone',
-    defaultValue: employeeData?.additionalPhone,
-  },
   foremanId: {
-    label: 'Выберите бригадира',
+    label: 'Choose foreman',
     type: 'fetch-select',
     fetchSelectConfig: {
       url: '/foremen',
@@ -83,7 +78,7 @@ const getFieldsData = employeeData => ({
     defaultValue: employeeData?.foremanId,
   },
   flags: {
-    label: 'Флаги',
+    label: 'Flags',
     type: 'multiple-select',
     defaultValue: employeeData ? Object.entries(employeeData).filter(([key, value]) => employeeFlags
       .map(flag => flag.value)
@@ -95,7 +90,7 @@ const getFieldsData = employeeData => ({
     style: { marginBottom: '8px' },
   },
   photo: {
-    label: 'Выберите или перетащите сюда фотографию',
+    label: 'Choose or drop photo here',
     type: 'file',
     defaultValue: employeeData?.photoPath,
   },
@@ -113,14 +108,14 @@ const EditEmployee = props => {
   }, {}, disableFetching);
 
   useEffect(() => {
-    updateSubTitle('Редактирование сотрудника');
+    updateSubTitle('Edit employee');
   }, []);
 
   useEffect(() => {
     if (fetchError) {
       notification.open({
         type: 'error',
-        title: `Ошибка: ${fetchError}`,
+        title: `Error: ${fetchError}`,
       });
     }
   }, [fetchError]);
@@ -154,7 +149,7 @@ const EditEmployee = props => {
 
           notification.open({
             type: 'success',
-            title: `Данные о сотруднике ${firstName} ${lastName} успешно обновлены`,
+            title: `Employee ${firstName} ${lastName} was successfully updated`,
           });
 
           router.back();
@@ -163,7 +158,7 @@ const EditEmployee = props => {
 
           notification.open({
             type: 'error',
-            title: `Ошибка: ${message}`,
+            title: `Error: ${message}`,
           });
         }
       },
@@ -177,7 +172,7 @@ const EditEmployee = props => {
         : (
           <Form
             onSubmit={onSubmit}
-            submitText="Сохранить"
+            submitText="Save"
             fieldsData={getFieldsData(data)}
             className="wide"
           />

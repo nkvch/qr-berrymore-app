@@ -15,7 +15,7 @@ const deleteUser = async req => {
   const user = userModelData.get({ plain: true });
 
   if (user?.role?.roleName === 'admin') {
-    throw new GeneralError('Нельзя удалить аккаунт администратора');
+    throw new GeneralError('You can\'t delete admin account');
   }
 
   const response = await db.users.destroy({ where: { id: Number(id) } });

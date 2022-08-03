@@ -66,10 +66,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(30),
       allowNull: true,
     },
-    additionalPhone: {
-      type: DataTypes.STRING(30),
-      allowNull: true,
-    },
     foremanId: {
       type: DataTypes.INTEGER,
       allowNull: true,

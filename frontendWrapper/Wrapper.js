@@ -23,7 +23,7 @@ import { useContext, useState } from "react";
 import Image from 'next/image';
 import { TransitionGroup } from 'react-transition-group';
 import Context from './context';
-import Notifications from './components/notifications';
+import Notifications from './components/Notifications';
 import ThemeSwitch from './components/ThemeSwitch';
 
 const Wrapper = ({ children, title, menuItems, subTitle }) => {
@@ -70,13 +70,13 @@ const Wrapper = ({ children, title, menuItems, subTitle }) => {
               checked={mode === 'dark'}
               onChange={switchTheme}
             />}
-            label={mode === 'dark' ? 'Ночная тема' : 'Дневная тема'}
+            label={mode === 'dark' ? 'Night theme' : 'Day theme'}
             style={{
               color: mode === 'dark' ? 'white' : 'black',
             }}
           />
           {
-            user && <Button variant="text" onClick={logout}>Выйти</Button>
+            user && <Button variant="text" onClick={logout}>Log out</Button>
           }
         </Toolbar>
       </AppBar>

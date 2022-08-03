@@ -1,6 +1,6 @@
 import Form from '../../frontendWrapper/components/Form';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/notifications';
+import { notification } from '../../frontendWrapper/components/Notifications';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/dist/client/router';
@@ -8,19 +8,19 @@ import { Alert } from '@mui/material';
 
 const fieldsData = {
   firstName: {
-    label: 'Имя',
+    label: 'First Name',
     type: 'text',
   },
   lastName: {
-    label: 'Фамилия',
+    label: 'Last Name',
     type: 'text',
   },
   username: {
-    label: 'Логин',
+    label: 'Username',
     type: 'text',
   },
   password: {
-    label: 'Пароль',
+    label: 'Password',
     type: 'text',
   },
 };
@@ -30,7 +30,7 @@ const CreateForeman = props => {
   const router = useRouter();
 
   useEffect(() => {
-    updateSubTitle('Новый бригадир');
+    updateSubTitle('New foreman');
   }, []);
 
   const onSubmit = values => {
@@ -47,7 +47,7 @@ const CreateForeman = props => {
 
           notification.open({
             type: 'success',
-            title: `Бригадир ${firstName} ${lastName} успешно добавлен`,
+            title: `Foreman ${firstName} ${lastName} was successfully added`,
           });
 
           router.back();
@@ -56,7 +56,7 @@ const CreateForeman = props => {
 
           notification.open({
             type: 'error',
-            title: `Ошибка: ${message}`,
+            title: `Error: ${message}`,
           });
         }
       },
@@ -65,10 +65,10 @@ const CreateForeman = props => {
 
   return (
     <div className="block">
-      <Alert style={{ width: '300px', margin: 'auto', marginBottom: '8px' }} severity="info">Логин и пароль нельзя будет изменить или подсмотреть после того как бригадир будет сохранен.</Alert>
+      <Alert style={{ width: '300px', margin: 'auto', marginBottom: '8px' }} severity="info">Username and password won&apos;t be editable after you save it.</Alert>
       <Form
         onSubmit={onSubmit}
-        submitText="Сохранить"
+        submitText="Save"
         fieldsData={fieldsData}
       />
     </div>

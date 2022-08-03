@@ -18,16 +18,16 @@ const parseFormWithPhoto = async req => {
   const uploadDirOk = await checkOrCreateFolder(uploadDir);
 
   if (!uploadDirOk) {
-    throw new GeneralError('Проблема с загрузкой фотографии на сервер');
+    throw new GeneralError('Problem has occured while trying to upload image');
   }
 
   try {
     const fields = await new Promise((res, rej) => form.parse(req, (err, fields, files) => {
-      if (err) rej(new GeneralError('Не удалось прочитать файл'));
+      if (err) rej(new GeneralError('Unable to read the file'));
 
       const photo = files.photo;
       
-      if (photo && !typeIsValid(photo)) rej(new GeneralError('Неправильный формат файла'));
+      if (photo && !typeIsValid(photo)) rej(new GeneralError('Invalid file format'));
 
       res({ ...fields, ...files });
     }));

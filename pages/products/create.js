@@ -1,21 +1,21 @@
 import Form from '../../frontendWrapper/components/Form';
 import request from '../../frontendWrapper/utils/request';
-import { notification } from '../../frontendWrapper/components/notifications';
+import { notification } from '../../frontendWrapper/components/Notifications';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/dist/client/router';
 
 const fieldsData = {
   productName: {
-    label: 'Название продукта',
+    label: 'Name of the product',
     type: 'text',
   },
   productPrice: {
-    label: 'Цена продукта',
+    label: 'Price of the product',
     type: 'number',
   },
   photo: {
-    label: 'Выберите или перетащите сюда фотографию',
+    label: 'Choose or drop photo here',
     type: 'file',
   },
 };
@@ -25,7 +25,7 @@ const CreateProduct = props => {
   const router = useRouter();
 
   useEffect(() => {
-    updateSubTitle('Новый продукт');
+    updateSubTitle('New product');
   }, []);
 
   const onSubmit = values => {
@@ -46,7 +46,7 @@ const CreateProduct = props => {
 
           notification.open({
             type: 'success',
-            title: `Продукт ${productName} успешно добавлен`,
+            title: `Product ${productName} was successfully added`,
           });
 
           router.back();
@@ -55,7 +55,7 @@ const CreateProduct = props => {
 
           notification.open({
             type: 'error',
-            title: `Ошибка: ${message}`,
+            title: `Error: ${message}`,
           });
         }
       },
@@ -66,7 +66,7 @@ const CreateProduct = props => {
     <div className="block">
       <Form
         onSubmit={onSubmit}
-        submitText="Сохранить"
+        submitText="Save"
         fieldsData={fieldsData}
         className="wide"
       />

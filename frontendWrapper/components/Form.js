@@ -43,7 +43,7 @@ const renderField = (fieldData, {
           handleChange={file => setFieldValue(field, file)}
           label={label}
           name={field}
-          hoverTitle="Отпускайте"
+          hoverTitle="Drop"
           types={['JPG', 'PNG', 'GIF']}
         >
           <DroppableImageContainer image={values[field]} theme={theme} />
@@ -93,7 +93,7 @@ const renderField = (fieldData, {
             <TextField
               {...params}
               label={label}
-              placeholder="Выберите интересующие вас значения"
+              placeholder="Sample options"
             />
           )}
         />
@@ -166,13 +166,13 @@ const renderField = (fieldData, {
     case 'phone':
       fieldToRender = (
         <PhoneInput
-          country={'by'}
+          country={'pl'}
           name={field}
           onChange={phoneNumber => setFieldValue(field, phoneNumber)}
           value={values[field]}
           specialLabel={label}
           className={theme}
-          isValid={(value, country) => country.iso2 === 'by' && !!value.match(/^\d{12}$/)}
+          isValid={(value, country) => country.iso2 === 'pl' && !!value.match(/^\d{11}$/)}
           style={{
             marginBottom: '8px',
             ...(style),

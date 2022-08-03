@@ -5,7 +5,7 @@ const createRegularJob = (job, { hour, minute }) => {
 
   rule.hour = hour;
   rule.minute = minute;
-  rule.tz = 'Europe/Minsk';
+  rule.tz = 'Europe/Warsaw';
 
   schedule.scheduleJob(rule, job);
 };

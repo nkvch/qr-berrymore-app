@@ -15,7 +15,6 @@ import {
   Avatar,
   Tooltip,
   Chip,
-  Grid,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTheme } from '@emotion/react';
@@ -25,7 +24,7 @@ import {
   KeyboardArrowLeft, 
   KeyboardArrowRight,
 } from '@mui/icons-material';
-import { notification } from './notifications';
+import { notification } from './Notifications';
 import { useState, useEffect, useRef } from 'react';
 import Debouncer from '../utils/debouncer';
 import { useRouter } from 'next/router';
@@ -78,7 +77,7 @@ const PaginatedTable = props => {
     if (fetchError) {
       notification.open({
         type: 'error',
-        title: `Ошибка: ${fetchError}`,
+        title: `Error: ${fetchError}`,
       });
     }
   }, [fetchError]);
@@ -87,7 +86,7 @@ const PaginatedTable = props => {
     if (total === 0) {
       notification.open({
         type: 'warning',
-        title: 'Результаты не найдены',
+        title: 'No results found',
       });
     }
   }, [total]);
@@ -129,7 +128,7 @@ const PaginatedTable = props => {
       case 'image':
         return (
           <Avatar
-            alt="Аватар"
+            alt="Profile image"
             src={value}
             sx={{ width: 40, height: 40 }}
           />
@@ -144,7 +143,7 @@ const PaginatedTable = props => {
       case 'custom':
         return columns[key].render(value);
       default:
-        return value?.toString() || 'Нет данных';
+        return value?.toString() || 'No data';
     }
   };
 
@@ -239,7 +238,7 @@ const PaginatedTable = props => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Поиск..."
+                label="Search..."
                 onChange={handleChangeSearch}
                 className={classNames?.autocompleteTextField}
               />
@@ -261,14 +260,7 @@ const PaginatedTable = props => {
         )
       }
       <TableContainer component={Paper}>
-        <Button
-          variant="contained"
-          style={{ marginTop: '1em', marginBottom: '1em', marginRight: '1em' }}
-          onClick={customAddButton || (() => router.push(`${url}/create`))}
-        >
-          Добавить
-        </Button>
-        { total !== undefined ? <Chip label={`Всего результатов: ${total}`} /> : null}
+        { total !== undefined ? <Chip label={`Total results number: ${total}`} /> : null}
         { tableChips && data ? tableChips.map(({ label, color }, idx) => <Chip key={`customchip${idx}`} label={label(data)} color={color} />) : null }
         <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
           <TableHead>
@@ -281,7 +273,7 @@ const PaginatedTable = props => {
               {
                 actions
                   ? (
-                    <TableCell key="actions-header">Действия</TableCell>
+                    <TableCell key="actions-header">Actions</TableCell>
                   )
                   : null
               }
@@ -319,7 +311,7 @@ const PaginatedTable = props => {
           </TableBody>
         </Table>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25, { label: 'Все', value: -1 }]}
+          rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
           colSpan={3}
           count={-1}
           rowsPerPage={qty}
@@ -329,10 +321,10 @@ const PaginatedTable = props => {
             inputProps: {
               'aria-label': 'rows per page',
             },
-            label: 'Результатов на странице',
+            label: 'Rows per page',
             native: true,
           }}
-          labelRowsPerPage={'Результатов на странице'}
+          labelRowsPerPage={'Rows per page'}
           labelDisplayedRows={() => `${page}-${totallyPages}`}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
@@ -344,7 +336,7 @@ const PaginatedTable = props => {
         style={{ marginTop: '1em' }}
         onClick={customAddButton || (() => router.push(`${url}/create`))}
       >
-        Добавить
+        Add
       </Button>
       {
         rows.length && pageActions ? (

@@ -18,7 +18,7 @@ const updateProduct = async req => {
     const savedFilesFolderExists = await checkOrCreateFolder(savedFilesFolder);
 
     if (!savedFilesFolderExists) {
-      throw new GeneralError('Проблема с загрузкой фотографии на сервер');
+      throw new GeneralError('Problem has occured while trying to upload image');
     }
 
     const randomFolderName = uuidv4();
@@ -28,7 +28,7 @@ const updateProduct = async req => {
     const productPhotoFolderCreated = await checkOrCreateFolder(productPhotoFolder);
 
     if (!productPhotoFolderCreated) {
-      throw new GeneralError('Проблема с загрузкой фотографии на сервер');
+      throw new GeneralError('Problem has occured while trying to upload image');
     }
 
     const photoName  = photo.originalFilename.replace(/[/\\?%*:|"<>\s]/g, '-');
@@ -38,7 +38,7 @@ const updateProduct = async req => {
     const movedFileToSaveDir = await moveFile(photo.filepath, photo_save_path);
 
     if (!movedFileToSaveDir) {
-      throw new GeneralError('Проблема с сохранением фотографии');
+      throw new GeneralError('Problem occured while saving the photo');
     }
   
     photoPath = photo_save_path.replace('public', '');
