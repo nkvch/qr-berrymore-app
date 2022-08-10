@@ -2,12 +2,17 @@ import Context from '../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
 import useApi from '../frontendWrapper/utils/hooks/useApi';
 import PaginatedTable from '../frontendWrapper/components/PaginatedTable';
-import { ModeEdit, Delete, PriceCheck, ManageSearch } from '@mui/icons-material';
+import { ModeEdit, Delete, PriceCheck, ManageSearch, BarChart, TableRows, CleaningServices } from '@mui/icons-material';
 import {
   VictoryPie as Pie,
   VictoryLegend as Legend,
   VictoryLine as Line,
   VictoryChart as Chart,
+  VictoryChart,
+  VictoryAxis,
+  VictoryBar,
+  VictoryTheme,
+  VictoryTooltip,
 } from 'victory';
 import { Switch, FormControlLabel, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
 import { notification } from '../frontendWrapper/components/Notifications';
@@ -27,7 +32,7 @@ const employeeFlags = [
   { value: 'blacklisted', text: 'Blacklisted', color: '#808080' },
   { value: 'goodWorker', text: 'Good worker', color: '#1e9e05' },
   { value: 'workedBefore', text: 'Worked before', color: '#d9c045' },
-  { value: 'called', text: 'Звонили', color: '#c75fed' },
+  { value: 'called', text: 'Called', color: '#c75fed' },
 ];
 
 const employeeColumns = {
@@ -186,7 +191,7 @@ const Stats = props => {
     sorting: defaultSorting,
   };
 
-  const [tableMode, setTableMode] = useState(true);
+  const [tableMode, setTableMode] = useState(false);
   const [filters, setFilters] = useState(initFilters);
 
   useEffect(() => {
@@ -270,15 +275,7 @@ const Stats = props => {
   };
 
   const onChangeFilters = values => {
-    const { fromDateTime, toDateTime, sortFilters, flagsPresent, flagsAbsent, ...restFilters } = values;
-
-    if (flagsPresent.some(flag => flagsAbsent.includes(flag))) {
-      notification.open({
-        type: 'warning',
-        title: 'Filters contain mistake',
-        text: 'Same flag cannot be present and absent in the same time. Results might be wrong.'
-      });
-    }
+    const { fromDateTime, toDateTime, sortFilters, flagsPresent, ...restFilters } = values;
 
     const [sortColumn, sorting] = sortFilters?.split(' ') || [];
 
@@ -310,9 +307,20 @@ const Stats = props => {
           sorting: 'desc',
         }));
 
+        if (!newSummarize) {
+          setTableMode(true);
+        }
+
         setSummarize(newSummarize);
       },
     },
+    ...(summarize && {
+      switchMode: {
+        icon: tableMode ? <BarChart /> : <TableRows />,
+        title: tableMode ? 'To chart mode' : 'To table mode',
+        action: () => setTableMode(prev => !prev),
+      },
+    }),
   };
 
   const filtersFormConfig = {
@@ -331,24 +339,55 @@ const Stats = props => {
     color: 'success',
   }];
 
+  const renderCharts = (rows, qty, page, setQty, setPage) => {
+    if (qty !== 10) {
+      setQty(10);
+    }
+
+    const tickValues = rows.map((item, idx) => idx);
+    const tickFormat = rows.map(({ employee: { firstName, lastName } }) => `${firstName} ${lastName}`);
+
+    return (
+      <div>
+        <VictoryChart
+          theme={VictoryTheme.material}
+          domain={{ x: [0, 10], y: [0, Math.max(...rows.map(({ allAmount }) => allAmount))] }}
+          width={700}
+        >
+          <VictoryAxis
+            tickValues={tickValues}
+            tickFormat={tickFormat}
+          />
+          <VictoryAxis
+            dependentAxis
+            tickFormat={x => `${x} kg`}
+          />
+          <VictoryBar
+            data={rows}
+            labels={({ datum: { allAmount, allPrice }}) => `Amount: ${allAmount.toFixed(2)} kg.\nPrice: ${parsePrice(allPrice)}`}
+            y="allAmount"
+            labelComponent={<VictoryTooltip dy={0} centerOffset={{ x: 25 }} />}
+          />
+        </VictoryChart>
+      </div>
+    );
+  };
+
   return (
     <div className="block">
-      {
-        tableMode ? (
-          <PaginatedTable
-            url="/history"
-            columns={summarize ? summarizeCols : columns}
-            actions={summarize ? null : actions}
-            noSearch
-            filters={filtersFormConfig}
-            pageActions={pageActions}
-            customFilters={{ ...filters, summarize }}
-            tableChips={tableChips}
-            customAddButton={() => router.push('/new-portion')}
-            hiddenButRequiredData={hiddenButRequiredData}
-          />
-        ) : null
-      }
+      <PaginatedTable
+        url="/history"
+        columns={summarize ? summarizeCols : columns}
+        actions={summarize ? null : actions}
+        noSearch
+        filters={filtersFormConfig}
+        pageActions={pageActions}
+        customFilters={{ ...filters, summarize }}
+        tableChips={tableChips}
+        customAddButton={() => router.push('/new-portion')}
+        hiddenButRequiredData={hiddenButRequiredData}
+        customDataRender={tableMode ? null : renderCharts}
+      />
     </div>
   )
 };

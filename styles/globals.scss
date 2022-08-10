@@ -113,3 +113,31 @@ a {
     background: #121212;
   }
 }
+
+.main-page-header {
+  font-family: "Roboto","Helvetica","Arial",sans-serif;
+  font-size: 40px;
+  font-weight: 500;
+  margin-left: 3%;
+}
+
+.main-page-paragraph {
+  font-family: "Roboto","Helvetica","Arial",sans-serif;
+  margin: 40px 3% 40px 3%;
+  font-weight: 300;
+  line-height: 1.5em;
+}
+
+.main-page-grid {
+  // margin: 40px 3% 40px 3%;
+  padding-left: 3%;
+  padding-right: 3%;
+}
+
+.main-page-descriptions {
+  height: 40px;
+}
+
+tspan {
+  font-size: 8px !important;
+}

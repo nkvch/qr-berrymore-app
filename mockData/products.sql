@@ -1,0 +1,1 @@
+insert into products (id, productName, productPrice) values (2, 'Blueberry', 10.5);

@@ -7,10 +7,12 @@ import db from '../../db/models';
 const jwt = require('jsonwebtoken');
 
 const refreshSession = async req => {
-  const id = await getUserIdByJwt(req);
+  const isDemo = process.env.IS_DEMO;
+
+  const id = isDemo ? null : (await getUserIdByJwt(req));
 
   const userModelData = await db.users.findOne({
-    where: { id },
+    where: isDemo ? { username: 'demo' } : { id },
     include: [{
       model: db.roles,
       as: 'role',
@@ -19,11 +21,11 @@ const refreshSession = async req => {
 
   const { password, ...user} = userModelData.get({ plain: true });
 
-  if (!user) throw new NotFound('User does not exist', { username });
+  if (!user) throw new NotFound('User does not exist', { username: user.username });
 
-  const newToken = await generateJWT({ id });
+  const newToken = await generateJWT({ id: user.id });
 
-  return { ...user, token: newToken, id };
+  return { ...user, token: newToken };
 };
 
 export default refreshSession;

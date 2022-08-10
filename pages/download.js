@@ -1,17 +1,23 @@
 import { Download } from "@mui/icons-material";
 import { Button, LinearProgress } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import LinearProgressWithLabel from "../frontendWrapper/components/LinearProgessWithLabel";
 import LinearWithValueLabel from "../frontendWrapper/components/LinearProgessWithLabel";
 import { notification } from '../frontendWrapper/components/notifications';
+import Context from "../frontendWrapper/context";
 import withInterval from "../frontendWrapper/utils/withInterval";
 
 const DownloadPage = () => {
   const [progress, setProgress] = useState(0);
+  const { updateSubTitle } = useContext(Context);
 
   const updateProgress = ({ loaded, total }) => {
     setProgress((loaded/total) * 100);
   };
+
+  useEffect(() => {
+    updateSubTitle('Download app');
+  }, []);
 
   const downloadApp = () => {
     fetch('/downloadAndroidApp', {
@@ -78,8 +84,8 @@ const DownloadPage = () => {
       .catch(res => {
         notification.open({
           type: 'error',
-          title: 'Ошибка при загрузке',
-          text: `Ошибка при загрузке приложения: ${res.toString()}`,
+          title: 'Error while downloading',
+          text: `Error while downloading the app: ${res.toString()}`,
         });
       });
   };
@@ -97,7 +103,7 @@ const DownloadPage = () => {
         onClick={downloadApp}
         endIcon={<Download />}
       >
-        Скачать приложение
+        Download app
       </Button>
     </div>
   )

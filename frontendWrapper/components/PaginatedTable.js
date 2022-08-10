@@ -35,7 +35,8 @@ import Form from './Form';
 const debouncer = new Debouncer(500);
 
 const PaginatedTable = props => {
-  const { url, columns, hiddenButRequiredData = [], actions, noSearch, searchStyle, customFilters, customAddButton, filters, classNames, pageActions, chips, tableChips } = props;
+  const { url, columns, hiddenButRequiredData = [], actions, noSearch, searchStyle, customFilters,
+    customAddButton, filters, classNames, pageActions, chips, tableChips, customDataRender } = props;
 
   const [page, setPage] = useState(1);
   const [qty, setQty] = useState(10);
@@ -148,9 +149,9 @@ const PaginatedTable = props => {
   };
 
   const renderActions = (actions, idx) => Object.entries(actions)
-    .map(([, { icon, tooltip, action, customRender }]) => customRender ? customRender(rows[idx], router, refetch, forceLoading) : (
+    .map(([, { icon, tooltip, action, customRender, disabled }]) => customRender ? customRender(rows[idx], router, refetch, forceLoading) : (
       <Tooltip key={`${action}${idx}`} title={tooltip}>
-        <IconButton onClick={() => action(rows[idx], router, refetch, forceLoading)}>
+        <IconButton disabled={disabled} onClick={() => action(rows[idx], router, refetch, forceLoading)}>
           { icon }
         </IconButton>
       </Tooltip>
@@ -262,56 +263,60 @@ const PaginatedTable = props => {
       <TableContainer component={Paper}>
         { total !== undefined ? <Chip label={`Total results number: ${total}`} /> : null}
         { tableChips && data ? tableChips.map(({ label, color }, idx) => <Chip key={`customchip${idx}`} label={label(data)} color={color} />) : null }
-        <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-          <TableHead>
-            <TableRow>
-              {
-                Object.values(columns).map(({ name }) => (
-                  <TableCell key={name}>{name}</TableCell>
-                ))
-              }
-              {
-                actions
-                  ? (
-                    <TableCell key="actions-header">Actions</TableCell>
-                  )
-                  : null
-              }
-            </TableRow>
-          </TableHead>
-          <TableBody className={loading ? 'table-rows dimmed' : 'table-rows'}>
-            { loading ? <CircularProgress className="loading-spinner" /> : null }
-            {rows.map((row, idx) => (
-              <>
-                {
-                  chips ? Object.values(chips).filter(({ show }) => show(row)).map(({ label, color }) => (
-                    <Chip key={`chip${idx}${label}`} label={label} style={{ backgroundColor: color }} />
-                  )) : null
-                }
-                <TableRow key={idx}>
+        {
+          customDataRender ? customDataRender(rows, qty, page, setQty, setPage) : (
+            <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+              <TableHead>
+                <TableRow>
                   {
-                    Object.entries(row).filter(filterHiddenFields).sort(sortColumns).map(([key, value]) => (
-                      <TableCell key={`${idx}${key}${value}`} scope="row">
-                        {renderCellContend(key, value)}
-                      </TableCell>
+                    Object.values(columns).map(({ name }) => (
+                      <TableCell key={name}>{name}</TableCell>
                     ))
                   }
                   {
                     actions
                       ? (
-                        <TableCell key={`${idx}-actions`} scope="row">
-                          {renderActions(actions, idx)}
-                        </TableCell>
+                        <TableCell key="actions-header">Actions</TableCell>
                       )
                       : null
                   }
                 </TableRow>
-              </>
-            ))}
-          </TableBody>
-        </Table>
+              </TableHead>
+              <TableBody className={loading ? 'table-rows dimmed' : 'table-rows'}>
+                { loading ? <CircularProgress className="loading-spinner" /> : null }
+                { rows.map((row, idx) => (
+                  <>
+                    {
+                      chips ? Object.values(chips).filter(({ show }) => show(row)).map(({ label, color }) => (
+                        <Chip key={`chip${idx}${label}`} label={label} style={{ backgroundColor: color }} />
+                      )) : null
+                    }
+                    <TableRow key={idx}>
+                      {
+                        Object.entries(row).filter(filterHiddenFields).sort(sortColumns).map(([key, value]) => (
+                          <TableCell key={`${idx}${key}${value}`} scope="row">
+                            {renderCellContend(key, value)}
+                          </TableCell>
+                        ))
+                      }
+                      {
+                        actions
+                          ? (
+                            <TableCell key={`${idx}-actions`} scope="row">
+                              {renderActions(actions, idx)}
+                            </TableCell>
+                          )
+                          : null
+                      }
+                    </TableRow>
+                  </>
+                ))}
+              </TableBody>
+            </Table>
+          )
+        }
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+          rowsPerPageOptions={customDataRender ? [] : [5, 10, 25]}
           colSpan={3}
           count={-1}
           rowsPerPage={qty}

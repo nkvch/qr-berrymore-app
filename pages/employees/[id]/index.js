@@ -10,13 +10,13 @@ import request from '../../../frontendWrapper/utils/request';
 const url = '/employees';
 
 const employeeFlags = [
-  { value: 'isWorking', text: 'Работает' },
-  { value: 'printedQR', text: 'QR распечатан' },
-  { value: 'blacklisted', text: 'Черный список' },
-  { value: 'goodWorker', text: 'Хороший работник' },
-  { value: 'workedBefore', text: 'Работал прежде' },
-  { value: 'wontWork', text: 'Не будет работать' },
-  { value: 'called', text: 'Звонили' },
+  { value: 'isWorking', text: 'Works' },
+  { value: 'printedQR', text: 'QR printed' },
+  { value: 'blacklisted', text: 'Blacklisted' },
+  { value: 'goodWorker', text: 'Good worker' },
+  { value: 'workedBefore', text: 'Worked before' },
+  { value: 'wontWork', text: 'Don\'t work' },
+  { value: 'called', text: 'Called' },
 ];
 
 const foremanColumns = {

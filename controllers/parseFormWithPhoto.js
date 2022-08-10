@@ -3,7 +3,7 @@ import { IncomingForm } from 'formidable';
 import GeneralError from '../apiWrapper/utils/errors/generalError';
 import path from 'path';
 
-const typeIsValid = file => ['jpeg', 'jpg', 'png'].includes(file.newFilename.split('.').pop());
+const typeIsValid = file => ['jpeg', 'jpg', 'png', 'webp'].includes(file.newFilename.split('.').pop());
 
 const parseFormWithPhoto = async req => {
   const uploadDir = path.resolve(__dirname, '../../../uploads');

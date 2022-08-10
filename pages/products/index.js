@@ -32,7 +32,8 @@ const actions = {
   },
   delete: {
     icon: <Delete />,
-    tooltip: 'Delete',
+    tooltip: 'Delete (disabled for demo purposes)',
+    disabled: true,
     action: (prod, _, refetch, forceLoading) => {
       const dialogKey = notification.open({
         type: 'warning',
@@ -88,6 +89,12 @@ const Products = props => {
         url="/products"
         columns={columns}
         actions={actions}
+        customAddButton={() => {
+          notification.open({
+            type: 'warning',
+            title: 'Adding is disabled here for demo purposes',
+          });
+        }}
       />
     </div>
   )

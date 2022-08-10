@@ -1,7 +1,7 @@
 import PaginatedTable from '../../frontendWrapper/components/PaginatedTable';
 import Context from '../../frontendWrapper/context';
 import { useContext, useEffect, useState } from 'react';
-import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation, SelectAll } from '@mui/icons-material';
+import { QrCode2, ModeEdit, Delete, Work, WorkOff, Print, CancelPresentation, SelectAll, PhoneDisabled } from '@mui/icons-material';
 import request from '../../frontendWrapper/utils/request';
 import { notification } from '../../frontendWrapper/components/Notifications';
 import { Button, Checkbox, CircularProgress } from '@mui/material';
@@ -15,13 +15,13 @@ import Form from '../../frontendWrapper/components/Form';
 const url = '/employees';
 
 const employeeFlags = [
-  { value: 'isWorking', text: 'Работает', color: '#fc7303' },
-  { value: 'printedQR', text: 'QR распечатан', color: '#03a5fc' },
-  { value: 'blacklisted', text: 'Черный список', color: '#808080' },
-  { value: 'goodWorker', text: 'Хороший работник', color: '#1e9e05' },
-  { value: 'workedBefore', text: 'Работал прежде', color: '#d9c045' },
-  { value: 'wontWork', text: 'Не будет работать', color: '#BF156C' },
-  { value: 'called', text: 'Звонили', color: '#c75fed' },
+  { value: 'isWorking', text: 'Works', color: '#fc7303' },
+  { value: 'printedQR', text: 'QR printed', color: '#03a5fc' },
+  { value: 'blacklisted', text: 'Blacklisted', color: '#808080' },
+  { value: 'goodWorker', text: 'Good worker', color: '#1e9e05' },
+  { value: 'workedBefore', text: 'Worked before', color: '#d9c045' },
+  { value: 'wontWork', text: 'Don\'t work', color: '#BF156C' },
+  { value: 'called', text: 'Called', color: '#c75fed' },
 ];
 
 const columns = {
@@ -37,10 +37,14 @@ const columns = {
     name: 'First Name',
     type: 'text',
   },
+  photoPath: {
+    name: 'Photo',
+    type: 'image',
+  },
   phone: {
-    name: 'Телефон',
+    name: 'Phone',
     type: 'custom',
-    render: number => number ? `+${number}` : 'Нет данных',
+    render: number => number ? `+${number}` : 'No data',
   },
   address: {
     name: 'Address',
@@ -103,7 +107,7 @@ const Employees = props => {
     });
   };
 
-  const bulkUpdate = (data, refetch, forceLoading, forRows = null) => {
+  const bulkUpdate = (data, refetch, forceLoading, forRows = null, all = false) => {
     forceLoading(true);
 
     request({
@@ -327,18 +331,18 @@ const Employees = props => {
     },
     isNotWorking: {
       icon: <WorkOff />,
-      title: `Don't work (${selected.length} employees)`,
+      title: `Don\'t work (${selected.length} employees)`,
       action: (_, __, refetch, forceLoading) => bulkUpdate({ isWorking: false }, refetch, forceLoading),
       disabled: !selected.length,
     },
     allNotWorking: {
       icon: <WorkOff />,
-      title: 'Убрать смену (у всех)',
+      title: 'Free all employees',
       action: (_, __, refetch, forceLoading) => bulkUpdate({ isWorking: false }, refetch, forceLoading, null, true),
     },
     forgetCalls: {
       icon: <PhoneDisabled />,
-      title: 'Отчистить историю звонков',
+      title: 'Clear call history',
       action: (_, __, refetch, forceLoading) => bulkUpdate({ called: false }, refetch, forceLoading, null, true),
     },
     setFlags: {

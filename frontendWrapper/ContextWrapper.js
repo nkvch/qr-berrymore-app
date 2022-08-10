@@ -6,6 +6,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import { Download } from '@mui/icons-material';
 import request from './utils/request';
 import sleep from './utils/sleep';
 import AddTaskIcon from '@mui/icons-material/AddTask';
@@ -38,13 +39,17 @@ const authMenuOptions = [{
   text: 'New portion',
   linkUrl: '/new-portion',
   icon: <AddTaskIcon />,
+}, {
+  text: 'Download app',
+  linkUrl: '/download',
+  icon: <Download />,
 }];
 
 const ContextWrapper = ({ children }) => {
   const { pathname } = useRouter();
   const [user, setUser] = useState(null);
   const [subTitle, setSubTitle] = useState(null);
-  const [mode, setMode] = useState('dark');
+  const [mode, setMode] = useState('light');
 
   const darkTheme = createTheme({
     palette: {

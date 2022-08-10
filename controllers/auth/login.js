@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const login = async req => {
   const { body } = req;
   const { username, password } = typeof body === 'string' ? JSON.parse(body) : body;
+  const isDemo = process.env.IS_DEMO;
 
   const existUserModelData = await db.users.findOne({
     where: { username },
@@ -25,7 +26,7 @@ const login = async req => {
 
   const { id, password: hashedPassword, ...userData } = existUser;
 
-  const matches = await bcrypt.compare(password, hashedPassword);
+  const matches = isDemo ? hashedPassword === password : (await bcrypt.compare(password, hashedPassword));
 
   if (!matches) {
     throw new Unauthorized('Incorrect password!');
