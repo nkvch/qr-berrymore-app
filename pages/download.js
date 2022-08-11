@@ -76,7 +76,7 @@ const DownloadPage = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = "BerrymoreApp.apk";
+        a.download = "BerryQRDemo.apk";
         document.body.appendChild(a);
         a.click();    
         a.remove();  
