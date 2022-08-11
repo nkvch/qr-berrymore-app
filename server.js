@@ -62,7 +62,7 @@ app.prepare().then(async () => {
           res.end(err);
         });
       } else if (pathname === '/downloadAndroidApp') {
-        const path_ = path.join(__dirname, 'public/AndroidApp/BerrymoreAppDemo.apk');
+        const path_ = path.join(__dirname, 'public/AndroidApp/BerryQRDemo.apk');
         var stat = fs.statSync(path_);
         res.writeHead(200, {
             'Content-Type': 'application/vnd.android.package-archive',
