@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.scss';
 import Context from '../frontendWrapper/context';
 import { useContext, useEffect } from 'react';
-import { Card, Grid, CardMedia, Typography, CardContent, CardActionArea, CardActions, Button } from '@mui/material';
+import { Card, Grid, CardMedia, Typography, CardContent, CardActionArea, CardActions, Button, Divider } from '@mui/material';
 
 export default function Home() {
   const { updateSubTitle } = useContext(Context);
@@ -21,7 +21,10 @@ export default function Home() {
       </Head>
       <div className="block">
         <h1 className="main-page-header">Berrymore app</h1>
-        <p className="main-page-paragraph">{'"Berrymore" berry farm maintenance system is a system which works on production on real berry farm and has been duplicated by me on this public domain to show my current developer skills :D. Purpose is simple: to track all portions of berry collected by all employees and count the statistics, calculating employee salaries. Registration of new portion is being done via QR on android app which is installed on phone of every foreman (employee-superviser). Every employee has his own QR code (generating and printing one (or more) can be done in "Employees" section). When foreman scans employee\'s QR code using android app, form to fill amount of berry appears. After submission record lands in statistics. App is using NextJS, with MaterialUI on frontend and AWS RDS database on backend.'}</p>
+        <div className="divider-container">
+          <Divider />
+        </div>
+        <Typography className="main-page-paragraph">{'"Berrymore" berry farm maintenance system is a system which works on production on real berry farm and has been duplicated by me on this public domain to show my current developer skills :D. Purpose is simple: to track all portions of berry collected by all employees and count the statistics, calculating employee salaries. Registration of new portion is being done via QR on android app which is installed on phone of every foreman (employee-superviser). Every employee has his own QR code (generating and printing one (or more) can be done in "Employees" section). When foreman scans employee\'s QR code using android app, form to fill amount of berry appears. After submission record lands in statistics. App is using NextJS, with MaterialUI on frontend and AWS RDS database on backend.'}</Typography>
         <Grid container spacing={2} className="main-page-grid">
           <Grid item xs={4}>
             <Card>

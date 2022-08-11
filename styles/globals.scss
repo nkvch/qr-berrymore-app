@@ -118,24 +118,31 @@ a {
   font-family: "Roboto","Helvetica","Arial",sans-serif;
   font-size: 40px;
   font-weight: 500;
-  margin-left: 3%;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .main-page-paragraph {
   font-family: "Roboto","Helvetica","Arial",sans-serif;
-  margin: 40px 3% 40px 3%;
+  margin: 40px 5% 40px 5%;
   font-weight: 300;
   line-height: 1.5em;
+  color: #000000b0;
 }
 
 .main-page-grid {
   // margin: 40px 3% 40px 3%;
-  padding-left: 3%;
-  padding-right: 3%;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.divider-container {
+  padding-left: 5%;
+  padding-right: 5%;
 }
 
 .main-page-descriptions {
-  height: 40px;
+  height: 50px;
 }
 
 tspan {
